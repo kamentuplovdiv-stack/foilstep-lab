@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#101a31"/>
+<title>FoilStep Lab V1.9.7 · Математическа проверка на подаването</title>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<style>
+:root{--bg:#f3f6fb;--panel:#fff;--ink:#17243a;--muted:#607086;--line:#dfe6ef;--blue:#2563eb;--navy:#101a31;--gold:#f4c946;--green:#00865e;--red:#c73543;--shadow:0 8px 26px rgba(21,35,63,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);line-height:1.45}header{background:linear-gradient(118deg,#101a31,#1d335a);color:white;padding:28px max(18px,calc((100vw - 1170px)/2)) 26px}header .eyebrow{letter-spacing:.15em;font-size:11px;color:#afc8f2;font-weight:750;text-transform:uppercase}h1{font-size:clamp(25px,4vw,36px);margin:4px 0 5px;letter-spacing:-.04em}header p{color:#cbd6e7;font-size:14px;margin:0;max-width:720px}.version{display:inline-block;font-size:11px;border:1px solid #7185a7;border-radius:30px;padding:3px 9px;letter-spacing:0;margin-left:10px;vertical-align:middle}main{max-width:1200px;margin:auto;padding:22px 18px 55px}.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.deck{display:grid;grid-template-columns:minmax(350px,.9fr) minmax(380px,1.1fr);gap:17px;align-items:start}.panel{border:1px solid var(--line);background:var(--panel);border-radius:15px;box-shadow:var(--shadow);padding:20px;margin-bottom:17px}.panel h2{margin:0 0 6px;font-size:18px;letter-spacing:-.025em}.sub{font-size:13px;color:var(--muted);margin:0 0 16px}.kicker{color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:750;letter-spacing:.065em}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}label{display:block;font-size:12px;font-weight:680;color:#4b5b73;margin-bottom:5px}.input{width:100%;border:1px solid #cfdae8;background:#fff;border-radius:9px;padding:11px 11px;min-height:42px;font-size:15px;color:var(--ink);outline:0;font-variant-numeric:tabular-nums}.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}button{cursor:pointer;font-family:inherit;border-radius:9px;padding:10px 13px;border:1px solid #cdd8e7;color:#283752;background:white;font-weight:700;font-size:13px}button:disabled{opacity:.5;cursor:not-allowed}button:hover{border-color:#608ddb;background:#f0f6ff}button:focus-visible{outline:3px solid #93b8ff}button.primary{background:var(--blue);color:white;border-color:var(--blue)}button.primary:hover{background:#1e4fc0}button.selected{background:#e9f0ff;color:#1e50c1;border-color:#94b2f5}button.ghost{border:0;background:transparent;color:var(--red);padding:6px 9px}button.full{width:100%;margin-top:14px;padding:12px}.scenarios{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0}.scroll{width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:460px}th{text-align:left;font-size:11px;color:var(--muted);padding:8px 5px 10px;font-weight:700;white-space:nowrap}td{padding:5px 4px;border-top:1px solid #edf1f6}td .input{min-width:64px;padding:7px;font-size:13px;min-height:35px}.rowno{color:#65748c;font-size:12px;font-weight:750}.note{font-size:12px;color:var(--muted);margin:12px 0 0}.results{display:grid;grid-template-columns:1fr 1fr;gap:11px}.metric{background:#f5f8ff;border:1px solid #e5ecfa;padding:16px;border-radius:12px;min-width:0}.metric .lbl{color:#60708a;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.04em}.metric strong{display:block;font-size:clamp(22px,3vw,32px);letter-spacing:-.045em;white-space:nowrap;font-variant-numeric:tabular-nums}.metric small{font-size:12px;color:#64748b}.metric.feature{grid-column:1/-1;background:#eaf3ff;border-color:#bfd7ff}.metric.feature strong{font-size:clamp(33px,4vw,46px);color:#154dca}.status{border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;margin-top:12px;background:#effaf5;border:1px solid #b7e7d0;color:#096b4b}.status.error{background:#fff0f1;color:#a22835;border-color:#f6c0c6}.status.warn{background:#fff9e8;color:#795a04;border-color:#f0db99}.stack{display:grid;gap:12px}.svgbox{background:#fafcff;border:1px solid #e5ecf3;border-radius:11px;padding:10px;overflow:auto}.svgbox svg{display:block;width:100%;height:auto;min-width:420px}.legend{font-size:12px;color:#667589;display:flex;flex-wrap:wrap;gap:13px;margin:8px 0 0}.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:baseline;background:#263449}.dot.blue{background:#2b76df}.dot.gold{background:#efc944}.hint{font-size:12px;color:#77859a;margin:10px 0 0}.stateline{padding:14px;background:#f7f9fd;border-radius:10px;border:1px solid #e9edf5;font-size:13px;line-height:1.5}.stateline strong{color:#1b3058}.footer{font-size:12px;color:#6b7b91;margin-top:9px}.counter{background:#e9f6ed;color:#167c52;font-size:12px;border-radius:50px;padding:4px 9px;font-weight:700}input[type=file]{display:none}.tag{background:#eaf2ff;color:#26529c;padding:4px 8px;border-radius:7px;font-size:12px;font-weight:700}.divider{height:1px;background:var(--line);margin:16px 0}.small{font-size:12px}.tip{padding:13px 15px;background:#fffbec;border:1px solid #f4e4a6;border-radius:11px;color:#69552a;font-size:12px}.rowlabel{display:block}.xyok{color:#087855;font-weight:750}.xyinfo{padding:8px 0;border-bottom:1px solid #e5edf5}.xyinfo:last-child{border-bottom:0}.wideGrid{grid-column:1/-1}@media(max-width:920px){.deck{grid-template-columns:minmax(0,1fr)}.deck>div,.panel{min-width:0}}@media(max-width:540px){main{padding:13px 10px 30px}.panel{padding:15px;border-radius:12px;margin-bottom:12px}.fields{gap:8px}.results{gap:7px}.metric{padding:11px}.scenarios button{flex:1}header{padding:23px 16px 21px}.input{font-size:16px}th,td{padding:5px 3px}}@media print{header{background:#101a31!important;print-color-adjust:exact}.scenarios,.actionbar,.del{display:none!important}.deck{grid-template-columns:1fr 1fr}.panel{box-shadow:none}}
+
+@media(max-width:540px){
+.scroll{overflow:visible}table{min-width:0}thead{display:none}
+tbody,tr,td{display:block}tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 29px;column-gap:8px;row-gap:8px;border:1px solid #e3eaf3;padding:10px;border-radius:10px;margin:9px 0;background:#fbfdff}
+tbody td{border:0;padding:0;min-width:0}tbody td:nth-child(1){grid-column:1/3;grid-row:1}tbody td:nth-child(2){grid-column:1;grid-row:2}tbody td:nth-child(3){grid-column:2;grid-row:2}tbody td:nth-child(4){grid-column:1;grid-row:3}tbody td:nth-child(5){grid-column:2;grid-row:3}tbody td:nth-child(6){grid-column:3;grid-row:1;text-align:right}
+tbody td:nth-child(n+2):nth-child(-n+5)::before{display:block;font-size:10px;font-weight:700;color:#64748b;padding-bottom:3px}
+tbody td:nth-child(2)::before{content:'X начало'}tbody td:nth-child(3)::before{content:'Размер X'}tbody td:nth-child(4)::before{content:'Y начало'}tbody td:nth-child(5)::before{content:'Размер Y'}
+tbody td .input{width:100%;min-width:0;font-size:16px}
+}
+
+.hero{display:flex;align-items:center;justify-content:space-between;gap:20px;background:linear-gradient(117deg,#122747,#214d88);border-radius:18px;padding:23px 26px;color:white;margin-bottom:17px;box-shadow:0 12px 28px rgba(31,57,101,.15)}
+.hero>div{display:flex;flex-direction:column;gap:3px}.hero-kicker,.hero-right>span{font-size:11px;font-weight:800;letter-spacing:.07em;color:#bcd2f5}.hero strong{font-size:clamp(30px,4.8vw,49px);line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.hero-right{text-align:right;align-items:flex-end}.hero-right strong{font-size:clamp(22px,3vw,29px)}.hero #heroStatus{font-size:12px;color:#d6e2f4}
+.lightButton{background:#fff;color:#193b6b;border:0;padding:8px 12px;margin-top:6px}.lightButton:hover{background:#e7f0ff}.editor{border:1px solid #c7d9ef;background:#f0f6ff;border-radius:12px;padding:12px;margin-top:12px;margin-bottom:12px}.editor strong{font-size:14px}.mini{padding:2px 13px;min-height:32px;font-size:22px;line-height:1}.editfields{margin-top:10px;gap:9px}.editor .input{background:#fff}.editor label{font-size:11px}.summarylink{padding:10px 0;color:#295ad1;font-weight:750;cursor:pointer;user-select:none}.summarylink:hover{color:#1c3d9a}details.more>summary{cursor:pointer;font-size:13px;color:#435571}.more[open]>summary{margin-bottom:8px}.more[open]{border-color:#c7d9ec}.interactive-figure{background:linear-gradient(135deg,#fffaf1,#f9fbff);border-color:#d9dfef;touch-action:pan-x pan-y}.interactive-figure .elementShape{cursor:pointer;outline:none}.interactive-figure .elementShape rect{transition:stroke-width .12s,filter .12s}.interactive-figure .elementShape:hover rect{stroke:#2563eb;stroke-width:3}.interactive-figure .elementShape.is-selected rect{stroke:#f97316!important;stroke-width:3.8!important;filter:drop-shadow(0 1px 3px rgba(249,115,22,.35))}.interactive-figure .elementShape:focus-visible rect{stroke:#f97316;stroke-width:3}.row-selected{background:#fff7eb!important}.row-selected td{background:#fff7eb}.row-selected td:first-child{color:#b65a05}.svgbox svg{min-width:0}.tip{font-size:12px}.status{margin-top:11px}
+@media(max-width:540px){.hero{padding:16px;border-radius:13px;gap:10px}.hero strong{font-size:32px}.hero-right strong{font-size:19px}.lightButton{font-size:11px;padding:7px}.hero-kicker,.hero-right>span{font-size:9px}.editor{padding:10px}.interactive-figure svg{min-width:480px}.interactive-figure{overflow-x:auto}.scenarios{gap:7px}.scenarios button{font-size:12px;padding:9px 6px}.panel h2{font-size:18px}}
+
+
+.anchorRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;margin:10px 0}.anchorRow button{min-height:42px}.allPositions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:10px 0}.cutTable{border:1px solid #dce4f1;border-radius:10px;padding:11px;background:#f9fbff}.cutTable strong{font-size:13px}.positionRow{display:grid;grid-template-columns: .7fr 1fr 1fr 1.3fr;gap:4px;border-top:1px solid #e6edf6;padding-top:6px;margin-top:6px;font-size:11px;font-variant-numeric:tabular-nums}.reportText{display:block;width:100%;min-height:170px;margin:12px 0;padding:10px;font-size:12px;border:1px solid #cdd9eb;border-radius:10px;resize:vertical;background:#f9fbff}.interactive-figure svg{max-width:none!important}.interactive-figure{scrollbar-color:#8fa5ca #eff3fa;scrollbar-width:auto;max-width:100%}.interactive-figure .elementShape rect{stroke-width:1.7}.interactive-figure .elementShape.is-selected rect{stroke-width:3.5}.interactive-figure{min-height:150px}
+@media(max-width:540px){.anchorRow{grid-template-columns:1fr}.anchorRow button{width:100%}.allPositions{grid-template-columns:1fr}.positionRow{font-size:11px}.hero strong{font-size:28px}}
+
+.originHint{display:flex;align-items:center;gap:10px;border:1px solid #bdd8ff;background:#eff6ff;border-radius:11px;padding:11px 13px;margin:8px 0 15px}.originHint strong{display:block;font-size:13px;color:#1e4f93}.originHint small{display:block;color:#536b88;font-size:12px;margin-top:2px}.originDot{background:#235cbe;color:white;border-radius:9px;display:flex;align-items:center;justify-content:center;min-width:34px;height:34px;font-weight:850;font-size:18px}
+
+/* Справочен преглед на ръчния екран — стойности, получени от автоматичния модел */
+.manual-screen{background:#f6f8fc;border:1px solid #d7e1ef;border-radius:13px;padding:14px}
+.manual-preview{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:12px}
+.manual-output{background:#fff;border:1px solid #cfdbea;border-radius:11px;padding:17px;display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0}
+.manual-overline{font-size:11px;letter-spacing:.09em;color:#526787;font-weight:800;text-transform:uppercase}
+.manual-big{font-size:clamp(30px,4vw,44px);font-weight:820;letter-spacing:-.05em;color:#183b73;white-space:nowrap;font-variant-numeric:tabular-nums}
+.manual-source{font-size:12px;color:#65748c}
+.manual-grid{background:#e8edf5;border:1px solid #cad5e3;border-radius:9px;padding:9px;min-width:0}
+.manual-grid-head,.manual-grid-row{display:grid;grid-template-columns:40px minmax(0,1fr) minmax(0,.85fr);gap:6px;align-items:center}
+.manual-grid-head{font-size:10px;color:#566981;font-weight:730;padding:3px 0 7px;text-align:center}
+.manual-grid-row{margin:3px 0 7px}
+.manual-idx{display:grid;place-items:center;min-height:42px;background:#fff;border:1px solid #b9c7d8;font-weight:800;border-radius:6px;color:#223452}
+.manual-cell{min-height:42px;background:#fff;border:1px solid #b9c7d8;border-radius:6px;display:grid;place-items:center;color:#34455d;font-weight:720;font-variant-numeric:tabular-nums;font-size:16px}
+.manual-grid-row.active .manual-idx{border-color:#4f9d71;background:#e9f7ec;color:#177442}
+.manual-grid-row.active .manual-cell:nth-child(2){border-color:#3a8bcd;box-shadow:inset 0 0 0 1px #9ec9ea;color:#154b9d;background:#f0f7ff;font-size:20px}
+.manual-grid-row.muted{opacity:.52}
+.manual-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.manual-actions button{min-height:43px}
+.manual-info{border:1px solid #e9d9aa;background:#fff9ed;border-radius:9px;color:#725923;padding:10px 12px;font-size:12px;margin-top:11px}
+.manual-mini{font-size:12px;color:#50627a;margin-top:9px}
+@media(max-width:630px){.manual-preview{grid-template-columns:1fr}.manual-output{padding:14px}.manual-big{font-size:34px}.manual-screen{padding:10px}}
+
+/* V1.0: Program of variable advances + editable start position */
+.seq-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.seq-metric{border:1px solid #dce6f4;border-radius:11px;padding:12px;background:#f8fbff}
+.seq-metric small{display:block;font-size:11px;color:#61718c;font-weight:700;margin-bottom:6px}
+.seq-metric strong{display:block;font-size:clamp(22px,3vw,29px);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.seq-highlight{background:#e9f3ff;border-color:#bcd5fa}
+.seq-steps{display:flex;gap:7px;overflow:auto;padding:10px 0 14px;scrollbar-width:thin}
+.seq-chip{flex:0 0 auto;min-width:85px;background:#f0f5ff;border:1px solid #c8d7f4;border-radius:10px;padding:10px 9px;text-align:center;font-size:12px}
+.seq-chip b{display:block;font-size:16px;color:#214f99;font-variant-numeric:tabular-nums}
+.seq-chip span{color:#64758a;font-size:10px}
+.seq-chip.alternate{background:#fff4db;border-color:#f1d998}
+.seq-program{display:grid;gap:8px;margin:12px 0}
+.seq-program-row{display:grid;grid-template-columns:38px 1fr auto;gap:7px;align-items:center;background:white;border:1px solid #d9e2ef;border-radius:9px;padding:9px 10px}
+.seq-program-row .seq-count{color:#546880;font-size:12px}
+.seq-program-row strong{color:#153e7a;font-variant-numeric:tabular-nums}
+.seq-label{font-size:12px;color:#607086}
+#sequencePreview{max-width:100%;overflow:auto}
+#sequencePreview svg{width:100%;min-width:0;height:auto}
+@media(max-width:540px){.seq-stats{gap:7px}.seq-metric{padding:9px}.seq-metric strong{font-size:22px}}
+
+/* V1.0: two honest representations of the computed feed program */
+.fitbtn{font-size:11px;padding:6px 9px;color:#1f4d97;background:#eef5ff}
+.manual-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.manual-compare>div{background:#eff5ff;border:1px solid #cfdef3;border-radius:11px;padding:12px;min-width:0}
+.m-label{font-size:10px;font-weight:800;color:#5c6d84;display:block;margin-bottom:6px}
+.manual-compare strong{font-size:clamp(20px,3vw,29px);color:#204a8e;display:block;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.manual-tabs{display:flex;gap:8px;margin:13px 0}
+.manual-tabs button{flex:1;font-size:12px;padding:10px 8px}
+.manual-v10-screen{background:#f6f8fc;border:1px solid #d5e1ef;border-radius:12px;padding:13px}
+.manual-v10-top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.manual-v10-top strong{font-size:14px}.manual-state{font-size:11px;background:#eaf5eb;border-radius:6px;padding:4px 7px;color:#166d4b}
+.manual-state.warning{color:#a05a13;background:#fff0d7}
+.manual-v10-diagram{overflow:auto;border-radius:9px;background:#fff7df;border:1px solid #eedba7;padding:9px;min-height:72px}
+.manual-v10-diagram svg{width:100%;height:auto;display:block}
+.manual-v10-header,.manual-v10-row{display:grid;grid-template-columns:46px minmax(0,1fr) minmax(0,.9fr);gap:8px;align-items:center}
+.manual-v10-header{font-size:10px;color:#637389;text-transform:uppercase;font-weight:800;margin:12px 0 5px}
+.manual-v10-row{padding:8px 0;border-top:1px solid #e2e8f0}
+.manual-v10-row span:first-child{background:#e4ebf7;border-radius:7px;text-align:center;padding:8px 2px;font-weight:750}
+.manual-v10-row strong{font-size:18px;color:#1b4a8b;font-variant-numeric:tabular-nums}
+.manual-v10-row small{font-size:11px;color:#62748b}
+.manual-v10-row.dim{opacity:.58}
+.reference-check{margin-top:13px;border:1px solid #dfe5ee;border-radius:10px;padding:10px 12px;background:#fafcff}
+.reference-check summary{cursor:pointer;font-size:13px;font-weight:750;color:#285aa7}
+.reference-check label{margin-top:12px}
+@media(max-width:540px){.manual-tabs button{font-size:11px}.manual-compare strong{font-size:19px}}
+
+.quickLegend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}
+.tinyElement{display:flex;align-items:center;gap:7px;text-align:left;padding:7px 8px;min-width:0;background:#f5f8fd}
+.tinyElement b{flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:5px;background:#263c60;color:#fff;font-size:11px}
+.tinyElement span{font-size:10px;line-height:1.3;white-space:nowrap;color:#45607e}
+@media(max-width:520px){.quickLegend{grid-template-columns:repeat(2,minmax(0,1fr))}.manual-tabs{flex-wrap:wrap}.manual-tabs button{flex-basis:42%}}
+
+#manualSmart .manualSmartTable{border:1px solid #d6e2f2;border-radius:12px;overflow:hidden;margin:15px 0}
+#manualSmart .manualSmartHead,#manualSmart .manualSmartRow{display:grid;grid-template-columns:43px minmax(0,1fr) minmax(0,.66fr);gap:8px;align-items:center;padding:9px 12px}
+#manualSmart .manualSmartHead{background:#e9f0fc;color:#5a6d8a;font-size:11px;font-weight:800}
+#manualSmart .manualSmartRow{border-top:1px solid #e3e9f4;background:#fafdff}
+#manualSmart .manualSmartRow b{display:grid;place-items:center;width:29px;height:29px;border-radius:7px;background:#263c60;color:white}
+#manualSmart .manualSmartRow input{min-width:0;width:100%;font-variant-numeric:tabular-nums}
+#smartFoilPreview svg{width:auto!important;min-width:600px;max-width:none!important;height:auto;display:block}
+@media(max-width:540px){#manualSmart .manualSmartRow,#manualSmart .manualSmartHead{gap:6px;padding:8px}}
+
+/* V1.5 – comparison of four independent safety/clearing presets */
+.variant-head{margin:18px 0 8px;align-items:center}
+.variant-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(208px,1fr));gap:10px;margin:10px 0 13px}
+.variant-card{border:1px solid #d9e3f1;border-radius:13px;background:#fafdff;padding:13px;min-width:0;transition:border-color .1s,box-shadow .1s}
+.variant-card.is-chosen{border:2px solid #2a63c9;padding:12px;background:#eef5ff;box-shadow:0 0 0 2px rgba(38,99,235,.07)}
+.variant-card .variant-title{font-size:13px;color:#536c8d;font-weight:750;display:block}
+.variant-card .variant-avg{font-size:25px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#173b79;display:block;margin:1px 0 0}
+.variant-card .variant-strokes{margin:10px 0 6px;font-size:12px;font-variant-numeric:tabular-nums;color:#273e62;min-height:42px;line-height:1.6}
+.variant-card .variant-usage{font-size:12px;color:#64748b;display:block;margin-bottom:10px}
+.variant-card button{width:100%;padding:9px 7px}
+.variant-card .variant-notice{font-size:11px;color:#96600d;margin:5px 0 0}
+.variant-card.best-geom .variant-avg{color:#006b55}
+.variant-card .best-tag{display:inline-block;color:#08664e;background:#dff8ed;border-radius:5px;padding:2px 6px;font-size:10px;margin-top:3px;font-weight:700}
+#smartVariantStatus{margin-bottom:8px}
+@media(max-width:540px){.variant-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.variant-card{padding:10px}.variant-card.is-chosen{padding:9px}.variant-card .variant-avg{font-size:21px}.variant-card .variant-strokes{font-size:11px}}
+
+/* V1.7 two separate, legible band previews */
+.manual-simbox{border:1px solid #cfdbed;border-radius:13px;background:#fbfdff;padding:13px;margin-top:16px}
+.manual-simbox h3{font-size:16px;margin:0 0 4px}
+.manual-simbox .sim-toolbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:space-between;margin:10px 0}
+.manual-simbox .sim-detail{font-size:13px;line-height:1.5;padding:10px;background:#eaf2ff;border-radius:9px;margin-bottom:9px}
+.manual-simbox .sim-figure{overflow-x:auto;overflow-y:hidden;max-width:100%;-webkit-overflow-scrolling:touch;min-height:125px}
+.manual-simbox .sim-figure svg{width:max-content!important;max-width:none!important;min-width:0!important;height:auto;display:block}
+.sim-legend{display:flex;gap:13px;flex-wrap:wrap;font-size:11px;color:#526079;margin-top:10px}
+.sim-dot{width:10px;height:10px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:2px}
+.sim-dot.dark{background:#223851}.sim-dot.blue{background:#2563eb}.sim-dot.red{background:#c73543}
+.elementShape .hit-target,.elementShape.is-selected .hit-target,.elementShape:hover .hit-target{stroke:none!important;stroke-width:0!important;fill:transparent!important}
+.elementShape.is-selected .physical-shape{stroke:#f97316!important;stroke-width:2.5!important}
+.ok-text{color:#087855;font-weight:700}.bad-text{color:#a22835;font-weight:700}
+#cutPreview svg{max-width:none!important}
+@media(max-width:540px){.manual-simbox{padding:10px}.sim-toolbar button{padding:8px;font-size:12px}.sim-detail{font-size:12px}.manual-simbox h3{font-size:15px}}
+
+/* V1.8: measured minimum clearances, not merely the configured X reserve */
+.clearance-block{margin-top:13px;border:1px solid #c6d9ee;border-radius:13px;padding:12px;background:linear-gradient(135deg,#f7fbff,#ecf5ff)}
+.clearance-block h3{margin:0 0 9px;font-size:15px}
+.clearance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.clearance-tile{padding:11px;background:white;border:1px solid #d9e6f7;border-radius:10px;min-width:0}
+.clearance-tile .kicker{font-size:10px;line-height:1.35;letter-spacing:0}
+.clearance-tile strong{display:block;font-variant-numeric:tabular-nums;letter-spacing:-.035em;font-size:clamp(21px,5vw,28px);color:#1d4f9a}
+.clearance-tile small{display:block;color:#64748b;font-size:11px;line-height:1.45}
+.clearance-delta{font-weight:800;font-size:12px;color:#14633f}
+.clearance-delta.down{color:#ad3846}
+.clearance-pair{margin:10px 0 0;font-size:12px;color:#435671;line-height:1.55}
+.clearance-inline{padding:8px 10px;border-radius:8px;background:#edf5ff;border:1px solid #d4e3f8;font-size:12px;margin:9px 0;color:#334e77}
+.variant-clearance{margin:8px 0;padding:9px;background:#f5f9ff;border:1px solid #e1eafa;border-radius:9px;font-size:12px;line-height:1.55;color:#2d486d}
+.variant-clearance b{font-variant-numeric:tabular-nums;font-size:14px;color:#123d75}
+.variant-clearance small{display:block;color:#4c6885}
+@media(max-width:420px){.clearance-tile{padding:8px}.clearance-tile strong{font-size:20px}}
+
+/* V1.9 · чисто представяне на физическото разположение, без аналитични маркери */
+.layout-title{display:flex;gap:10px;justify-content:space-between;align-items:center;margin:15px 0 11px;flex-wrap:wrap}
+.layout-title h3{font-size:16px;letter-spacing:-.025em;margin:0 0 2px}
+.layout-title span{font-size:12px;color:#687991}
+.layout-switch{display:flex;gap:5px;background:#eef2f8;padding:4px;border-radius:11px;flex-shrink:0}
+.layout-switch button{border:0;background:transparent;color:#4b607e;padding:8px 13px;border-radius:8px;font-size:12px;min-height:34px}
+.layout-switch button.selected{background:#fff;color:#1d4dbb;box-shadow:0 1px 4px rgba(33,55,86,.12)}
+#cutPreview.simple-cut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:11px;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;overflow:visible;min-height:0;touch-action:auto}
+.cut-visual-card{border:1px solid #dbe4f0;border-radius:15px;background:#fff;padding:13px;min-width:0;overflow:hidden;box-shadow:0 2px 9px rgba(28,44,71,.04)}
+.cut-visual-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+.cut-visual-head strong{font-size:13px;color:#253b5c}
+.cut-visual-head span{font-size:11px;color:#6b7a8d;white-space:nowrap}
+.cut-art{position:relative;background:#fff9e9;border:1px solid #e9dcae;border-radius:10px;padding:5px;overflow:hidden}
+#cutPreview .cut-art svg{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;display:block}
+.cut-visual-foot{display:flex;justify-content:space-between;font-size:11px;color:#8290a2;margin-top:7px;gap:8px}
+#cutPreview .elementShape .physical-shape{stroke:#f6f0dc;stroke-width:.75}
+#cutPreview .elementShape:hover .physical-shape{stroke:#1760e8;stroke-width:2.2}
+#cutPreview .elementShape.is-selected .physical-shape{stroke:#2773ed!important;stroke-width:2.2!important;filter:drop-shadow(0 0 2px rgba(37,99,235,.28))}
+.layout-hint{color:#78869a;font-size:12px;margin:10px 0 12px}
+#previewQuickLegend .tinyElement[data-select]{transition:background .15s,border-color .15s}
+@media(max-width:540px){.layout-title{align-items:center}.layout-title span{font-size:11px}.cut-visual-card{padding:9px}.cut-visual-head{margin-bottom:6px}.cut-art{padding:3px}#cutPreview.simple-cut-grid{grid-template-columns:1fr;gap:9px}}
+
+
+/* V1.9.4: Named, portable recipes */
+.job-panel{border-color:#c6d9ee;background:linear-gradient(145deg,#fff,#f8fbff)}
+.job-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.job-title{font-size:13px;font-weight:780;color:#264a78}
+.job-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.job-buttons button{min-height:41px}
+.job-buttons button.primary{background:#2463e9}
+.job-meta{font-size:12px;color:#526785;margin:10px 0 0}
+.job-name-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.job-status{margin-top:12px;padding:10px 12px;font-size:12px;line-height:1.55;background:#edf4ff;border-radius:10px;color:#22528c}
+.job-status.error{background:#fff1f2;color:#9d2838}
+.job-status.good{background:#e9f7ef;color:#096c49}
+.job-saved-summary{font-size:11px;line-height:1.5;margin-top:6px;color:#65748c}
+#installApp[hidden]{display:none!important}
+@media(max-width:600px){.job-grid{grid-template-columns:1fr}.job-panel{padding:15px}.job-name-line button{padding:8px 11px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
+ <h1>FoilStep Lab <span class="version">V1.9.7 TEST</span></h1>
+ <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
+</header>
+<main>
+ <div class="hero" aria-live="polite">
+  <div><span class="hero-kicker">ИЗБРАНО СРЕДНО ПОДАВАНЕ</span><strong id="heroAdvance">—</strong><span id="heroStatus">Изчисляване…</span></div>
+  <div class="hero-right"><span>РАЗХОД ЗА 1000 ЛИСТА</span><strong id="heroPer1000">—</strong><button type="button" id="jumpEditor" class="lightButton">Редактирай елементите ↓</button></div>
+ </div>
+
+ <section class="panel job-panel" id="savedJobsPanel" aria-label="Моите запазени настройки">
+  <div class="flex between"><h2>Моите настройки</h2><span class="tag">Запази · Зареди · Офлайн</span></div>
+  <p class="sub" style="margin-bottom:6px">Запази ръчните стъпки заедно с координатите, изрезките и резервите. Можеш да имаш различни настройки за различни поръчки.</p>
+  <div class="job-grid">
+    <div>
+      <label class="job-title" for="jobName">Име на нова настройка</label>
+      <div class="job-name-line"><input class="input" id="jobName" maxlength="70" placeholder="Напр. Кутия 250 · фолио 1" autocomplete="off"/><button id="saveJob" type="button" class="primary">Запази</button></div>
+      <div class="job-saved-summary">Записва до 3 ръчни реда и текущата геометрия. Съществуващото име може да се презапише след потвърждение.</div>
+    </div>
+    <div>
+      <label class="job-title" for="jobSelect">Запазени настройки</label>
+      <select id="jobSelect" class="input" aria-label="Избери запазена настройка"><option value="">Няма запазени настройки</option></select>
+      <div class="job-buttons"><button id="loadJob" class="primary" type="button">Зареди</button><button id="exportJob" type="button">Файл</button><button id="deleteJob" type="button">Изтрий</button></div>
+      <div id="jobDetails" class="job-meta">Все още няма избрана настройка.</div>
+    </div>
+  </div>
+  <div class="job-buttons"><button id="exportJobLibrary" type="button">↓ Архив на всички</button><button id="importJobLibrary" type="button">↑ Зареди архив / настройка</button><input id="jobFilePicker" type="file" accept=".json,application/json" hidden/></div>
+  <div class="job-status" id="jobStatus" role="status" aria-live="polite">Настройките се съхраняват локално в браузъра. Направи JSON архив, за да можеш да ги прехвърляш на друг телефон.</div>
+  <div class="flex" style="margin-top:10px"><button id="installApp" type="button" hidden>Инсталирай като приложение</button><span class="job-meta" id="installHint">За икона на телефона: отвори уеб версията през HTTPS в Chrome и избери „Инсталирай приложение“ или „Добавяне към началния екран“.</span></div>
+ </section>
+ <div class="panel" hidden style="display:none" aria-hidden="true">
+  <div class="flex between"><div><h2>Започни с пример или нов проект</h2><p class="sub" style="margin-bottom:0">Избери пример, после промени размерите. Резултатът се обновява веднага.</p></div><span class="counter" id="testCount">Тестове…</span></div>
+  <div class="scenarios"><button type="button" id="load1">2 елемента · 310,5</button><button type="button" id="load2">4 елемента · 334</button><button type="button" id="load3">Разминаване по Y</button><button type="button" id="load6">6 елемента · OACS 56,333</button><button type="button" id="load4">Променлива стъпка · демо</button><button type="button" id="newProject">Нов проект</button></div>
+ </div>
+ <div class="deck">
+  <div>
+   <section class="panel">
+    <h2>1. Настройки на изрезката</h2>
+    <p class="sub">Нов проект започва от X = 0 mm. Можеш да промениш координатата на всеки елемент.</p>
+    <div class="fields">
+     <div><label for="cutLength">Дължина на изрезката (mm)</label><input class="input" id="cutLength" inputmode="decimal" value="266"/></div>
+     <div><label for="copies">Брой изрезки в цикъл</label><input class="input" id="copies" inputmode="numeric" value="2"/></div>
+     <div><label for="gapX">Минимален луфт X (mm)</label><input class="input" id="gapX" inputmode="decimal" value="3.5"/></div>
+     <div><label for="gapY">Минимален луфт Y (mm)</label><input class="input" id="gapY" inputmode="decimal" value="2"/></div>
+     <div class="wideGrid"><label for="sheets">Тираж (листа / цикли)</label><input class="input" id="sheets" inputmode="numeric" value="1000"/></div>
+    </div>
+   </section>
+   <section class="panel">
+    <div class="flex between"><h2>2. Елементи в първата изрезка</h2><span class="tag" id="elementCount">4 елемента</span></div>
+    <p class="sub">Елемент 1 започва по подразбиране от <strong>X = 0 mm</strong>, но можеш да зададеш друг X. Позициите на останалите елементи не се променят автоматично.</p>
+    <div class="originHint"><span class="originDot">0</span><div><strong>Начало X = 0 mm · по подразбиране</strong><small>Натисни X начало в редактора, за да зададеш друга позиция.</small></div></div>
+    <div class="layout-title">
+      <div><h3>Разположение на елементите</h3><span>Само първата изрезка · точно по въведените X и Y</span></div>
+      <div class="layout-switch" role="group" aria-label="Изглед на изрезките" hidden style="display:none">
+        <button id="readablePreview" type="button">Всички</button>
+        <button id="fitPreview" class="selected" type="button">Първа</button>
+        <button id="previewMinus" type="button" hidden aria-hidden="true">−</button>
+        <span id="previewZoomText" hidden>100%</span>
+        <button id="previewPlus" type="button" hidden aria-hidden="true">+</button>
+      </div>
+    </div>
+    <div class="simple-cut-grid" id="cutPreview" aria-label="Разположение на елементите по изрезките"></div>
+    <p class="layout-hint">Докосни правоъгълник, за да редактираш елемента. Визуализацията е само на първата изрезка.</p>
+    <div id="previewQuickLegend" class="quickLegend" aria-label="Елементи и координати"></div><details id="allPositionsDetails"><summary class="summarylink">Всички координати по изрезки <span id="positionsCount"></span></summary><div id="allPositions" class="allPositions"></div></details>
+    <div class="editor" id="selectedEditor" aria-label="Редактор на избрания елемент">
+      <div class="flex between"><strong id="selectedTitle">Елемент 1</strong><div class="flex"><button type="button" id="prevElement" class="mini" aria-label="Предишен елемент">‹</button><button type="button" id="nextElement" class="mini" aria-label="Следващ елемент">›</button></div></div>
+      <div class="fields editfields">
+        <div><label for="editX" id="editXLabel">X начало (mm)</label><input class="input" id="editX" inputmode="decimal"/></div>
+        <div><label for="editW">Дължина X (mm)</label><input class="input" id="editW" inputmode="decimal"/></div>
+        <div><label for="editY">Y начало (mm)</label><input class="input" id="editY" inputmode="decimal"/></div>
+        <div><label for="editH">Височина Y (mm)</label><input class="input" id="editH" inputmode="decimal"/></div>
+      </div>
+    </div>
+    <details id="tableDetails"><summary class="summarylink">Таблица с всички елементи <span id="tableCounter"></span></summary><div class="scroll"><table><thead><tr><th>№</th><th>X начало</th><th>Размер X</th><th>Y начало</th><th>Размер Y</th><th></th></tr></thead><tbody id="elementRows"></tbody></table></div></details>
+    <div class="flex actionbar" style="margin-top:12px"><button id="addElement">+ Добави елемент</button><button id="exportProject">↓ Проект JSON</button><button id="importButton">↑ Зареди JSON</button><input id="filePicker" type="file" accept=".json,application/json"/></div>
+    <p class="note" aria-live="polite">Заредените проекти запазват оригиналните X координати. Нов проект започва с X = 0 mm, който можеш да промениш.</p>
+   </section>
+  </div>
+  <div>
+   <section class="panel" aria-live="polite">
+    <div class="flex between"><h2>3. Резултат</h2><span class="tag">На живо</span></div>
+    <div id="resultRegion">
+     <div class="results">
+      <div class="metric feature"><div class="lbl">Геометрична постоянна стъпка · за сравнение</div><strong id="resultAdvance">—</strong><small>mm за машинен цикъл</small></div>
+      <div class="metric"><div class="lbl">Разход за 1000 цикъла</div><strong id="per1000">—</strong><small>метра фолио / една лента</small></div>
+      <div class="metric"><div class="lbl">Разход за зададен тираж</div><strong id="totalUsage">—</strong><small>метра фолио / една лента</small></div>
+      <div class="metric"><div class="lbl">Брой отпечатъци / цикъл</div><strong id="totalElements">—</strong></div>
+      <div class="metric"><div class="lbl">Номинална обща дължина</div><strong id="totalWidth">—</strong><small>mm на всички изрезки</small></div>
+     </div>
+     <div class="status" id="status">Изчисляване…</div>
+     <details class="more" id="mathDetails"><summary>Кои елементи определят стъпката?</summary><div class="stateline" id="tightContact" style="margin-top:9px">—</div></details>
+
+    </div>
+   </section>
+
+   <section class="panel" id="sequencePanel" aria-live="polite">
+    <div class="flex between"><h2>4. Автоматичен режим · подавания</h2><span class="tag">По реалните X/Y позиции</span></div>
+    <p class="sub">Търси геометрично допустими периоди според X/Y позициите и сравнява със снимките от OACS.</p>
+    <div class="fields" style="margin-bottom:9px"><div><label for="simulationCount">Проверени подавания</label><select class="input" id="simulationCount"><option value="30">30</option><option value="60" selected>60</option><option value="120">120</option></select></div><div><label>Търсене</label><div class="tag" style="min-height:44px;display:flex;align-items:center">Автоматично · без местене на елементи</div></div></div>
+    <div class="seq-stats"><div class="seq-metric seq-highlight"><small>Средно подаване от симулацията</small><strong id="sequenceAverage">—</strong></div><div class="seq-metric"><small>Промяна спрямо постоянното</small><strong id="sequenceSaving">—</strong></div></div>
+    <div id="sequenceStatus" class="status warn">Проверка…</div>
+    <div class="flex between" style="margin-top:14px"><strong style="font-size:13px">Последователни стъпки (mm)</strong><button id="copySequence" type="button">Копирай</button></div>
+    <div class="seq-steps" id="sequenceChips"></div>
+    <details><summary class="summarylink">Виж всички изчислени подавания</summary><div id="sequenceRows" class="seq-program"></div></details>
+    <div class="svgbox" id="sequencePreview" style="margin-top:11px"></div>
+    <p class="note">Алгоритъмът избира най-ранното безопасно следващо място. Това е геометрична евристика, не доказано глобален оптимум и не потвърдена машинна програма.</p>
+   </section>
+   <section class="panel" id="manualSmart" aria-live="polite">
+    <div class="flex between"><h2>5. Ръчно подаване · 10 + 1 варианта</h2><span class="tag">Подаване × повторения</span></div>
+    <p class="sub">Програмата сравнява <b>10 автоматични варианта</b> за минимална действителна междина <b>1 / 1,5 / 2 / 2,5 / 3 mm</b>. За всеки минимум има два режима: <b>А: изчистване +8 mm и резерв за грешка 1,5 mm</b>; <b>Б: изчистване +10 mm и резерв за грешка 2 mm</b>. <b>№11 „Мой избор“</b> се настройва отделно. По Y се използват реалните координати, без измислен Y луфт.</p>
+    <div class="fields">
+      <div><label for="manualSafety">Мой вариант · минимум между отпечатъци (mm)</label><input id="manualSafety" class="input" inputmode="decimal" value="1"/></div>
+      <div><label for="manualClearExtra">Мой вариант · изчистващ резерв (mm)</label><input id="manualClearExtra" class="input" inputmode="decimal" min="0" max="50" step="0.5" value="8"/></div>
+      <div><label for="manualError">Мой вариант · резерв за грешка (mm)</label><input id="manualError" class="input" inputmode="decimal" min="0" max="30" step="0.5" value="1.5"/></div>
+      <div><label for="manualGrid">Стъпка на изчисление (не грешка)</label><select id="manualGrid" class="input"><option value="0.1">0,1 mm</option><option value="0.5">0,5 mm</option><option value="1" selected>1 mm</option><option value="1.5">1,5 mm</option><option value="2">2 mm</option></select></div>
+      <div><label for="manualRepeats">Макс. кратки повторения</label><select id="manualRepeats" class="input"><option value="10">10</option><option value="18">18</option><option value="25" selected>25</option></select></div>
+    </div>
+    <p class="note">Изчислява се действителната най-малка <b>2D междина</b> между отпечатъците и се проверяват повторенията. Резервът за грешка се добавя към целевата междина: например минимум 1,5 + грешка 2 = проверявани поне 3,5 mm. Това е <b>моделиран еднократен резерв за относителна неточност</b>, а не измерена грешка на машината; натрупващите се отклонения при много подавания не са моделирани. Изчистващите +8/+10 mm се добавят към дългия ход, когато има такъв. Алгоритъмът е евристичен и не гарантира абсолютен минимум.</p>
+    <div class="variant-head flex between">
+      <div><strong>Десет предложения с резерв за грешка + „Мой избор“</strong><p class="sub" style="margin:2px 0 0">Сравнение за текущите елементи и изрезки</p></div>
+      <button type="button" id="smartCompare" class="primary">Изчисли 11 варианта</button>
+    </div>
+    <div id="smartVariantStatus" class="note" aria-live="polite">Натисни „Изчисли 11 варианта“.</div>
+    <div id="smartVariantList" class="variant-list" aria-live="polite"></div>
+    <details class="math-audit" id="mathAuditPanel" style="margin:16px 0 8px;padding:13px;border:1px solid #c7d6ea;border-radius:14px;background:#f4f8ff">
+      <summary style="cursor:pointer;font-weight:800;color:#23497b">Математическо сравнение: двустъпкови схеми без допълнително изчистване</summary>
+      <p class="note">По желание, само за сверяване. <b>Тук няма резерв за грешка и изчистване</b>. Само геометрично сравнение за <b>една или две единични стъпки</b> (без дълги серии от повторения). <b>Тези схеми не включват резерв +8 / +10 mm и резерв за грешка</b> и не са готови машинни настройки. Проверяват се всички подавания на избраната стъпка на точност и многократните периоди. Не е доказан оптимум при 3 реда или повече.</p>
+      <button type="button" id="runMathAudit" class="mini">Пресметни двустъпковото сравнение</button><div id="mathAuditResult" aria-live="polite" class="note">При нужда натисни „Пресметни двустъпковото сравнение“.</div>
+    </details>
+    <div class="divider"></div>
+    <div class="flex between"><strong>Избран вариант · ръчна таблица</strong><span class="tag" id="smartChosenGap">Резерв 1 mm</span></div>
+    <div class="manual-actions"><button type="button" id="smartAuto" class="primary">Изчисли моя вариант</button><button type="button" id="smartCheck">Провери въведените</button></div>
+    <div class="manualSmartTable">
+      <div class="manualSmartHead"><span>Ред</span><span>Подаване (mm)</span><span>Брой</span></div>
+      <div class="manualSmartRow"><b>1</b><input id="smartA1" class="input" inputmode="decimal" value="10" aria-label="Стъпка ред 1"/><input id="smartN1" class="input" inputmode="numeric" value="17" aria-label="Повторения ред 1"/></div>
+      <div class="manualSmartRow"><b>2</b><input id="smartA2" class="input" inputmode="decimal" value="205" aria-label="Стъпка ред 2"/><input id="smartN2" class="input" inputmode="numeric" value="1" aria-label="Повторения ред 2"/></div>
+      <div class="manualSmartRow"><b>3</b><input id="smartA3" class="input" inputmode="decimal" placeholder="—" aria-label="Стъпка ред 3"/><input id="smartN3" class="input" inputmode="numeric" placeholder="—" aria-label="Повторения ред 3"/></div>
+    </div>
+    <div class="manual-compare"><div><span class="m-label">СРЕДНО РЪЧНО ПОДАВАНЕ</span><strong id="smartAverage">—</strong></div><div><span class="m-label">ПОДАВАНЕ ЗА ПЕРИОДА</span><strong id="smartPeriod">—</strong></div></div>
+    <div class="clearance-block" aria-live="polite">
+      <h3>Най-малки разстояния между отпечатъците</h3>
+      <div class="clearance-grid">
+        <div class="clearance-tile"><span class="kicker">По X · когато се застъпват по Y</span><strong id="smartMinX">—</strong><small id="smartMinXDelta">Сравнение след проверка</small></div>
+        <div class="clearance-tile"><span class="kicker">Реална най-малка междина · 2D</span><strong id="smartMin2D">—</strong><small id="smartMin2DDelta">Разстояние между краищата</small></div>
+      </div>
+      <p class="clearance-pair" id="smartMinPair">Изчислява се между отпечатъци от различни ходове, включително след повторение на периода.</p>
+      <p class="note">Разстоянието по X е определящо, когато елементите пресичат един и същ диапазон по Y. 2D разстоянието отчита и разминаването по височина. Показаните mm са по геометрията, не измерена грешка на машината.</p>
+    </div>
+    <div class="status warn" id="smartStatus">Натисни „Изчисли 11 варианта“.</div>
+    <p class="note" id="smartMeta"></p>
+    <div class="manual-actions"><button id="smartCopy" type="button">Копирай редовете</button><span id="smartCopyStatus" class="note"></span></div>
+    <div class="manual-simbox" id="manualSimulator">
+      <div class="flex between"><h3>Симулация на ръчното подаване</h3><span class="tag">X/Y · реална геометрия</span></div>
+      <p class="sub">Всеки ход премества цялата лента. Синьото е новият отпечатък, сивото — предишният. Червеното показва недопустимо сближаване според ръчния резерв X.</p>
+      <div class="sim-toolbar">
+        <button type="button" id="simPrev" aria-label="Предишен ход">‹ Предишен</button>
+        <span id="simCurrent" class="tag" aria-live="polite">Ход —</span>
+        <button type="button" id="simNext" aria-label="Следващ ход">Следващ ›</button>
+      </div>
+      <div id="simDetail" class="sim-detail" aria-live="polite">Въведи стъпките, за да видиш движението.</div>
+      <div class="svgbox sim-figure" id="simFocusPreview"></div>
+      <div class="flex between" style="margin-top:15px"><strong>Цялата лента · период + повторение</strong><div class="flex"><button id="simZoomOut" class="mini" type="button">−</button><span class="tag" id="simZoomValue">100%</span><button id="simZoomIn" class="mini" type="button">+</button></div></div>
+      <p class="note" style="margin:4px 0 7px">Плъзни хоризонтално. Докосни номера на ход, за да го избереш.</p>
+      <div class="svgbox sim-figure" id="smartFoilPreview"></div>
+      <div class="sim-legend"><span><i class="sim-dot dark"></i> Отпечатък</span><span><i class="sim-dot blue"></i> Избран ход</span><span><i class="sim-dot red"></i> Недопустимо сближаване</span></div>
+    </div>
+    <p class="note">Проверяват се отпечатъците между различните цикли, включително при прехода от последния към първия ред. По Y няма изкуствен резерв: само истинско припокриване блокира X. Допълнителният резерв за изчистващия ход е различен за всеки вариант. Тези стойности не заместват проверка на отклоненията при изтегляне. Изчислените ходове са геометрични предложения, не потвърдени машинни настройки.</p>
+   </section>
+   <section class="panel" id="manualPanel" aria-live="polite" hidden style="display:none">
+    <div class="flex between"><h2>Предишен пример за ръчни ходове</h2><span class="tag">X/Y → подавания</span></div>
+    <p class="sub">Изчислява се периодична последователност от подадените координати X/Y. Провери коя от схемите може да се въведе в ръчния екран на BOBST.</p>
+    <div class="manual-compare">
+      <div><span class="m-label">ГЕОМЕТРИЧНА ПОСТОЯННА СТЪПКА</span><strong id="manualExact">—</strong></div>
+      <div><span class="m-label">СРЕДЕН ГЕОМЕТРИЧЕН АВАНС</span><strong id="manualValue">—</strong></div>
+    </div>
+    <div class="manual-tabs" role="group" aria-label="Варианти за ръчна проверка"><button type="button" class="selected" id="manualTabSimple" aria-pressed="true">Вариант А · 0,1 mm</button><button type="button" id="manualTabPattern" aria-pressed="false">Вариант Б · 1 mm</button><button type="button" id="manualTabConstant" aria-pressed="false">Геометрична постоянна</button></div>
+    <div class="manual-v10-screen">
+      <div class="manual-v10-top"><strong id="manualModeTitle">Вариант А · ходове с 0,1 mm</strong><span id="manualModeState" class="manual-state">Изчисление…</span></div>
+      <div class="manual-v10-diagram" id="manualDiagram"></div>
+      <div class="manual-v10-header"><span>Ход</span><span>Подаване (mm)</span><span>Роля</span></div>
+      <div id="manualStepList" class="manual-v10-rows"></div>
+      <p id="manualNote" class="manual-mini">Изчисляване…</p>
+    </div>
+    <div class="manual-actions"><button class="primary" type="button" id="copyManual" disabled>Копирай показаните стъпки</button><button type="button" id="copyManualSummary" disabled>Копирай целия отчет</button><span id="manualCopied" class="note" aria-live="polite"></span></div>
+    <details class="reference-check"><summary>Показания от OACS (само сверяване)</summary><label for="oacsCompare">OACS оптимизиран среден аванс (mm/лист)</label><input class="input" id="oacsCompare" inputmode="decimal" placeholder="Например 56,333"/><p class="manual-mini" id="oacsCompareResult">Няма въведена стойност за сравнение.</p></details>
+    <div class="manual-info"><strong>Внимание за реалната машина:</strong> схемите показват геометрично изчислени ходове. От снимките с празни полета не можем да установим кои точно колони на BOBST са дължина, брой повторения или изчистващо подаване. Изчислените ходове НЕ са директно съответствие на трите реда в BOBST; липсва потвърдено значение на полетата. Свери ръчните настройки с OACS и ръководството.</div>
+    <details class="more" style="margin-top:11px"><summary>Пълен отчет с всички координати</summary><textarea id="machineReport" class="reportText" readonly aria-label="Резултат и координати за сверяване"></textarea><div class="manual-actions"><button id="copyReport" type="button">Копирай отчета</button><span class="note" id="copyStatus"></span></div></details>
+   </section>
+   <section class="panel">
+    <h2>6. Два последователни цикъла · постоянна стъпка</h2>
+    <p class="sub">Тъмно = първи цикъл · Синьо = следващ цикъл.</p>
+    <div class="svgbox" id="cyclePreview"><svg viewBox="0 0 900 145"></svg></div>
+    <div class="legend"><span><span class="dot"></span>Предишен отпечатък</span><span><span class="dot blue"></span>Следващ отпечатък</span></div>
+
+   </section>
+   <details class="panel more"><summary><strong>Разминаване по Y</strong> · проверка</summary><div class="stateline" id="xyNotes" style="margin-top:10px">—</div></details>
+  </div>
+ </div>
+ <details class="panel more"><summary><strong>Кратко обяснение и ограничения</strong></summary><div class="small" style="padding-top:12px;color:#55677d">Елементите се копират през дължината на изрезката. Програмата сравнява постоянна стъпка и евристично подреждане на последователни подавания: по X се спазва луфтът, освен когато елементите са достатъчно разделени по Y. Това е независим тестов модел, а не софтуерът на BOBST. Няма връзка с машината и не отчита всички нейни ограничения; сверявай реалните настройки с OACS.</div></details>
+ <p class="footer">FoilStep Lab V1.9.7 · Тестово разширено търсене · 10 автоматични + 1 ръчен вариант · Първа изрезка в подредбата · Начален X = 0 по подразбиране, но е редактируем · Офлайн · Проектите могат да се експортират като JSON · Не управлява машината.</p>
+</main>
+<script>
+'use strict';
+const EPS = 1e-8;
+const sample1 = {id:1, cutLength:246, copies:2, gapX:3.5, gapY:2, sheets:1000, elements:[{x:24.5,w:61,y:10,h:10},{x:204,w:35,y:10,h:10}]};
+const sample2 = {id:2, cutLength:266, copies:2, gapX:3.5, gapY:2, sheets:1000, elements:[{x:30.5,w:11,y:10,h:10},{x:53.5,w:11,y:10,h:10},{x:84,w:11,y:10,h:10},{x:222.5,w:35,y:10,h:10}]};
+const sample6 = {id:6, cutLength:250, copies:2, gapX:4, gapY:2, sheets:1000, elements:[
+ {x:17,w:17,y:10,h:2},{x:34,w:17,y:5,h:2},{x:42,w:7,y:20,h:7},
+ {x:199,w:9.5,y:35,h:2},{x:200,w:7,y:20,h:7},{x:208.5,w:9.5,y:32,h:2}
+]};
+const sample4 = {id:4, cutLength:100, copies:1, gapX:3.5, gapY:2, sheets:1000, elements:[{x:0,w:20,y:10,h:10},{x:54,w:20,y:10,h:10}]};
+const sample3 = {id:3, cutLength:150, copies:2, gapX:3.5, gapY:2, sheets:1000, elements:[{x:20,w:25,y:8,h:12},{x:20,w:25,y:28,h:12}]};
+const $=id=>document.getElementById(id);
+let previewZoom=1;
+let previewCutMode='first';
+// Началният проект е пример с нормализирани координати, така че първият X да е 0.
+// След зареждане или редакция не налагаме принудително начало 0.
+let state = structuredClone(sample2);
+const startupX = state.elements[0].x;
+state.elements.forEach(e => {e.x=Math.round((e.x-startupX)*1e9)/1e9;});
+let selectedIndex=0;
+const toNum = v => {const s=String(v??'').trim().replace(',','.'); return s===''?NaN:Number(s)};
+const nfmt=(v,d=1)=> Number.isFinite(v)?new Intl.NumberFormat('bg-BG',{maximumFractionDigits:d,minimumFractionDigits:d}).format(v):'—';
+const esc = s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function axisGap(p,wp,q,wq){return Math.max(q-p-wp,p-q-wq)}
+function expand(elements,cutLength,copies){
+ const shapes=[];
+ for(let c=0;c<copies;c++)for(let i=0;i<elements.length;i++){
+  const e=elements[i];shapes.push({...e,x:e.x+c*cutLength,label:`Елемент ${i+1} / изрезка ${c+1}`,index:i+1,copy:c+1});
+ }
+ return shapes;
+}
+function validAdvance(shapes,A,gx,gy){
+ if(!(A>0))return false;
+ const extent=Math.max(...shapes.map(e=>e.x+e.w))-Math.min(...shapes.map(e=>e.x));
+ const maxK=Math.ceil((extent+gx)/A)+1;
+ for(let k=1;k<=maxK;k++)for(const a of shapes)for(const b of shapes){
+  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  if(axisGap(a.x+k*A,a.w,b.x,b.w)<gx-EPS)return false;
+ }
+ return true;
+}
+function solve(p){
+ const {cutLength,copies,gapX:gx,gapY:gy,elements}=p;
+ const grid=0;
+ if(!Number.isFinite(cutLength)||cutLength<=0||cutLength>10000)throw Error('Дължината на изрезката трябва да е положителна.');
+ if(!Number.isInteger(copies)||copies<1||copies>30)throw Error('Броят изрезки трябва да е цяло число от 1 до 30.');
+ if(!Number.isFinite(gx)||gx<0||!Number.isFinite(gy)||gy<0)throw Error('Технологичните отстояния не могат да бъдат отрицателни.');
+ if(!elements.length||elements.length>80||elements.length*copies>240)throw Error('Въведи между 1 и 80 елемента; общо копирани елементи до 240.');
+ for(let i=0;i<elements.length;i++){
+  const e=elements[i];
+  if(![e.x,e.w,e.y,e.h].every(Number.isFinite)||e.x<0||e.y<0||e.w<=0||e.h<=0||e.x+e.w>cutLength+EPS)
+   throw Error(`Елемент ${i+1}: проверѝ X, Y, размерите и дали се побира в дължината на изрезката.`);
+ }
+ const shapes=expand(elements,cutLength,copies);
+ // Check that shapes from the same machine cycle already have required clearance.
+ for(let i=0;i<shapes.length;i++)for(let j=i+1;j<shapes.length;j++){
+  const a=shapes[i], b=shapes[j];
+  // Same press cycle: virgin foil is used only once. Adjacent stamp shapes may touch.
+  // True area overlap in both X and Y remains invalid. Inter-cycle clearance is checked separately.
+  if(axisGap(a.y,a.h,b.y,b.h)<-EPS && axisGap(a.x,a.w,b.x,b.w)<-EPS)
+   throw Error(`Елементите ${a.label} и ${b.label} се застъпват физически в самата изрезка.`);
+ }
+ const lower=Math.max(0,...shapes.map(e=>e.w+gx));
+ const minX=Math.min(...shapes.map(e=>e.x));
+ const maxRight=Math.max(...shapes.map(e=>e.x+e.w));
+ const span=maxRight-minX;
+ const maxK=Math.ceil((span+gx)/lower)+1;
+ if(maxK*shapes.length*shapes.length>500000)throw Error('Твърде много геометрични комбинации. Намали размера или броя на елементите.');
+ const forbidden=[];
+ for(const a of shapes)for(const b of shapes){
+  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  for(let k=1;k<=maxK;k++){
+   const lo=(b.x-a.x-a.w-gx)/k;
+   const hi=(b.x+b.w-a.x+gx)/k;
+   if(hi>lower-EPS && lo<span+gx+EPS)forbidden.push([lo,hi]);
+  }
+ }
+ forbidden.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+ let A=grid?Math.ceil((lower-EPS)/grid)*grid:lower;
+ const snap=n=>grid?Math.ceil((n-EPS)/grid)*grid:n;
+ for(const [lo,hi] of forbidden){
+  if(lo<A-EPS && A<hi-EPS)A=snap(hi);
+  else if(lo>=A-EPS)break;
+ }
+ A=Math.round(A*1e9)/1e9;
+ if(!validAdvance(shapes,A,gx,gy))throw Error('Числена грешка при изчисляването — проверѝ настройките.');
+ const tight=[];
+ for(let k=1;k<=Math.ceil((span+gx)/A)+1;k++)for(const a of shapes)for(const b of shapes){
+  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  const d=axisGap(a.x+k*A,a.w,b.x,b.w);
+  if(Math.abs(d-gx)<1e-5)tight.push({old:b,newer:a,k,d});
+ }
+ return {A,shapes,tight,span,lower,forbiddenCount:forbidden.length,forbidden};
+}
+// V0.8 -- forbidden translations for ANY two impressions, not just adjacent.
+// If t_j - t_i falls inside a forbidden interval, the two footprints clash.
+function forbiddenOffsets(shapes,gx,gy){
+ const intervals=[];
+ for(const a of shapes)for(const b of shapes){
+  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  const lo=a.x-b.x-b.w-gx,hi=a.x+a.w+gx-b.x;
+  if(hi>EPS)intervals.push([Math.max(0,lo),hi]);
+ }
+ intervals.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+ const merged=[];
+ for(const [lo,hi] of intervals){
+  const last=merged[merged.length-1];
+  if(last&&lo<=last[1]+EPS)last[1]=Math.max(last[1],hi);
+  else merged.push([lo,hi]);
+ }
+ if(!merged.length||merged[0][0]>EPS)throw Error('Неуспешна проверка на началния аванс.');
+ return merged;
+}
+// V1.9.3: shortest physical clearance between rectangles from DIFFERENT
+// impressions. Even Y-separated elements can be closer than the target
+// diagonally; a positive Y gap alone does not grant unlimited X proximity.
+function forbiddenOffsetsDistance(shapes,minimum2D){
+ if(!Number.isFinite(minimum2D)||minimum2D<0)throw Error('Невалиден минимален 2D резерв.');
+ const intervals=[];
+ for(const a of shapes)for(const b of shapes){
+  const yg=Math.max(0,axisGap(a.y,a.h,b.y,b.h));
+  if(yg>=minimum2D-EPS && minimum2D>EPS)continue;
+  const needX=minimum2D>EPS?Math.sqrt(Math.max(0,minimum2D*minimum2D-yg*yg)):0;
+  const lo=a.x-b.x-b.w-needX;
+  const hi=a.x+a.w-b.x+needX;
+  if(hi>EPS)intervals.push([Math.max(0,lo),hi]);
+ }
+ intervals.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+ const merged=[];
+ for(const [lo,hi] of intervals){
+  const prev=merged[merged.length-1];
+  if(prev&&lo<=prev[1]+EPS)prev[1]=Math.max(prev[1],hi);
+  else merged.push([lo,hi]);
+ }
+ if(!merged.length||merged[0][0]>EPS)throw Error('Няма надеждна начална геометрична проверка.');
+ return merged;
+}
+function offsetClash(d,intervals){
+ if(d<=0)return [0,Number.POSITIVE_INFINITY];
+ let left=0,right=intervals.length-1,idx=-1;
+ while(left<=right){const mid=(left+right)>>1;if(intervals[mid][0]<=d+EPS){idx=mid;left=mid+1;}else right=mid-1;}
+ if(idx<0)return null;
+ const q=intervals[idx];return d>q[0]+EPS && d<q[1]-EPS?q:null;
+}
+function verifySteps(starts,intervals){
+ for(let i=0;i<starts.length;i++)for(let j=i+1;j<starts.length;j++){
+  if(offsetClash(starts[j]-starts[i],intervals))return false;
+ }
+ return true;
+}
+function verifyPeriodic(pattern,intervals){
+ if(!pattern.length||pattern.some(v=>v<=0))return false;
+ const maxDist=intervals[intervals.length-1][1];
+ const minStep=Math.min(...pattern);
+ const checkLen=pattern.length+Math.ceil(maxDist/minStep)+2;
+ if(checkLen>4000)return false; // cannot certify within safe computation budget
+ const starts=[0];for(let i=0;i<checkLen;i++)starts.push(starts.at(-1)+pattern[i%pattern.length]);
+ // For a periodic infinite sequence, there are only p start phases. All further
+ // distances exceed maxDist and can no longer conflict.
+ for(let phase=0;phase<pattern.length;phase++){
+  for(let j=phase+1;j<starts.length;j++){
+   const d=starts[j]-starts[phase];
+   if(d>maxDist+EPS)break;
+   if(offsetClash(d,intervals))return false;
+  }
+ }
+ return true;
+}
+
+// V1.2: manual strip scheduling uses a separate X reserve from automatic OACS.
+// A schedule is a cyclic list of (advance, repeatCount), 1..3 rows.
+// Its physical movements must remain collision-free even across the period boundary.
+let smartDirty=true,smartLast=null,smartAutomatic=false;
+const smartPresets=[1,1.5,2,2.5,3].flatMap((gap)=>[
+ {gap,extra:8,error:1.5,mode:'А'},
+ {gap,extra:10,error:2,mode:'Б'}
+]);
+// Buffer for estimated relative feed-position error is added to target real 2D gap.
+// This is a SINGLE relative-position allowance; it does not model cumulative errors.
+let smartCalculationSerial=0;
+// In MANUAL mode Y is only a geometric intersection test: 0 = no extra safety margin.
+// This setting deliberately does not change the automatic-mode gapY input.
+const MANUAL_Y_EXTRA_GAP=0;
+const MIN_CLEAR_EXTRA=0;
+let smartVariants=[],smartSelectedId=null;
+
+/* V1.9.3: the smallest actual separation is measured between DIFFERENT impressions
+   We inspect every phase of the repeated feed program and all later impressions
+   that can geometrically be closer than the best value already found. */
+function minimumImprintGap(shapes,steps){
+ if(!steps?.length || steps.some(v=>!Number.isFinite(v)||v<=0)||!shapes?.length)return null;
+ const span=Math.max(...shapes.map(e=>e.x+e.w))-Math.min(...shapes.map(e=>e.x));
+ const p=steps.length, minStep=Math.min(...steps);
+ const xPairs=[];
+ for(let a=0;a<shapes.length;a++)for(let b=0;b<shapes.length;b++){
+  const old=shapes[a],next=shapes[b],ySigned=axisGap(old.y,old.h,next.y,next.h);
+  xPairs.push({old,next,ySigned,yGap:Math.max(0,ySigned)});
+ }
+ let near2={distance:Infinity},nearX={distance:Infinity};
+ let comparisons=0,cutoff=false,checkedCycles=0;
+ // Full cycle phases, so the change from the last step to the first is included.
+ for(let phase=0;phase<p;phase++){
+  let offset=0;
+  const maxAhead=Math.max(2,Math.ceil((span+Math.max(100,...steps))/minStep)+2*p+4);
+  let proven=false;
+  for(let jump=1;jump<=Math.min(maxAhead,4000);jump++){
+   offset+=steps[(phase+jump-1)%p];
+   const limit=Math.max(near2.distance,nearX.distance);
+   if(Number.isFinite(limit)&&offset-span>limit+1e-8){proven=true;break;}
+   checkedCycles++;
+   for(const pair of xPairs){
+    const {old,next,ySigned,yGap}=pair;
+    const xSigned=axisGap(old.x,old.w,next.x+offset,next.w);
+    const xGap=Math.max(0,xSigned);
+    const d=Math.hypot(xGap,yGap);
+    if(d<near2.distance-1e-8)near2={distance:d,phase,jump,old,next,xGap,yGap,overlap:xSigned<-EPS&&ySigned<-EPS};
+    if(ySigned<-EPS && xSigned<nearX.distance-1e-8){
+      nearX={distance:xSigned,phase,jump,old,next,overlap:xSigned<-EPS};
+    }
+    comparisons++;
+    if(comparisons>=6500000){cutoff=true;break;}
+   }
+   if(cutoff)break;
+  }
+  if(!proven)cutoff=true;
+  if(cutoff)break;
+ }
+ // No claims of global minimum when budget was exceeded.
+ return {near2,nearX,complete:!cutoff,p,checkedCycles};
+}
+function gapDeltaHtml(delta){
+ if(!Number.isFinite(delta))return 'Сравнение след проверка';
+ const same=Math.abs(delta)<1e-7;
+ return `<span class="clearance-delta ${delta<0?'down':''}">${same?'Без промяна':`${delta>0?'+':'−'}${nfmt(Math.abs(delta),3)} mm ${delta>0?'повече':'по-малко'}`}</span> спрямо предишния вариант`;
+}
+function formatGap(v){return Number.isFinite(v)?nfmt(Math.max(0,v),3)+' mm':'—';}
+function gapPairText(pair){
+ if(!pair||!Number.isFinite(pair.distance))return 'Няма сравними елементи.';
+ return `${esc(pair.old.label)} (отп. ${pair.phase+1}) и ${esc(pair.next.label)} (отп. ${pair.phase+pair.jump+1})`;
+}
+function renderMinimumGap(measure,previous){
+ if(!measure||!measure.complete){
+  $('smartMinX').textContent='—';$('smartMin2D').textContent='—';
+  $('smartMinPair').textContent='Твърде много комбинации за надеждно изчисляване на най-малката междина.';
+  $('smartMinXDelta').textContent='';$('smartMin2DDelta').textContent='';return;
+ }
+ const xm=measure.nearX,dm=measure.near2;
+ $('smartMinX').textContent=formatGap(xm.distance);
+ $('smartMin2D').textContent=formatGap(dm.distance);
+ $('smartMinXDelta').innerHTML=gapDeltaHtml(previous?.complete?xm.distance-previous.nearX.distance:NaN);
+ $('smartMin2DDelta').innerHTML=gapDeltaHtml(previous?.complete?dm.distance-previous.near2.distance:NaN);
+ const collision=dm.overlap||xm.distance<-EPS;
+ $('smartMinPair').innerHTML=(collision?'<b style="color:#b43141">⚠ Има геометрично пресичане.</b> ':'')+
+  `<b>Критична двойка по X:</b> ${gapPairText(xm)}. `+
+  `<b>Най-близка 2D двойка:</b> ${gapPairText(dm)}.`+
+  (dm.distance<EPS&&!collision?' Има допиране без пресичане на площите.':'')+
+  ' Измерени са и преходите между периодите.';
+}
+function smartClearVariants(){
+ smartCalculationSerial++;
+ smartVariants=[];smartSelectedId=null;
+ $('smartVariantList').innerHTML='';
+ if($('mathAuditResult'))$('mathAuditResult').textContent='Настройките са променени. Изчисли отново.';
+ $('smartVariantStatus').textContent='Данните са променени. Изчисли 11 варианта отново.';
+ $('smartChosenGap').textContent='Избери вариант за ръчната таблица';
+}
+function smartRenderVariants(){
+ const available=smartVariants.filter(v=>v.valid);
+ const best=available.length?Math.min(...available.map(v=>v.avg)):NaN;
+ $('smartVariantList').innerHTML=smartVariants.map(v=>{
+  const name=v.custom?'№ 11 · Мой избор':`№ ${v.id} · ${nfmt(v.gap,1)} mm · режим ${v.mode}`;
+  const details=`Изчистване +${nfmt(v.extra,1)} mm · грешка ${nfmt(v.error,1)} mm`;
+  const need=v.gap+(v.error||0);
+  if(!v.valid)return `<article class="variant-card"><b class="variant-title">${name}</b><p class="variant-notice">${details}<br>Не е намерена и напълно проверена схема с междина поне ${nfmt(need,1)} mm в обхвата на търсенето.</p></article>`;
+  const same=Math.abs(v.avg-best)<EPS, selected=smartSelectedId===v.id;
+  const strokes=v.blocks.map((b,k)=>`<div>${k+1}. ${nfmt(b.advance,2)} mm × ${b.count} път${b.count===1?'':'и'}</div>`).join('');
+  const real=v.clearance?.complete?v.clearance.near2.distance:NaN;
+  return `<article class="variant-card ${selected?'is-chosen':''} ${same?'best-geom':''}">
+    <span class="variant-title">${name}</span>
+    <div style="font-size:12px;color:#526683;margin:5px 0">${details}</div>
+    <strong class="variant-avg">${nfmt(v.avg,3)} mm</strong>
+    <span class="variant-usage">Среден аванс на ход · ${nfmt(v.avg,3)} m / 1000 хода</span>
+    <div class="variant-strokes">${strokes}</div>
+    <div class="variant-clearance"><b>Най-малка измерена 2D междина: ${formatGap(real)}</b><small>Цел ${nfmt(v.gap,1)} mm + резерв за грешка ${nfmt(v.error||0,1)} mm = изисквани ${nfmt(need,1)} mm · след резерва остават ${nfmt(Math.max(0,real-(v.error||0)),3)} mm</small></div>
+    <small class="variant-notice">${v.blocks.length===1?'Постоянно подаване, без изчистващ ход':`Период от ${v.steps.length} хода · +${nfmt(v.extra,1)} mm при изчистване`}</small>
+    ${same?'<span class="best-tag">Най-нисък намерен среден разход</span>':''}
+    <button type="button" data-variant="${v.id}" ${selected?'class="selected"':''}>${selected?'✓ Избран':'Избери вариант'}</button>
+   </article>`;
+ }).join('');
+}
+/* V1.9.6. Independent grid-complete enumeration of *one- or two-step* periodic
+   feed schedules. The minimum clearance is measured between actual XY rectangles.
+   No cleanup buffer is added in this audit. Buffered operational proposals above
+   remain calculated by smartOptimize() with their own reserve. */
+function mathAuditTwoStep(shapes,minGap,grid){
+ const forbidden=forbiddenOffsetsDistance(shapes,minGap);
+ const maxOffset=forbidden.at(-1)[1];
+ const step=Math.max(0.5,grid); // cap costly dense scans at 0.5 mm; 1 mm remains exact on its grid
+ const from=Math.ceil((forbidden[0][1]-EPS)/step),to=Math.ceil((maxOffset+step-EPS)/step)+1;
+ if(to-from>2000) return {reason:'Твърде дълга лента за пълно двустъпково търсене в браузъра.'};
+ const allowed=[];
+ for(let z=from;z<=to;z++){
+   const v=Math.round(z*step*1e6)/1e6;
+   if(v>EPS&&!offsetClash(v,forbidden))allowed.push(v);
+ }
+ const pairs=[];
+ for(let i=0;i<allowed.length;i++){
+   const a=allowed[i];
+   for(let j=i;j<allowed.length;j++){
+    const b=allowed[j];
+    // The successive moves a,b are checked in ALL cyclic phases. Some sums
+    // are forbidden even when each individual move is separately safe.
+    if(offsetClash(a+b,forbidden))continue;
+    const avg=(a+b)/2;
+    pairs.push({a,b,avg});
+   }
+ }
+ pairs.sort((a,b)=>a.avg-b.avg||a.b-b.a||a.a-b.a);
+ const result=[],keys=new Set();
+ for(const pair of pairs){
+   const pattern=pair.a===pair.b?[pair.a]:[pair.a,pair.b];
+   if(!verifyPeriodic(pattern,forbidden))continue;
+   const key=pattern.join('|');if(keys.has(key))continue;
+   const measured=minimumImprintGap(shapes,pattern);
+   if(!measured?.complete||measured.near2.distance+1e-6<minGap)continue;
+   keys.add(key);
+   result.push({steps:pattern,avg:pair.avg,min:measured.near2.distance});
+   if(result.length===2)break;
+ }
+ return {results:result,grid:step,exhaustive:true};
+}
+function mathAuditRender(shapes,grid){
+ const list=[];
+ for(const gap of [1,1.5,2,2.5,3]){
+  const r=mathAuditTwoStep(shapes,gap,grid);
+  if(r.reason){list.push(`<div><b>${nfmt(gap,1)} mm:</b> ${esc(r.reason)}</div>`);continue;}
+  const found=r.results.map((v,i)=>`${i+1}) <b>${v.steps.map(s=>`${nfmt(s,2)} mm × 1`).join(' → ')}</b> = <b>${nfmt(v.avg,3)} mm/ход</b> · реална междина ${nfmt(v.min,3)} mm`).join('<br/>');
+  list.push(`<div style="padding:10px 0;border-bottom:1px solid #dbe5ef"><b>Минимална междина ${nfmt(gap,1)} mm:</b><br/>${found||'Няма проверен двустъпков кандидат.'}</div>`);
+ }
+ // The comparison is optional, do not force the panel open.
+ $('mathAuditResult').innerHTML=list.join('')+`<p class="note">Двустъпковото търсене е пълно по използваната решетка ${nfmt(Math.max(0.5,grid),1)} mm в разгледания диапазон. Проверката обхваща повторението на периода. Не отчита грешки в действителното изтегляне или неограничени схеми с повече ходове.</p>`;
+}
+async function smartRunCompare(){
+ const ticket=++smartCalculationSerial;
+ try{
+  readState();const opts=smartSettings(),r=solve(state);
+  smartVariants=[];smartSelectedId=null;
+  $('smartVariantList').innerHTML='';
+  $('smartVariantStatus').textContent='Изчисляване 0/11…';
+  const variants=[];
+  for(const [index,preset] of smartPresets.entries()){
+   // The requested minimum is a physical 2D gap. Error reserve is extra.
+   const required=preset.gap+preset.error;
+   const result=smartOptimize(r.shapes,{...opts,gap:required,extra:preset.extra});
+   const scheme=result?.alternates?.[0];
+   const id=index+1;
+   if(scheme){
+    const steps=smartExpand(scheme.blocks);
+    const forbidden=forbiddenOffsetsDistance(r.shapes,required);
+    const periodic=verifyPeriodic(steps,forbidden);
+    const clearance=periodic?minimumImprintGap(r.shapes,steps):null;
+    const valid=periodic&&clearance?.complete&&clearance.near2.distance+1e-6>=required;
+    variants.push({...preset,id,valid,avg:scheme.avg,blocks:scheme.blocks,steps,clearance,tested:result.tested});
+   }else variants.push({...preset,id,valid:false});
+   if(ticket!==smartCalculationSerial)return;
+   $('smartVariantStatus').textContent=`Изчислени ${index+1}/11 варианта…`;
+   if(index%2===1){smartVariants=[...variants];smartRenderVariants();}
+   await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  const own={id:11,gap:opts.gap,extra:opts.extra,error:opts.error,custom:true};
+  const ownRequired=own.gap+own.error;
+  const ownResult=smartOptimize(r.shapes,{...opts,gap:ownRequired}),ownScheme=ownResult?.alternates?.[0];
+  if(ownScheme){
+   const steps=smartExpand(ownScheme.blocks),periodic=verifyPeriodic(steps,forbiddenOffsetsDistance(r.shapes,ownRequired));
+   const clearance=periodic?minimumImprintGap(r.shapes,steps):null;
+   variants.push({...own,valid:periodic&&clearance?.complete&&clearance.near2.distance+1e-6>=ownRequired,avg:ownScheme.avg,blocks:ownScheme.blocks,steps,clearance});
+  }else variants.push({...own,valid:false});
+  if(ticket!==smartCalculationSerial)return;
+  smartVariants=variants;
+  smartRenderVariants();
+  const valid=smartVariants.filter(v=>v.valid);
+  $('smartVariantStatus').textContent=`${valid.length}/11 геометрично проверени кандидата. Двете схеми за всяко отстояние са с +8 mm/грешка 1,5 mm и +10 mm/грешка 2 mm. Минималната действителна междина се проверява с добавен резерв за грешка, включително при повторение на периода. Не е доказан абсолютен оптимум и не е проверено натрупване на грешка при изтегляне.`;
+  if(valid.length)smartSelectVariant(valid[0].id);
+ }catch(err){$('smartVariantStatus').textContent='Грешка при сравнение: '+err.message;smartVariants=[];$('smartVariantList').innerHTML='';}
+}
+function smartSelectVariant(id){
+ const variant=smartVariants.find(v=>v.id===Number(id)&&v.valid);
+ if(!variant)return;
+ // Choosing any automatic proposal never overwrites the custom inputs.
+ smartSetBlocks(variant.blocks);
+ smartSelectedId=variant.id;
+ const current=smartSettings();
+ smartResult(variant.blocks,`Вариант ${variant.id}: 2D междина ${nfmt(variant.gap,1)} mm, грешка ${nfmt(variant.error,1)} mm, изчистване +${nfmt(variant.extra,1)} mm`,{...current,gap:variant.gap,error:variant.error,extra:variant.extra});
+ smartRenderVariants();
+ $('smartChosenGap').textContent=`№ ${variant.id} · 2D минимум ${nfmt(variant.gap,1)} mm + грешка ${nfmt(variant.error,1)} mm`;
+}
+
+function smartReadBlocks(){
+ const blocks=[];let closed=false;
+ for(let i=1;i<=3;i++){
+  const a=toNum($('smartA'+i).value),n=toNum($('smartN'+i).value);
+  const empty=String($('smartA'+i).value).trim()===''&&String($('smartN'+i).value).trim()==='';
+  if(empty){closed=true;continue;}
+  if(closed)throw Error('Попълни редовете последователно, без празен ред между тях.');
+  if(!Number.isFinite(a)||a<=0||!Number.isInteger(n)||n<1||n>200)throw Error(`Ред ${i}: положително подаване и цяло число повторения (1–200).`);
+  blocks.push({advance:a,count:n});
+ }
+ if(!blocks.length)throw Error('Попълни поне един активен ред.');
+ if(blocks.reduce((s,b)=>s+b.count,0)>250)throw Error('Периодът е твърде дълъг за геометричната проверка.');
+ return blocks;
+}
+function smartExpand(blocks){return blocks.flatMap(b=>Array(b.count).fill(b.advance));}
+function smartSetBlocks(blocks){
+ for(let i=0;i<3;i++){
+  $('smartA'+(i+1)).value=blocks[i]===undefined?'':String(Math.round(blocks[i].advance*1e6)/1e6);
+  $('smartN'+(i+1)).value=blocks[i]===undefined?'':String(blocks[i].count);
+ }
+}
+function smartSettings(){
+ const gap=toNum($('manualSafety').value),extra=toNum($('manualClearExtra').value),error=toNum($('manualError').value),grid=toNum($('manualGrid').value),maxRep=toNum($('manualRepeats').value);
+ if(!Number.isFinite(gap)||gap<0||gap>30)throw Error('Ръчният резерв X трябва да е от 0 до 30 mm.');
+ if(!Number.isFinite(extra)||extra<MIN_CLEAR_EXTRA||extra>50)throw Error('Допълнителният резерв за изчистващия ход трябва да е между 0 и 50 mm.');
+ if(!Number.isFinite(error)||error<0||error>30)throw Error('Резервът за грешка трябва да е между 0 и 30 mm.');
+ return {gap,extra,error,grid,maxRep};
+}
+// Precompute forbidden regions for one variable "last" advance in a cyclic period.
+// Each distance to a previous imprint is a*A + b*last. We solve the forbidden
+// inequality analytically and merge intervals (rather than scanning by 0.1 mm).
+function smartLastAdvance(prefix,forbidden,grid,extra=0){
+ const F=forbidden.at(-1)[1],minGap=forbidden[0][1],baseMin=Math.max(minGap,...prefix);
+ const n=prefix.length+1,mins=Math.min(baseMin,...prefix);
+ if(!Number.isFinite(mins)||mins<=0||n>48)return null;
+ const maxSteps=Math.min(1200,Math.ceil(F/mins)+n+2);
+ const banned=[];
+ for(let phase=0;phase<n;phase++){
+  let known=0,variable=0;
+  for(let j=1;j<=maxSteps;j++){
+   const index=(phase+j-1)%n;
+   if(index===n-1)variable++;else known+=prefix[index];
+   if(known+variable*baseMin>F+EPS)break;
+   if(!variable){if(offsetClash(known,forbidden))return null;continue;}
+   for(const [l,h] of forbidden){
+    const lo=(l-known)/variable,hi=(h-known)/variable;
+    if(hi>=baseMin-EPS)banned.push([lo,hi]);
+   }
+  }
+ }
+ banned.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+ function freeAt(target){
+  let v=Math.ceil((target-EPS)/grid)*grid;
+  for(const [lo,hi] of banned){
+   if(v>=hi-EPS)continue;
+   if(v>lo+EPS&&v<hi-EPS)v=Math.ceil((hi-EPS)/grid)*grid;
+   if(v<=lo+EPS)break;
+  }
+  return Math.round(v*1e6)/1e6;
+ }
+ let b=freeAt(baseMin);
+ if(extra>EPS)b=freeAt(b+extra);
+ if(b<=0||!Number.isFinite(b)||b>50000)return null;
+ const pattern=prefix.concat(b);
+ if(!verifyPeriodic(pattern,forbidden))return null;
+ return b;
+}
+function smartOptimize(shapes,opts){
+ // Search within three manual rows: 1–2 short runs and an optional clearing run.
+ // The six recommendations are TWO different lowest-average candidates found
+ // per target 2D clearance, not a claim of global optimum.
+ const forbidden=forbiddenOffsetsDistance(shapes,opts.gap);
+ const g=opts.grid,firstAllowed=forbidden[0][1];
+ const maxForbidden=forbidden.at(-1)[1];
+ let regular=null;
+ for(let z=Math.ceil((firstAllowed-EPS)/g)*g;z<=maxForbidden+g+EPS;z+=g){
+  if(verifyPeriodic([z],forbidden)){regular=Math.round(z*1e6)/1e6;break;}
+ }
+ if(regular===null)regular=Math.ceil((maxForbidden+g)/g)*g;
+ const choices=new Map();let tested=0;
+ function propose(blocks){
+  const seq=smartExpand(blocks);
+  if(!seq.length||seq.length>250)return;
+  const avg=seq.reduce((a,b)=>a+b,0)/seq.length;
+  const key=blocks.map(b=>`${Math.round(b.advance*1e6)}x${b.count}`).join('|');
+  if(choices.has(key))return;
+  const vals=Array.from(choices.values());
+  if(vals.length>=40&&avg>Math.max(...vals.map(v=>v.avg))+EPS)return;
+  if(!verifyPeriodic(seq,forbidden))return;
+  choices.set(key,{blocks:blocks.map(b=>({...b})),avg,steps:seq});
+  if(choices.size>40){
+   const bottom=[...choices.entries()].sort((a,b)=>b[1].avg-a[1].avg||b[1].steps.length-a[1].steps.length)[0];
+   choices.delete(bottom[0]);
+  }
+ }
+ propose([{advance:regular,count:1}]);
+ // Consider the next constant feeds too: a slightly larger constant feed
+ // can be more economical than a poor variable pattern, and is a meaningful
+ // second choice when no other compact scheme beats it.
+ for(let j=1;j<=20;j++){
+  const advance=Math.round((regular+j*g)*1e6)/1e6;
+  if(verifyPeriodic([advance],forbidden))propose([{advance,count:1}]);
+ }
+ const candidates=new Set();
+ function push(v){const z=Math.ceil((v-EPS)/g)*g;if(z>=firstAllowed-EPS&&z<=regular+EPS&&!offsetClash(z,forbidden))candidates.add(Math.round(z*1e6)/1e6);}
+ for(const [l,r] of forbidden){push(r);push(r+g);push(r+2*g);}
+ for(const add of [0,g,2*g,3*g,1,2,3,5,8,12,18])push(firstAllowed+add);
+ // V1.9.6: do not silently ignore admissible short steps after the 24th endpoint.
+ // Search the entire short-feed domain on the configured grid (up to 250 samples),
+ // then distribute at most 130 candidates across it for predictable mobile runtime.
+ const maxCandidates=130;
+ const lo=Math.ceil((firstAllowed-EPS)/g)*g, hi=regular;
+ const count=Math.max(0,Math.floor((hi-lo+EPS)/g));
+ if(count<=250) for(let k=0;k<=count;k++)push(lo+k*g);
+ else for(let k=0;k<=250;k++)push(lo+(hi-lo)*k/250);
+ const allowed=Array.from(candidates).sort((a,b)=>a-b);
+ let cands=allowed;
+ if(allowed.length>maxCandidates){
+   const chosen=new Set();
+   for(let i=0;i<maxCandidates;i++)chosen.add(allowed[Math.round(i*(allowed.length-1)/(maxCandidates-1))]);
+   cands=[...chosen].sort((a,b)=>a-b);
+ }
+ for(const a of cands)for(let n=1;n<=opts.maxRep;n++){
+  const b=smartLastAdvance(Array(n).fill(a),forbidden,g,opts.extra);
+  if(b===null)continue;
+  tested++;
+  if(Math.abs(a-b)<EPS)propose([{advance:a,count:n+1}]);
+  else propose([{advance:a,count:n},{advance:b,count:1}]);
+ }
+ for(const a of cands.slice(0,7))for(let n=1;n<=Math.min(opts.maxRep,10);n++){
+  for(const b of cands.filter(v=>v>a+EPS).slice(0,6))for(let m=1;m<=3;m++){
+   const c=smartLastAdvance(Array(n).fill(a).concat(Array(m).fill(b)),forbidden,g,opts.extra);
+   if(c===null)continue;
+   tested++;
+   propose([{advance:a,count:n},{advance:b,count:m},{advance:c,count:1}]);
+  }
+ }
+ const ordered=[...choices.values()].sort((a,b)=>a.avg-b.avg||a.steps.length-b.steps.length);
+ // Remove cyclically identical or trivial variants to present meaningful alternatives.
+ const unique=[];
+ for(const entry of ordered){
+  if(unique.some(v=>v.steps.length===entry.steps.length&&v.steps.every((x,i)=>Math.abs(x-entry.steps[i])<EPS)))continue;
+  unique.push(entry);
+  if(unique.length>=2)break;
+ }
+ const best=unique[0]||null;
+ return {...best,alternates:unique,tested,constant:regular};
+}
+
+function smartVisualize(shapes,pattern){
+ if(!pattern?.length)return '<p class="note">Няма схема за визуализация.</p>';
+ const draws=Math.min(100,Math.max(15,pattern.length*3));
+ const starts=[0];for(let i=0;i<draws;i++)starts.push(starts.at(-1)+pattern[i%pattern.length]);
+ const emax=Math.max(...shapes.map(e=>e.x+e.w)),emin=Math.min(...shapes.map(e=>e.x));
+ const top=Math.min(...shapes.map(e=>e.y)),bottom=Math.max(...shapes.map(e=>e.y+e.h));
+ const end=starts.at(-1)+emax,full=end-emin;
+ // Wide scrollable SVG so each rectangle retains true scale and is visible.
+ const width=Math.max(600,Math.min(7600,full*2.1+80));
+ const px=(width-70)/Math.max(1,full),h=Math.max(125,Math.min(320,130+(bottom-top)*3));
+ const sy=(h-55)/Math.max(bottom-top+3,12);
+ let svg=`<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Отпечатъци по лентата, разположени според ръчната програма" width="${width}" height="${h}" viewBox="0 0 ${width} ${h}"><rect x="30" y="15" width="${width-50}" height="${h-40}" rx="7" fill="#fff0b2" stroke="#b99139"/>`;
+ for(let i=0;i<starts.length;i++){
+  const start=starts[i];
+  for(const sh of shapes){
+   const x=30+(start+sh.x-emin)*px,y=26+(sh.y-top)*sy,w=Math.max(.8,sh.w*px),hh=Math.max(2,sh.h*sy);
+   const fill=i%2?'#2668b3':'#24364f';
+   svg+=`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${hh.toFixed(2)}" rx=".8" fill="${fill}" opacity=".86"><title>Цикъл ${i+1}, ${esc(sh.label)} · X=${nfmt(sh.x+start,1)} Y=${nfmt(sh.y,1)}</title></rect>`;
+  }
+ }
+ svg+=`<text x="34" y="${h-9}" fill="#4d6178" font-size="11">${draws+1} отпечатвания · редуване на цветове по цикъл · X/Y в мащаб</text></svg>`;
+ return svg;
+}
+function smartResult(blocks,source='Проверка на ръчно въведена схема',settingsOverride=null){
+ let settings=settingsOverride||smartSettings();let result=solve(state);let seq=smartExpand(blocks);
+ const effectiveGap=settings.gap+(settings.error||0);
+ const forb=forbiddenOffsetsDistance(result.shapes,effectiveGap);
+ const avg=seq.reduce((s,x)=>s+x,0)/seq.length;
+ const sum=seq.reduce((s,x)=>s+x,0);
+ const valid=verifyPeriodic(seq,forb);
+ const clearance=minimumImprintGap(result.shapes,seq);
+ const previous=smartLast?.clearance||null;
+ renderMinimumGap(clearance,previous);
+ $('smartAverage').textContent=nfmt(avg,3)+' mm';
+ $('smartPeriod').textContent=nfmt(sum,2)+' mm / '+seq.length+' хода';
+ $('smartStatus').className='status '+(valid?'':'error');
+ $('smartStatus').textContent=valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap?`✓ Измерена 2D междина ${nfmt(clearance.near2.distance,3)} mm · цел ${nfmt(settings.gap,2)} + грешка ${nfmt(settings.error||0,2)} = изисквани ${nfmt(effectiveGap,2)} mm. Проверени са повторенията.`:'✕ Геометричната междина е под минимума, схемата се пресича или проверката не е завършила. Не използвай като потвърдена настройка.';
+ const automAvg=currentSequence?(currentSequence.period?currentSequence.period.reduce((a,b)=>a+b,0)/currentSequence.period.length:currentSequence.avg):NaN;
+ const compare=Number.isFinite(automAvg)?` Автоматичен геометричен модел: ${nfmt(automAvg,3)} mm; ръчен кандидат: ${nfmt(avg,3)} mm; разлика: ${nfmt(automAvg-avg,3)} mm. Двата режима използват различни резерви.`:'';
+ $('smartMeta').textContent=`${source}. ${blocks.length} активни реда · ${seq.length} подавания/период · средно ${nfmt(avg,3)} mm · ${nfmt(avg,3)} m за 1000 цикъла.${compare} Допълнителният изчистващ резерв се прилага при автоматичното търсене; ръчно написаните ходове се проверяват геометрично без автоматично удължаване.`;
+ smartLast={blocks:blocks.map(b=>({...b})),seq,average:avg,sum,valid:valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap,settings,source,clearance};smartDirty=false;
+ manualSimSet(result.shapes, seq, effectiveGap);
+ return smartLast.valid;
+}
+function smartRefreshLabel(){
+ smartDirty=true;
+ if(smartSelectedId!==null){smartSelectedId=null;smartRenderVariants();}
+ $('smartStatus').className='status warn';
+ $('smartStatus').textContent='Стойностите са променени. Натисни „Провери въведените“ или „Намери икономична схема“.';
+}
+function smartRunOptimized(){
+ try{
+  readState();const settings=smartSettings(),r=solve(state);
+  const found=smartOptimize(r.shapes,{...settings,gap:settings.gap+(settings.error||0)});
+  if(!found||!found.blocks)throw Error('Не е намерена допустима ръчна схема в зададените граници.');
+  smartSetBlocks(found.blocks);
+  smartSelectedId=null;
+  if(smartVariants.length)smartRenderVariants();
+  $('smartChosenGap').textContent='Мой минимум: '+nfmt(settings.gap,1)+' mm + грешка '+nfmt(settings.error,1)+' mm';
+  smartAutomatic=true;
+  smartResult(found.blocks,`Автоматично намерен проверен кандидат (изпробвани ${found.tested} схеми; не е доказан глобален минимум)`);
+ }catch(err){$('smartStatus').className='status error';$('smartStatus').textContent=err.message;}
+}
+function smartRunCheck(){
+ try{readState();const blocks=smartReadBlocks();smartAutomatic=false;
+  const selected=smartVariants.find(v=>v.id===smartSelectedId&&v.valid);
+  const active=smartSettings();
+  smartResult(blocks,'Проверка на ръчно въведена схема',selected?{...active,gap:selected.gap,extra:selected.extra}:active);
+ }
+ catch(err){$('smartStatus').className='status error';$('smartStatus').textContent=err.message;}
+}
+function detectPeriod(moves,forbidden){
+ for(let p=1;p<=Math.min(16,Math.floor(moves.length/3));p++){
+  const pattern=moves.slice(0,p);
+  if(moves.every((m,i)=>Math.abs(m-pattern[i%p])<1e-7)&&verifyPeriodic(pattern,forbidden))return pattern;
+ }
+ return null;
+}
+function variableSchedule(result,p,n=60){
+ const forbidden=forbiddenOffsets(result.shapes,p.gapX,p.gapY);
+ const moves=[],starts=[0];
+ const maxDist=forbidden[forbidden.length-1][1];
+ for(let i=0;i<n;i++){
+  let candidate=starts.at(-1)+forbidden[0][1];
+  let count=0;
+  while(true){
+   if(++count>150000)throw Error('Твърде сложна геометрия за тази симулация.');
+   let bumped=false;
+   for(let j=starts.length-1;j>=0;j--){
+    const d=candidate-starts[j];if(d>maxDist+EPS)break;
+    const collision=offsetClash(d,forbidden);
+    if(collision){candidate=starts[j]+collision[1];bumped=true;break;}
+   }
+   if(!bumped)break;
+  }
+  candidate=Math.round(candidate*1e9)/1e9;
+  const move=Math.round((candidate-starts.at(-1))*1e9)/1e9;
+  if(move<=0)throw Error('Неуспешно изчисление на подаване.');
+  moves.push(move);starts.push(candidate);
+ }
+ if(!verifySteps(starts,forbidden))throw Error('Контролът за застъпване откри грешна последователност.');
+ const period=detectPeriod(moves,forbidden);
+ const avg=starts.at(-1)/moves.length;
+ // Keep best candidate: constant option is always safe and never worse than an
+ // unproductive greedy layout. There is NO global optimality claim.
+ if(avg>=result.A-EPS){
+  const constant=Array(n).fill(result.A);
+  return {moves:constant,starts:constant.map((_,i)=>i*result.A).concat([n*result.A]),
+   period:[result.A],avg:result.A,forbidden,mode:'constant',saving:0,compared:n};
+ }
+ return {moves,starts,period,avg,forbidden,mode:'greedy',saving:result.A-avg,compared:n};
+}
+function sumForSheets(plan,n){
+ if(plan.period){const p=plan.period;const q=Math.floor(n/p.length);let x=q*p.reduce((a,b)=>a+b,0);for(let i=0;i<n%p.length;i++)x+=p[i];return {total:x,exact:true};}
+ return {total:plan.avg*n,exact:false};
+}
+function manualValues(plan){
+ if(!plan.period)return null;
+ // The machine photo appears to have one-decimal fields, but this precision
+ // has NOT been confirmed. Rounding EVERY step can create new collisions.
+ const rounded=plan.period.map(v=>Math.ceil(v*10-1e-8)/10);
+ return verifyPeriodic(rounded,plan.forbidden)?rounded:null;
+}
+function sequenceSvg(result,plan){
+ const shapes=result.shapes;
+ const cycles=Math.min(5,plan.moves.length);
+ const end=plan.starts[cycles]+Math.max(...shapes.map(e=>e.x+e.w));
+ const viewW=920,scale=850/Math.max(150,end),height=120;
+ const ys=shapes.map(s=>s.y), maxY=Math.max(...shapes.map(s=>s.y+s.h)),minY=Math.min(...ys);
+ const yscale=58/Math.max(20,maxY-minY);
+ let out=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewW} ${height}" role="img" aria-label="Първите подавания и заетите участъци от фолиото"><rect x="22" y="21" width="850" height="77" rx="4" fill="#fce49c" fill-opacity=".36" stroke="#e6bf54"/>`;
+ for(let c=0;c<=cycles;c++){
+  const base=plan.starts[c];
+  for(const e of shapes){
+   const x=22+(base+e.x)*scale,y=32+(e.y-minY)*yscale,w=Math.max(2,e.w*scale),h=Math.max(5,e.h*yscale);
+   out+=`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" rx="1" fill="${c%2?'#2774cd':'#1e3554'}" opacity="${Math.max(.35,.93-c*.11)}"/>`;
+  }
+ }
+ out+=`<text x="22" y="114" font-size="10" fill="#546987">Първите ${cycles+1} отпечатвания · тъмно/синьо = различни цикли · всички X/Y позиции</text></svg>`;
+ return out;
+}
+function renderSequence(result,p){
+ const n=Number($('simulationCount').value)||60;
+ const plan=variableSchedule(result,p,n);
+ currentSequence=plan;
+ const summary=plan.period?`Повтарящ се цикъл от ${plan.period.length} стъпк${plan.period.length===1?'а':'и'}, проверен геометрично.`:`Няма доказана кратка повтаряща се програма. Показани са само първите ${n} подавания.`;
+ $('sequenceAverage').textContent=nfmt(plan.avg,3)+' mm';
+ $('sequenceSaving').textContent=plan.saving>EPS?'-'+nfmt(plan.saving,3)+' mm / лист':'0,000 mm';
+ $('sequenceStatus').className='status '+(!plan.period?'warn':'');
+ $('sequenceStatus').textContent=(plan.mode==='constant'?'При тази геометрия постоянната стъпка е не по-лоша в симулацията. ':'Намерено е по-икономично разполагане с различни подавания. ')+summary;
+ $('sequenceChips').innerHTML=plan.moves.slice(0,Math.min(18,plan.moves.length)).map((v,i)=>`<div class="seq-chip ${i%2?'alternate':''}"><span>Подаване ${i+1}</span><b>${nfmt(v,3)}</b><span>mm</span></div>`).join('');
+ $('sequenceRows').innerHTML=plan.moves.map((v,i)=>`<div class="seq-program-row"><span>${i+1}.</span><strong>${nfmt(v,3)} mm</strong><span class="seq-count">Σ ${nfmt(plan.starts[i+1],3)} mm</span></div>`).join('');
+ $('sequencePreview').innerHTML=sequenceSvg(result,plan);
+ renderManual(result,p,plan);
+ return plan;
+}
+// A/B = candidate periods quantized to 0.1 mm and 1 mm. They are NOT direct BOBST recipes.
+let manualMode='A', manualRecord=null, currentSequence=null;
+function avgOf(xs){return xs.reduce((a,b)=>a+b,0)/xs.length;}
+function candidateQuantization(plan,grid){
+ if(!plan.period)return null;
+ const base=plan.period;
+ const candidates=[];
+ // Step pattern already has several different strokes: quantize cumulative positions
+ // and validate the whole infinite repeated period, not just one cycle.
+ for(let repeats=1; repeats<=Math.min(8,Math.max(1,Math.floor(12/base.length)));repeats++){
+  const ideal=Array.from({length:base.length*repeats},(_,i)=>base[i%base.length]);
+  const prefix=[0];for(const x of ideal)prefix.push(prefix.at(-1)+x);
+  const ceilToUnit=x=>Math.ceil(x/grid-1e-8);
+  const units=prefix.map(ceilToUnit);
+  const seq=units.slice(1).map((n,i)=>Math.round((n-units[i])*grid*1e7)/1e7);
+  if(seq.every(v=>v>0)&&verifyPeriodic(seq,plan.forbidden))candidates.push(seq);
+ }
+ // For a constant geometric step, distribute fractional units over a short period.
+ if(base.length===1){
+  const target=base[0];
+  for(let length=1;length<=12;length++){
+   const floorUnits=Math.floor(target/grid+1e-7);
+   const totalUnits=Math.ceil(target*length/grid-1e-7);
+   const extra=totalUnits-floorUnits*length;
+   if(extra<0||extra>length)continue;
+   const seq=Array.from({length},(_,i)=>grid*(floorUnits+Math.floor((i+1)*extra/length)-Math.floor(i*extra/length)));
+   const rounded=seq.map(v=>Math.round(v*1e7)/1e7);
+   if(verifyPeriodic(rounded,plan.forbidden))candidates.push(rounded);
+  }
+ }
+ if(!candidates.length)return null;
+ candidates.sort((a,b)=>avgOf(a)-avgOf(b)||a.length-b.length);
+ // Prefer a short program at equal or near-equal mean; show only validated <=12 rows.
+ return candidates[0];
+}
+function manualSketch(steps){
+ if(!steps.length)return '';
+ const acc=[0];for(const a of steps)acc.push(acc.at(-1)+a);
+ const total=acc.at(-1)||1;
+ const x=v=>20+Math.min(690,v/total*690);
+ const svg=['<svg viewBox="0 0 740 84" role="img" aria-label="Повтарящ се период на подавания">', '<line x1="20" y1="58" x2="716" y2="58" stroke="#b08827" stroke-width="5" stroke-linecap="round"/>'];
+ for(let i=0;i<steps.length;i++){
+  const xx=x(acc[i]),end=x(acc[i+1]);
+  svg.push(`<rect x="${xx.toFixed(1)}" y="26" width="${Math.max(1,end-xx-2).toFixed(1)}" height="18" rx="3" fill="${i%2?'#2774cd':'#233958'}"/><text x="${((xx+end)/2).toFixed(1)}" y="20" text-anchor="middle" fill="#294666" font-size="12">${nfmt(steps[i],1)}</text>`);
+ }
+ svg.push('</svg>');return svg.join('');
+}
+function renderManual(result,p,plan){
+ const options={A:candidateQuantization(plan,.1),B:candidateQuantization(plan,1),C:[result.A]};
+ const selected=options[manualMode];
+ const target=plan.period?avgOf(plan.period):plan.avg;
+ $('manualValue').textContent=nfmt(target,3)+' mm';
+ $('manualExact').textContent=nfmt(result.A,3)+' mm';
+ $('manualModeTitle').textContent=manualMode==='A'?'Вариант А · точност 0,1 mm':manualMode==='B'?'Вариант Б · цели mm':'Геометрична постоянна стъпка';
+ for(const [m,id] of [['A','manualTabSimple'],['B','manualTabPattern'],['C','manualTabConstant']]){
+  $(id).classList.toggle('selected',m===manualMode);$(id).setAttribute('aria-pressed',String(m===manualMode));
+ }
+ const status=selected?'Геометрично проверено':'Няма потвърден период';
+ $('manualModeState').textContent=status;
+ $('manualModeState').classList.toggle('warning',!selected);
+ $('manualStepList').innerHTML=selected?selected.map((v,i)=>`<div class="manual-v10-row"><span>${i+1}</span><strong>${nfmt(v,manualMode==='A'?1:manualMode==='B'?0:3)} mm</strong><small>${selected.length===1?'постоянна стъпка':`ход ${i+1} от ${selected.length}`}</small></div>`).join(''):'<p class="manual-mini">Не е намерена кратка проверена последователност с тази точност.</p>';
+ $('manualDiagram').innerHTML=manualSketch(selected||[]);
+ const avg=selected?avgOf(selected):NaN;
+ const note=manualMode==='C'?`Тази стъпка е математически допустима в геометричния модел. За снимковия случай OACS показва отделно машинна постоянна 104,800 mm; не приемай тези две стойности за една и съща настройка.`:
+  selected?`Повтаря се в показания ред. Средно: ${nfmt(avg,3)} mm на цикъл. ${selected.length} хода, общо ${nfmt(selected.reduce((a,b)=>a+b,0),3)} mm за периода. Проверено срещу всички предходни отпечатъци в безкрайното повторение.`:
+  'Няма доказана периодична ръчна схема. Не въвеждай автоматично произволни стойности.';
+ $('manualNote').textContent=note;
+ manualRecord={plan,average:target,result,p,options,selected,mode:manualMode};
+ $('copyManual').disabled=!selected;$('copyManualSummary').disabled=false;$('manualCopied').textContent='';
+ renderOacsComparison();
+}
+function renderOacsComparison(){
+ const ref=toNum($('oacsCompare').value),out=$('oacsCompareResult');
+ if(!manualRecord||!Number.isFinite(ref)||ref<=0){out.textContent='Въведи показанието от OACS, за да сравниш.';return;}
+ const avg=manualRecord.average;
+ const selected=manualRecord.selected;
+ const candidate=selected?avgOf(selected):NaN;
+ out.textContent=`OACS среден: ${nfmt(ref,3)} mm · Геометричен модел: ${nfmt(avg,3)} mm · Разлика: ${nfmt(avg-ref,3)} mm. ${Number.isFinite(candidate)?`Избран вариант: ${nfmt(candidate,3)} mm средно.`:''} Геометричното съвпадение не потвърждава колоните на машинното меню.`;
+}
+function manualSummary(){
+ if(!manualRecord)return '';
+ const {average,result,p,selected,mode}=manualRecord;
+ const lines=[`FOILSTEP LAB V1.6 · ГЕОМЕТРИЧНИ КАНДИДАТИ`,
+ `Геометричен среден аванс: ${nfmt(average,3)} mm`,
+ `Геометрична постоянна стъпка: ${nfmt(result.A,3)} mm`,
+ `Изрезки: ${p.copies} × ${nfmt(p.cutLength,3)} mm`,
+ `Автоматичен луфт X/Y: ${p.gapX}/${p.gapY} mm; ръчен по Y: само реално застъпване`,
+ `Избран вариант: ${mode==='A'?'A · 0,1 mm':mode==='B'?'Б · 1 mm':'геометрична постоянна'}`];
+ if(selected){lines.push(`ПЕРИОД: ${selected.length} ход(а), сума ${nfmt(selected.reduce((a,b)=>a+b,0),3)} mm, средно ${nfmt(avgOf(selected),3)} mm`);selected.forEach((v,i)=>lines.push(`${i+1}. ${nfmt(v,3)} mm`));}
+ else lines.push('Не е намерен валиден период за този вариант.');
+ lines.push('НЕ Е МАШИННА РЕЦЕПТА. Не е установено съответствието с полетата/броячите за ръчно програмиране на BOBST.');
+ return lines.join('\n');
+}
+async function copyPlain(value,target){
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
+  else{
+   const t=document.createElement('textarea');t.value=value;t.style.position='fixed';t.style.top='-1000px';document.body.append(t);t.focus();t.select();
+   if(!document.execCommand('copy'))throw Error('Без разрешение за копиране');t.remove();
+  }
+  $(target).textContent='Копирано';
+ }catch(err){$(target).textContent='Копирането е блокирано — можеш да препишеш стойността от екрана.';}
+}
+function readState(){
+ for(const name of ['cutLength','copies','gapX','gapY','sheets'])state[name]=toNum($(name).value);
+}
+function setFields(){
+ for(const name of ['cutLength','copies','gapX','gapY','sheets'])$(name).value=state[name];
+}
+function renderRows(){
+ $('elementRows').innerHTML=state.elements.map((e,i)=>`<tr data-i="${i}"><td class="rowno">${i+1}</td>${['x','w','y','h'].map(key=>`<td><input class="input" inputmode="decimal" data-key="${key}" aria-label="Елемент ${i+1}: ${key}" value="${esc(e[key])}"/></td>`).join('')}<td><button class="ghost del" data-del="${i}" title="Премахни елемент" aria-label="Премахни елемент ${i+1}">✕</button></td></tr>`).join('');
+ $('elementCount').textContent=`${state.elements.length} елемента`;
+ $('tableCounter').textContent=`(${state.elements.length})`;
+ $('positionsCount').textContent=`(${state.elements.length * state.copies})`;
+ selectedIndex=Math.max(0,Math.min(selectedIndex,state.elements.length-1));
+ updateSelected();
+}
+function load(p){
+ smartClearVariants();
+ if(p.manual){
+  if(Number.isFinite(Number(p.manual.safety)))$('manualSafety').value=String(p.manual.safety);
+  if(Number.isFinite(Number(p.manual.clearExtra)))$('manualClearExtra').value=String(Math.max(MIN_CLEAR_EXTRA,Number(p.manual.clearExtra)));
+  if(p.manual.error!==undefined&&Number.isFinite(Number(p.manual.error)))$('manualError').value=String(Math.max(0,Number(p.manual.error)));
+  if([0.1,0.5,1,1.5,2].includes(Number(p.manual.grid)))$('manualGrid').value=String(p.manual.grid);
+  if([10,18,25].includes(Number(p.manual.maxRep)))$('manualRepeats').value=String(p.manual.maxRep);
+  if(Array.isArray(p.manual.blocks))smartSetBlocks(p.manual.blocks.slice(0,3));
+ }
+ smartLast=null;smartDirty=true;
+ $('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('smartMinX').textContent='—';$('smartMin2D').textContent='—';$('smartMinPair').textContent='Изчислява се след проверка на ръчната схема.';$('smartMinXDelta').textContent='';$('smartMin2DDelta').textContent='';$('smartFoilPreview').innerHTML='';if($('simFocusPreview'))$('simFocusPreview').innerHTML='';if($('simDetail'))$('simDetail').textContent='Въведи стъпките за визуализация.';
+ $('smartStatus').className='status warn';$('smartStatus').textContent='Избери „Изчисли 4 варианта“ или „Провери въведените“.';
+ selectedIndex=0;if($('oacsCompare'))$('oacsCompare').value=p.id===6?'56.333':'';state={id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements)};setFields();renderRows();compute();}
+function saveLocal(){try{localStorage.setItem('foilstep-lab-v16',JSON.stringify({id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}}));}catch(e){/* file-browser privacy mode */}}
+function clearResults(){for(const id of ['resultAdvance','per1000','totalUsage','totalElements','totalWidth'])$(id).textContent='—';$('tightContact').textContent='Въведи валидни размери.';$('cutPreview').innerHTML='';$('cyclePreview').innerHTML='';$('allPositions').innerHTML='';$('previewQuickLegend').innerHTML='';$('machineReport').value='';$('heroAdvance').textContent='—';$('heroPer1000').textContent='—';$('heroStatus').textContent='Провери въведените данни';$('xyNotes').textContent='Въведи валидни размери.';manualRecord=null;for(const id of ['manualValue','manualExact','sequenceAverage','sequenceSaving'])$(id).textContent='—';$('manualNote').textContent='Няма валиден резултат за ръчно сверяване.';$('copyManual').disabled=true;$('copyManualSummary').disabled=true;$('manualCopied').textContent='';$('manualStepList').innerHTML='';$('manualDiagram').innerHTML='';$('manualModeState').textContent='Няма резултат';$('oacsCompareResult').textContent='Няма въведена стойност за сравнение.';$('sequenceChips').innerHTML='';$('sequenceRows').innerHTML='';$('sequencePreview').innerHTML='';currentSequence=null;}
+function drawRect(e,x,y,w,h,color,opacity=1,stroke='#fff',interactive=false){
+ const label=`${esc(e.label)}: X=${nfmt(e.x,2)}; Y=${nfmt(e.y,2)}; дължина=${nfmt(e.w,2)}; височина=${nfmt(e.h,2)}`;
+ // The filled rect retains exact proportional dimensions. Touch targets are larger,
+ // but transparent, so enlargement never implies a physical overlap.
+ const physical=`<rect class="physical-shape" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${Math.max(.5,w).toFixed(2)}" height="${Math.max(.5,h).toFixed(2)}" rx=".6" fill="${color}" fill-opacity="${opacity}" stroke="${stroke}" stroke-width=".5"/>`;
+ if(!interactive)return `<g>${physical}<title>${label}</title></g>`;
+ const wHit=Math.max(21,w),hHit=Math.max(21,h);
+ const hit=`<rect class="hit-target" x="${(x-(wHit-w)/2).toFixed(2)}" y="${(y-(hHit-h)/2).toFixed(2)}" width="${wHit.toFixed(2)}" height="${hHit.toFixed(2)}" fill="transparent" stroke="none"/>`;
+ return `<g class="elementShape ${e.index-1===selectedIndex?'is-selected':''}" role="button" tabindex="0" aria-label="Избери елемент ${e.index} от изрезка ${e.copy}" data-element="${e.index-1}">${physical}${hit}<title>${label}</title></g>`;
+}
+function yLayout(shapes,top=43){
+ const rawMin=Math.min(0,...shapes.map(e=>e.y));
+ const rawMax=Math.max(0,...shapes.map(e=>e.y+e.h));
+ const min=rawMin,max=Math.max(rawMax,min+10);
+ const h=Math.max(110,Math.min(270,(max-min)*2.6));
+ const scale=h/(max-min);return {min,max,h,scale,toY:y=>top+(max-y)*scale};
+}
+function buildPreview(shapes,p){
+ // V1.9: тази лента показва само действителното разположение в изрезките.
+ // Чисто картографиране X/Y с истинските размери; без анализ и надписи върху формите.
+ const cuts=previewCutMode==='first'?1:p.copies;
+ const maxY=Math.max(10,...p.elements.map(e=>e.y+e.h));
+ const minY=Math.min(0,...p.elements.map(e=>e.y));
+ const left=16,top=14,plotW=386,plotH=164,svgW=420,svgH=202;
+ const scalex=plotW/p.cutLength,scaley=plotH/(maxY-minY);
+ let html='';
+ for(let cut=0;cut<cuts;cut++){
+  const items=shapes.filter(e=>e.copy===cut+1);
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" aria-label="Изрезка ${cut+1}, ${items.length} елемента, X надясно, Y нагоре" role="img">`;
+  svg+=`<rect x="${left}" y="${top}" width="${plotW}" height="${plotH}" rx="5" fill="#fff5d9" stroke="#e3bc62" stroke-width="1"/>`;
+  // Clean 10 mm grid only as a faint physical reference, no tick labels / overlapping numbers.
+  for(let gy=Math.ceil(minY/10)*10;gy<maxY;gy+=10){
+   const yy=top+(maxY-gy)*scaley;
+   if(yy>top+5&&yy<top+plotH-5)svg+=`<line x1="${left}" x2="${left+plotW}" y1="${yy.toFixed(2)}" y2="${yy.toFixed(2)}" stroke="#e9d5a2" stroke-opacity=".5" stroke-width=".65"/>`;
+  }
+  for(const e of items){
+   const x=left+(e.x-cut*p.cutLength)*scalex;
+   const y=top+(maxY-(e.y+e.h))*scaley;
+   const rawW=e.w*scalex,rawH=e.h*scaley;
+   // Visual lower bounds only for touch/readability; every tooltip uses actual measurements.
+   const w=Math.max(rawW,5),h=Math.max(rawH,6);
+   const xDraw=Math.min(left+plotW-w,Math.max(left,x-(w-rawW)/2));
+   const yDraw=Math.min(top+plotH-h,Math.max(top,y-(h-rawH)/2));
+   const active=e.index-1===selectedIndex;
+   const title=`Елемент ${e.index} · Изрезка ${cut+1} · X ${nfmt(e.x,2)} · Y ${nfmt(e.y,2)} · ${nfmt(e.w,2)} × ${nfmt(e.h,2)} mm`;
+   const touchW=Math.max(15,w),touchH=Math.max(15,h);
+   const hitX=Math.max(left,Math.min(left+plotW-touchW,xDraw-(touchW-w)/2));
+   const hitY=Math.max(top,Math.min(top+plotH-touchH,yDraw-(touchH-h)/2));
+   svg+=`<g class="elementShape${active?' is-selected':''}" role="button" tabindex="0" data-element="${e.index-1}" aria-label="${esc(title)}" style="cursor:pointer"><rect class="physical-shape" x="${xDraw.toFixed(2)}" y="${yDraw.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" rx="1.2" fill="${active?'#2463db':'#263d59'}"/><rect x="${hitX.toFixed(2)}" y="${hitY.toFixed(2)}" width="${touchW.toFixed(2)}" height="${touchH.toFixed(2)}" fill="transparent" pointer-events="all"/><title>${esc(title)}</title></g>`;
+  }
+  svg+=`<line x1="${left}" y1="190" x2="${left+plotW}" y2="190" stroke="#c7a45b" stroke-width="1"/><text x="${left}" y="200" font-size="10" fill="#586981">0 mm</text><text x="${left+plotW}" y="200" text-anchor="end" font-size="10" fill="#586981">${nfmt(p.cutLength,1)} mm · X →</text></svg>`;
+  html+=`<div class="cut-visual-card"><div class="cut-visual-head"><strong>Изрезка ${cut+1}</strong><span>${nfmt(cut*p.cutLength,1)} – ${nfmt((cut+1)*p.cutLength,1)} mm</span></div><div class="cut-art">${svg}</div><div class="cut-visual-foot"><span>↑ Y · разположение</span><span>${items.length} елемента</span></div></div>`;
+ }
+ return html;
+}
+function buildCycles(shapes,A,p){
+ const minX=Math.min(...shapes.map(e=>e.x));
+ const maxX=Math.max(...shapes.map(e=>e.x+e.w))+A;
+ const start=Math.max(0,minX-10),end=maxX+10;
+ const left=52,usable=820,scale=usable/Math.max(end-start,1),top=53;
+ const yl=yLayout(shapes,top);
+ const height=top+yl.h+40;
+ let svg=`<svg viewBox="0 0 900 ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Два последователни цикъла със същите Y позиции и различен X, при подаване ${nfmt(A,2)} mm">`;
+ svg+=`<text x="${left}" y="22" font-size="13" font-weight="700" fill="#263449">Два цикъла · постоянен аванс ${nfmt(A,2)} mm</text>`;
+ svg+=`<rect x="${left}" y="${top}" width="${usable}" height="${yl.h}" rx="4" fill="#f4f7fc" stroke="#dce5f0"/>`;
+ for(let y=yl.min;y<=yl.max+1e-7;y+=(yl.max-yl.min)/4){
+  const yy=yl.toY(y);svg+=`<line x1="${left}" x2="${left+usable}" y1="${yy}" y2="${yy}" stroke="#b4c3d6" stroke-dasharray="3 4" stroke-width=".6"/><text x="${left-7}" y="${yy+4}" text-anchor="end" font-size="11" fill="#64748b">${nfmt(y,1)}</text>`;
+ }
+ for(const [shift,color,opac] of [[0,'#27354c',.91],[A,'#287be6',.72]])for(const e of shapes){
+  const x=left+(e.x+shift-start)*scale,y=yl.toY(e.y+e.h),w=e.w*scale,h=e.h*yl.scale;
+  svg+=drawRect(e,x,y,w,h,color,opac,'#fff',true);
+ }
+ svg+=`<text x="${left}" y="${height-7}" font-size="11" fill="#64748b">X ${nfmt(start,1)} mm</text><text x="${left+usable}" y="${height-7}" text-anchor="end" font-size="11" fill="#64748b">X ${nfmt(end,1)} mm</text></svg>`;
+ return svg;
+}
+function checkYRelations(p,shapes,A){
+ let matched=0;const examples=[];
+ // Show pairings in the original cut, and cross-cycle ones that have the same X band.
+ for(let i=0;i<p.elements.length;i++)for(let j=i+1;j<p.elements.length;j++){
+  const a=p.elements[i],b=p.elements[j];
+  const xgap=axisGap(a.x,a.w,b.x,b.w),ygap=axisGap(a.y,a.h,b.y,b.h);
+  if(xgap<p.gapX-EPS&&ygap>=p.gapY-EPS){
+   matched++;
+   if(examples.length<5)examples.push(`Ел. ${i+1} и ${j+1}: X се застъпва; свободно Y = ${nfmt(ygap,2)} mm`);
+  }
+ }
+ let staggerCross=0;
+ for(const a of shapes)for(const b of shapes){
+  const xgap=axisGap(a.x+A,a.w,b.x,b.w),ygap=axisGap(a.y,a.h,b.y,b.h);
+  if(xgap<p.gapX-EPS&&ygap>=p.gapY-EPS)staggerCross++;
+ }
+ let html=`<div class="xyinfo"><span class="xyok">✓ ${matched} двойки</span> в първата изрезка ползват припокриващи се X позиции без конфликт, защото са раздалечени по Y.</div>`;
+ if(examples.length)html+=examples.map(v=>`<div class="xyinfo">${esc(v)}</div>`).join('');
+ else html+=`<div class="xyinfo">За да пробваш, задай два елемента със сходен X и Y разстояние поне ${nfmt(p.gapY,1)} mm между краищата им. Избери „Разминаване по Y“.</div>`;
+ html+=`<div class="xyinfo">При два последователни цикъла са намерени ${staggerCross} X-близки двойки, които са разделени по Y. Те не блокират подаването.</div>`;
+ html+=`<div class="xyinfo"><strong>Координатите са фиксирани.</strong> Програмата променя само изчисленото подаване на фолиото.</div>`;
+ return html;
+}
+function compute(){
+ readState();
+ if(smartLast){smartLast=null;smartRefreshLabel();manualSim=null;$('smartFoilPreview').innerHTML='';if($('simFocusPreview'))$('simFocusPreview').innerHTML='';if($('simDetail'))$('simDetail').textContent='Въведи стъпките за визуализация.';$('simFocusPreview').innerHTML='';$('simDetail').textContent='Елементите са променени. Провери ръчните ходове отново.';}
+ if(smartVariants.length)smartClearVariants();
+ try{
+  const result=solve(state),A=result.A;
+  const cycles=state.sheets;
+  if(!Number.isInteger(cycles)||cycles<1||cycles>1e9)throw Error('Броят машинни цикли трябва да е положително цяло число.');
+  const plan=renderSequence(result,state);
+  $('resultAdvance').textContent=nfmt(A,3)+' mm';
+  $('heroAdvance').textContent=nfmt(plan.period?plan.period.reduce((a,b)=>a+b,0)/plan.period.length:plan.avg,3)+' mm';
+  $('heroPer1000').textContent=nfmt(sumForSheets(plan,1000).total/1000,3)+' m';
+  $('heroStatus').textContent=`${result.shapes.length} отпечатъка / цикъл · ${plan.period?'проверен период':'симулация'} · постоянна алтернатива ${nfmt(A,3)} mm`; 
+  $('per1000').textContent=nfmt(sumForSheets(plan,1000).total/1000,3)+' m';
+  $('totalUsage').textContent=(plan.period?'':'≈ ')+nfmt(sumForSheets(plan,cycles).total/1000,2)+' m';
+  $('totalElements').textContent=String(result.shapes.length);
+  $('totalWidth').textContent=nfmt(state.cutLength*state.copies,1)+' mm';
+  $('status').className='status';
+  $('status').textContent='✓ Геометрично изчисление. Елементите остават на въведените X/Y позиции. Периодичните стъпки се показват отделно.';
+  const c=result.tight[0];
+  if(c){
+   $('tightContact').innerHTML=`<strong>Определяща двойка при стъпката:</strong><br/>Предишен цикъл: ${esc(c.old.label)} ↔ следващ цикъл: ${esc(c.newer.label)}${c.k>1?` (${c.k} цикъла напред)`:''}.<br/>Разстояние X: <strong>${nfmt(c.d,3)} mm</strong> (зададен минимум: ${nfmt(state.gapX,3)} mm).`;
+  }else{
+   $('tightContact').textContent='Няма двойка точно на минималния луфт. Няма двойка точно на минималния луфт за този резултат.';
+  }
+  const previousScroll=$('cutPreview').scrollLeft;
+  $('cutPreview').innerHTML=buildPreview(result.shapes,state);
+  $('cutPreview').scrollLeft=previousScroll;
+  $('cyclePreview').innerHTML=buildCycles(result.shapes,A,state);
+  $('xyNotes').innerHTML=checkYRelations(state,result.shapes,A);
+  $('positionsCount').textContent=`(${result.shapes.length})`;
+  $('previewQuickLegend').innerHTML=state.elements.map((e,i)=>`<button type="button" class="tinyElement" data-select="${i}" title="Избери елемент ${i+1}"><b>${i+1}</b><span>X ${nfmt(e.x,1)} · Y ${nfmt(e.y,1)}<br>${nfmt(e.w,1)} × ${nfmt(e.h,1)} mm</span></button>`).join('');
+  $('allPositions').innerHTML=Array.from({length:state.copies},(_,c)=>`<div class="cutTable"><strong>Изрезка ${c+1} · от ${nfmt(c*state.cutLength,1)} mm</strong>${state.elements.map((e,i)=>`<div class="positionRow"><span>Ел. ${i+1}</span><span>X ${nfmt(e.x+c*state.cutLength,2)}</span><span>Y ${nfmt(e.y,2)}</span><span>${nfmt(e.w,2)} × ${nfmt(e.h,2)}</span></div>`).join('')}</div>`).join('');
+  $('machineReport').value=manualSummary()+`\n\nПостоянно подаване (геометричен модел): ${nfmt(A,3)} mm\nДължина изрезка: ${nfmt(state.cutLength,3)} mm\nБрой изрезки: ${state.copies}\nЛуфт X: ${nfmt(state.gapX,2)} mm; Y: ${nfmt(state.gapY,2)} mm\n\nКООРДИНАТИ НА ПЪРВА ИЗРЕЗКА\n`+state.elements.map((e,i)=>`${i+1}. X=${nfmt(e.x,3)}, Y=${nfmt(e.y,3)}, размер X=${nfmt(e.w,3)}, размер Y=${nfmt(e.h,3)} mm`).join('\n')+`\n\nАВТОМАТИЧНО КОПИРАНИ ИЗРЕЗКИ\n`+result.shapes.map(e=>`${e.label}: X=${nfmt(e.x,3)}, Y=${nfmt(e.y,3)}`).join('\n')+`\n\nВНИМАНИЕ: Изчислителен прототип. Потвърди с OACS.`;
+  updateSelected();
+  saveLocal();
+ }catch(err){
+  clearResults();$('status').className='status error';$('status').textContent='Проверка: '+err.message;
+ }
+}
+
+function updateSelected(){
+ if(!state.elements.length)return;
+ selectedIndex=Math.min(Math.max(selectedIndex,0),state.elements.length-1);
+ const e=state.elements[selectedIndex];
+ if($('selectedTitle'))$('selectedTitle').textContent=`Елемент ${selectedIndex+1} от ${state.elements.length}`;
+ for(const [key,id] of [['x','editX'],['w','editW'],['y','editY'],['h','editH']]){
+  const el=$(id);
+  if(el){if(key==='x'){$('editXLabel').textContent='X начало (mm)';el.readOnly=false;el.classList.remove('locked-input');}
+   if(document.activeElement!==el)el.value=String(e[key]);}
+ }
+ document.querySelectorAll('.elementShape').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.element)===selectedIndex));
+ document.querySelectorAll('#elementRows tr').forEach(tr=>tr.classList.toggle('row-selected',Number(tr.dataset.i)===selectedIndex));
+}
+function selectElement(i,scroll=false){
+ if(!Number.isInteger(i)||i<0||i>=state.elements.length)return;
+ selectedIndex=i;updateSelected();
+ if(scroll)$('selectedEditor').scrollIntoView({behavior:'smooth',block:'center'});
+}
+for(const id of ['cutPreview','cyclePreview']){
+ $(id).addEventListener('click',event=>{
+  const target=event.target.closest('[data-element]');if(!target)return;
+  selectElement(Number(target.dataset.element),true);
+ });
+ $(id).addEventListener('keydown',event=>{
+  if(event.key!=='Enter'&&event.key!==' ')return;
+  const target=event.target.closest('[data-element]');if(!target)return;
+  event.preventDefault();selectElement(Number(target.dataset.element),true);
+ });
+}
+$('previewQuickLegend').addEventListener('click',e=>{const btn=e.target.closest('button[data-select]');if(btn)selectElement(Number(btn.dataset.select),true);});
+$('elementRows').addEventListener('focusin',event=>{
+ const tr=event.target.closest('tr');if(tr)selectElement(Number(tr.dataset.i));
+});
+for(const [key,id] of [['x','editX'],['w','editW'],['y','editY'],['h','editH']]){
+ $(id).addEventListener('input',event=>{
+  if(!state.elements[selectedIndex])return;
+  const val=toNum(event.target.value);
+  state.elements[selectedIndex][key]=val;
+  const row=$('elementRows').querySelector(`tr[data-i="${selectedIndex}"] input[data-key="${key}"]`);
+  if(row)row.value=event.target.value;
+  compute();
+ });
+}
+$('prevElement').addEventListener('click',()=>selectElement((selectedIndex+state.elements.length-1)%state.elements.length));
+$('nextElement').addEventListener('click',()=>selectElement((selectedIndex+1)%state.elements.length));
+$('jumpEditor').addEventListener('click',()=>{$('selectedEditor').scrollIntoView({behavior:'smooth',block:'center'});});
+$('manualTabSimple').addEventListener('click',()=>{manualMode='A';if(manualRecord)renderManual(manualRecord.result,manualRecord.p,manualRecord.plan);});
+$('manualTabPattern').addEventListener('click',()=>{manualMode='B';if(manualRecord)renderManual(manualRecord.result,manualRecord.p,manualRecord.plan);});
+$('manualTabConstant').addEventListener('click',()=>{manualMode='C';if(manualRecord)renderManual(manualRecord.result,manualRecord.p,manualRecord.plan);});
+$('oacsCompare').addEventListener('input',renderOacsComparison);
+$('copyManual').addEventListener('click',()=>{if(manualRecord)copyPlain(manualRecord.selected.map(v=>nfmt(v,3)+' mm').join(' → '),'manualCopied');});
+$('copyManualSummary').addEventListener('click',()=>{if(manualRecord)copyPlain(manualSummary(),'manualCopied');});
+$('smartAuto').addEventListener('click',smartRunOptimized);
+$('smartCheck').addEventListener('click',smartRunCheck);
+
+$('smartCopy').addEventListener('click',()=>{
+ if(!smartLast||smartDirty||!smartLast.valid){$('smartCopyStatus').textContent='Първо въведи и провери геометрично допустима схема.';return;}
+ const textRows=smartLast.blocks.map((b,i)=>`${i+1}. ${nfmt(b.advance,3)} mm × ${b.count} пъти`).join('\n');
+ copyPlain(textRows+`\nПовтаря се от ред 1. Средно ${nfmt(smartLast.average,3)} mm. ${smartLast.valid?'Геометрично допустимо.':'НЕ Е ДОПУСТИМО.'}`,'smartCopyStatus');
+});
+for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3','manualSafety','manualClearExtra','manualError','manualGrid','manualRepeats']) $(id).addEventListener('input',smartRefreshLabel);
+for(const id of ['manualSafety','manualClearExtra','manualError','manualGrid','manualRepeats']) $(id).addEventListener('input',()=>{if(smartVariants.length)smartClearVariants();});
+$('manualSafety').addEventListener('input',()=>{smartSelectedId=null;smartRenderVariants();$('smartChosenGap').textContent='Мой резерв: '+$('manualSafety').value+' mm';});
+$('smartCompare').addEventListener('click',smartRunCompare);
+$('smartVariantList').addEventListener('click',event=>{const b=event.target.closest('button[data-variant]');if(b)smartSelectVariant(Number(b.dataset.variant));});
+$('runMathAudit').addEventListener('click',()=>{try{readState();const r=solve(state);mathAuditRender(r.shapes,smartSettings().grid);}catch(e){$('mathAuditResult').textContent='Проверка: '+e.message;}});
+function selfTest(){
+ let ok=0;
+ try{
+  for(const [p,expected] of [[sample1,310.5],[sample2,334]]){
+   const r=solve(p);
+   if(Math.abs(r.A-expected)>1e-8||!validAdvance(r.shapes,r.A,p.gapX,p.gapY)||validAdvance(r.shapes,r.A-.1,p.gapX,p.gapY))throw Error('Несъответствие');
+   const m=Math.min(...p.elements.map(e=>e.x));
+   const shifted={...p,elements:p.elements.map(e=>({...e,x:e.x+1-m}))};
+   if(Math.abs(solve(shifted).A-expected)>1e-8)throw Error('Провал на теста за общо X преместване');
+   ok++;
+  }
+  // X/Y collisions: same X with enough vertical gap is legal; actual collision isn't.
+  const r3=solve(sample3);if(Math.abs(r3.A-59.5)>1e-8||!validAdvance(r3.shapes,r3.A,sample3.gapX,sample3.gapY))throw Error('Y test failed');
+  ok++;
+  const bad={...sample3,elements:sample3.elements.map(e=>({...e,y:8}))};
+  let rejected=false;try{solve(bad);}catch(err){rejected=true;}
+  if(!rejected)throw Error('Неотхвърлено препокриване по X+Y');
+  ok++;
+  for(const p of [sample1,sample2]){
+    const d=-p.elements[0].x;
+    const shifted={...p,elements:p.elements.map(e=>({...e,x:e.x+d}))};
+    if(Math.abs(solve(p).A-solve(shifted).A)>1e-8)throw Error('Групово X=0 тест');
+    ok++;
+  }
+  const d=solve(sample4);
+  const v=variableSchedule(d,sample4,60);
+  if(Math.abs(d.A-77.5)>1e-8 || !v.period || v.period.length!==2 || Math.abs(v.period[0]-23.5)>1e-8||Math.abs(v.period[1]-77.5)>1e-8)throw Error('Променливи подавания');
+  if(!verifyPeriodic(v.period,v.forbidden))throw Error('Неправилен повторяем цикъл');
+  ok++;
+  const r6=solve(sample6),v6=variableSchedule(r6,sample6,60);
+  const cA=candidateQuantization(v6,.1),cB=candidateQuantization(v6,1);
+  if(Math.abs(r6.A-56.333333333)>1e-6||!cA||!cB||!verifyPeriodic(cA,v6.forbidden)||!verifyPeriodic(cB,v6.forbidden)||Math.abs(avgOf(cA)-56.333333333)>1e-5||Math.abs(avgOf(cB)-56.333333333)>1e-5)throw Error('OACS 56,333 и ръчни варианти');
+  ok++;
+  for(const [p,expected] of [[sample1,310.5],[sample2,334]]){
+   const v2=variableSchedule(solve(p),p,30);
+   if(!v2.period||v2.period.length!==1||Math.abs(v2.period[0]-expected)>1e-8)throw Error('Променлива съвместимост');
+   ok++;
+  }
+  $('testCount').textContent=`✓ ${ok}/10 теста`;
+ }catch(err){$('testCount').textContent=`⚠ ${ok}/10 теста`;$('testCount').style.background='#fff0f1';$('testCount').style.color='#aa2b35';}
+}
+for(const name of ['cutLength','copies','gapX','gapY','sheets'])$(name).addEventListener('input',compute);
+$('elementRows').addEventListener('input',e=>{
+ const key=e.target.dataset.key;if(!key)return;
+ const tr=e.target.closest('tr');selectedIndex=Number(tr.dataset.i);
+ state.elements[selectedIndex][key]=toNum(e.target.value);compute();
+});
+$('elementRows').addEventListener('click',e=>{
+ const target=e.target.closest('button[data-del]');if(!target)return;
+ if(state.elements.length===1)return alert('Трябва да има поне един елемент.');
+ const removed=Number(target.dataset.del);state.elements.splice(removed,1);
+ selectedIndex=Math.min(selectedIndex,state.elements.length-1);renderRows();compute();
+});
+$('addElement').addEventListener('click',()=>{
+ if(state.elements.length>=80)return alert('Максимум 80 елемента.');
+ const x=state.elements.length?Math.min(state.cutLength-10,Math.max(0,Math.max(...state.elements.map(e=>e.x+e.w))+state.gapX)):0;
+ state.elements.push({x:Math.max(0,x),w:Math.min(10,Math.max(1,state.cutLength-x)),y:10,h:10});
+ selectedIndex=state.elements.length-1;renderRows();compute();
+});
+$('fitPreview').addEventListener('click',()=>{previewCutMode='first';redrawPreview();$('fitPreview').classList.add('selected');$('readablePreview').classList.remove('selected');});
+$('previewMinus').addEventListener('click',()=>{previewZoom=Math.max(.6,previewZoom/1.5);redrawPreview();$('previewZoomText').textContent=Math.round(previewZoom*100)+'%';});
+$('previewPlus').addEventListener('click',()=>{previewZoom=Math.min(12,previewZoom*1.5);redrawPreview();$('previewZoomText').textContent=Math.round(previewZoom*100)+'%';});
+$('copyReport').addEventListener('click',async()=>{
+ const el=$('machineReport');el.focus();el.select();
+ try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(el.value);}else document.execCommand('copy');$('copyStatus').textContent='Копирано';}
+ catch(err){$('copyStatus').textContent='Избери текста и копирай ръчно.';}
+});
+$('load1').addEventListener('click',()=>load(sample1));
+$('load2').addEventListener('click',()=>load(sample2));
+$('load3').addEventListener('click',()=>load(sample3));
+$('load4').addEventListener('click',()=>load(sample4));
+$('load6').addEventListener('click',()=>{load(sample6);$('oacsCompare').value='56.333';renderOacsComparison();});
+$('simulationCount').addEventListener('change',compute);
+$('copySequence').addEventListener('click',()=>{if(currentSequence)copyPlain(currentSequence.moves.map((v,i)=>`${i+1}. ${nfmt(v,3)} mm`).join('\n'),'manualCopied');});
+$('newProject').addEventListener('click',()=>load({...structuredClone(sample2),id:0,elements:[{x:0,w:20,y:10,h:10}]}));
+$('exportProject').addEventListener('click',()=>{
+ readState();const content=JSON.stringify({format:'foilstep-lab/v1.6',cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}},null,2);
+ const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
+ a.href=url;a.download='FoilStep_Proekt.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+});
+$('importButton').addEventListener('click',()=>$('filePicker').click());
+$('filePicker').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+  if(f.size>200000)throw Error('Файлът е твърде голям.');
+  const data=JSON.parse(await f.text());
+  const p={...structuredClone(sample2),...data};
+  if(!Array.isArray(p.elements))throw Error('Липсват елементи.');
+  const result=solve(p);if(!result)throw Error('Неуспешна проверка.');
+  load(p);
+ }catch(err){alert('Не може да се зареди проектът: '+err.message);}
+ e.target.value='';
+});
+try{const saved=localStorage.getItem('foilstep-lab-v16') || localStorage.getItem('foilstep-lab-v15') || localStorage.getItem('foilstep-lab-v14') || localStorage.getItem('foilstep-lab-v12') || localStorage.getItem('foilstep-lab-v09') || localStorage.getItem('foilstep-lab-v08') || localStorage.getItem('foilstep-lab-v07') || localStorage.getItem('foilstep-lab-v06') || localStorage.getItem('foilstep-lab-v05') || localStorage.getItem('foilstep-lab-v04') || localStorage.getItem('foilstep-lab-v03') || localStorage.getItem('foilstep-lab-v01');if(saved){const p=JSON.parse(saved);solve(p);state={id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements)};if(p.manual){if(Number.isFinite(Number(p.manual.safety)))$('manualSafety').value=String(p.manual.safety);if(Number.isFinite(Number(p.manual.clearExtra)))$('manualClearExtra').value=String(Math.max(MIN_CLEAR_EXTRA,Number(p.manual.clearExtra)));if(p.manual.error!==undefined&&Number.isFinite(Number(p.manual.error)))$('manualError').value=String(Math.max(0,Number(p.manual.error)));if([0.1,0.5,1,1.5,2].includes(Number(p.manual.grid)))$('manualGrid').value=String(p.manual.grid);if([10,18,25].includes(Number(p.manual.maxRep)))$('manualRepeats').value=String(p.manual.maxRep);if(Array.isArray(p.manual.blocks)&&p.manual.blocks.length)smartSetBlocks(p.manual.blocks.slice(0,3));}}}catch(err){/* ignore invalid cache */}
+setFields();renderRows();selfTest();compute();
+// V1.2 checks manual program repetition and both safety settings.
+(function smartSelfTest(){
+ try{
+  const e=solve(sample6).shapes;
+  const ints=forbiddenOffsets(e,1,0);
+  const candidate=smartOptimize(e,{gap:1,extra:5,grid:.5,maxRep:25});
+  if(!candidate?.blocks||!verifyPeriodic(smartExpand(candidate.blocks),ints)||candidate.blocks.length>3)throw Error('manual optimization');
+  if(smartPresets.length!==10||smartPresets[0].gap!==1||smartPresets[8].gap!==3||smartPresets[0].extra!==8||smartPresets[1].extra!==10||smartPresets[0].error!==1.5||smartPresets[1].error!==2)throw Error('five groups with two safety settings each');
+  const inLine=[{x:0,w:10,y:0,h:4},{x:0,w:10,y:5,h:4}];
+  if(!offsetClash(0.6,forbiddenOffsetsDistance(inLine,2)))throw Error('diagonal gap');
+  const sampleAligned=[{x:0,w:10,y:0,h:4},{x:30,w:10,y:6,h:4}];
+  if(offsetClash(30,forbiddenOffsets(sampleAligned,1,0)) || !offsetClash(30,forbiddenOffsets(sampleAligned,1,3)))throw Error('Y gating');
+  if(verifyPeriodic(Array(17).fill(10).concat(205),ints))throw Error('invalid example accepted');
+  const testSingle=[300];if(!verifyPeriodic(testSingle,ints))throw Error('single step verification');
+  $('testCount').textContent='✓ 11/11 основни теста';
+ }catch(err){$('testCount').textContent='⚠ допълнителен тест';}
+})();
+
+/* V1.7: visual-only modules. Core calculation and preset optimization remain unchanged. */
+let manualSim=null;
+let manualFocusIndex=0;
+let manualDrawScale=2.8;
+function manualSimSet(shapes, steps, reserve){
+ manualSim={shapes,steps,reserve};
+ manualFocusIndex=0;
+ updateManualSim(true);
+}
+function manualStarts(steps,n){
+ const starts=[0];
+ for(let i=0;i<n;i++)starts.push(starts.at(-1)+steps[i%steps.length]);
+ return starts;
+}
+function manualYView(shapes,top,height){
+ const ymin=Math.min(0,...shapes.map(e=>e.y));
+ const ymax=Math.max(10,...shapes.map(e=>e.y+e.h));
+ const scale=height/Math.max(ymax-ymin,1);
+ return {min:ymin,max:ymax,scale,toY:(y,h)=>top+(ymax-y-h)*scale};
+}
+function manualCycleCollisions(shapes,starts,reserve){
+ const red=new Set(),details=[];
+ const forbidden=forbiddenOffsetsDistance(shapes,reserve);
+ const maxDist=forbidden.at(-1)[1];
+ for(let i=1;i<starts.length;i++)for(let j=i-1;j>=0;j--){
+  const distance=starts[i]-starts[j];
+  if(distance>maxDist+EPS)break;
+  if(offsetClash(distance,forbidden)){
+   red.add(i);red.add(j);
+   if(details.length<8)details.push({i,j,distance});
+  }
+ }
+ return {red,details};
+}
+function focusCycleClearance(shapes,steps,idx){
+ if(idx<1)return null;
+ const starts=manualStarts(steps,idx),cur=starts[idx];
+ let bestX=Infinity,best2=Infinity,bestPrevious=-1;
+ // Earlier cycles can be less than one short step away in foil coordinates.
+ for(let k=0;k<idx;k++){
+  const d=cur-starts[k];
+  for(const a of shapes)for(const b of shapes){
+   const xSigned=axisGap(a.x,a.w,b.x+d,b.w);
+   const ySigned=axisGap(a.y,a.h,b.y,b.h);
+   const distance=Math.hypot(Math.max(0,xSigned),Math.max(0,ySigned));
+   if(distance<best2-EPS){best2=distance;bestPrevious=k;}
+   if(ySigned<-EPS&&xSigned<bestX-EPS)bestX=xSigned;
+  }
+ }
+ return {x:bestX,twoD:best2,previous:bestPrevious};
+}
+function buildManualOverview(sim){
+ const {shapes,steps,reserve}=sim;
+ const periods=Math.min(3,Math.max(1,Math.ceil(30/steps.length)));
+ const n=Math.max(1,Math.min(65,steps.length*periods+1,Math.floor(2000/Math.max(1,shapes.length))-1));
+ const starts=manualStarts(steps,n);
+ const left=45, right=35, minX=Math.min(0,...shapes.map(e=>e.x)), maxRight=Math.max(...shapes.map(e=>e.x+e.w));
+ const length=starts.at(-1)+maxRight-minX;
+ const scale=manualDrawScale;
+ const width=Math.min(25000,Math.max(690,left+length*scale+right));
+ const ylim=manualYView(shapes,58,160),height=270;
+ const {red}=manualCycleCollisions(shapes,starts,reserve);
+ let html=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Визуална симулация на ${n+1} отпечатвания, X и Y мащаб"><rect x="${left}" y="58" width="${length*scale+12}" height="160" fill="#fff2c0" rx="5" stroke="#d9b46c"/>`;
+ for(let i=0;i<=n;i++){
+  const x=left+(starts[i]-minX)*scale;
+  if(i<=n){
+   const selected=i===manualFocusIndex;
+   html+=`<line x1="${x}" y1="44" x2="${x}" y2="221" stroke="${selected?'#2563eb':'#9fafd0'}" stroke-width="${selected?2.4:.6}" stroke-dasharray="${selected?'':'3 4'}"/>`;
+   if(i<steps.length+1||i%Math.max(1,Math.round(steps.length/4))===0||selected){
+    html+=`<g data-sim-index="${i}" role="button" tabindex="0" aria-label="Покажи отпечатване ${i+1}" style="cursor:pointer"><rect x="${x-12}" y="6" width="24" height="25" rx="5" fill="${selected?'#2563eb':'#e9eff8'}"/><text x="${x}" y="23" fill="${selected?'white':'#324560'}" font-weight="700" font-size="12" text-anchor="middle">${i+1}</text></g>`;
+   }
+  }
+  for(const e of shapes){
+   const x0=left+(starts[i]+e.x-minX)*scale;
+   const y0=ylim.toY(e.y,e.h),w=Math.max(.65,e.w*scale),h=Math.max(.65,e.h*ylim.scale);
+   const col=red.has(i)?'#c73543':i===manualFocusIndex?'#2563eb':i%2?'#34577f':'#1b344e';
+   html+=`<rect x="${x0.toFixed(2)}" y="${y0.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="${col}" opacity=".89"><title>Отпечатване ${i+1}; ${esc(e.label)}; X ${nfmt(starts[i]+e.x,2)}; Y ${nfmt(e.y,2)}</title></rect>`;
+  }
+ }
+ html+=`<text x="${left}" y="242" font-size="12" fill="#5b6d87">X: ${nfmt(minX,1)} mm</text><text x="${left+length*scale}" y="242" font-size="12" text-anchor="end" fill="#5b6d87">${nfmt(starts.at(-1)+maxRight,1)} mm</text><text x="${left}" y="260" font-size="11" fill="#5b6d87">Показани ${n+1} отпечатвания; червено = недостатъчен ръчен резерв</text></svg>`;
+ return html;
+}
+function buildManualFocus(sim,idx){
+ const {shapes,steps,reserve}=sim;
+ const before=Math.max(0,idx-1),after=idx+1;
+ const starts=manualStarts(steps,after);
+ const minx=Math.min(...shapes.map(e=>e.x))+starts[before]-8;
+ const maxx=Math.max(...shapes.map(e=>e.x+e.w))+starts[after]+8;
+ const rawLength=maxx-minx;
+ const scale=2.4;
+ const width=Math.max(680,rawLength*scale+96);
+ const left=42,yl=manualYView(shapes,58,155),height=268;
+ const {red}=manualCycleCollisions(shapes,starts,reserve);
+ let html=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Приближен изглед на избраното ръчно подаване"><rect x="${left}" y="58" width="${rawLength*scale}" height="155" rx="5" fill="#fff3c8" stroke="#dabb69"/>`;
+ for(let k=before;k<=after;k++){
+  const x=left+(starts[k]-minx)*scale;
+  const chosen=k===idx;
+  html+=`<line x1="${x}" y1="43" x2="${x}" y2="214" stroke="${chosen?'#2563eb':'#adbcd5'}" stroke-width="${chosen?2:1}" stroke-dasharray="4 4"/><text x="${x}" y="33" fill="${chosen?'#154dc1':'#526783'}" text-anchor="middle" font-size="13" font-weight="700">${k===0?'Старт':`Ход ${k}`}</text>`;
+  for(const e of shapes){
+    const x0=left+(starts[k]+e.x-minx)*scale,y0=yl.toY(e.y,e.h);
+    const w=Math.max(.5,e.w*scale),h=Math.max(.5,e.h*yl.scale);
+    const col=red.has(k)?'#c73543':chosen?'#2563eb':'#495a72';
+    html+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="1" fill="${col}" opacity="${chosen?1:.72}"><title>Отпечатване ${k+1}; ${esc(e.label)}; X ${nfmt(starts[k]+e.x,1)} / Y ${nfmt(e.y,1)}</title></rect>`;
+  }
+ }
+ html+=`<text x="${left}" y="241" fill="#53657e" font-size="11">X ${nfmt(minx,1)} mm</text><text x="${left+rawLength*scale}" y="241" fill="#53657e" text-anchor="end" font-size="11">X ${nfmt(maxx,1)} mm</text><text x="${left}" y="259" fill="#53657e" font-size="11">Реален геометричен размер · червеното означава конфликт по X/Y</text></svg>`;
+ return html;
+}
+function updateManualSim(resetScroll=false){
+ if(!manualSim)return;
+ const sim=manualSim,n=sim.steps.length;
+ manualFocusIndex=Math.max(0,Math.min(manualFocusIndex,Math.min(65,2*n)));
+ $('simCurrent').textContent=`Отпечатване ${manualFocusIndex+1} · период ${Math.floor(manualFocusIndex/n)+1}`;
+ const feed=manualFocusIndex===0?null:sim.steps[(manualFocusIndex-1)%n];
+ const previous=manualFocusIndex?manualStarts(sim.steps,manualFocusIndex)[manualFocusIndex]:0;
+ const valid=verifyPeriodic(sim.steps,forbiddenOffsetsDistance(sim.shapes,sim.reserve));
+ const clearance=smartLast?.clearance||minimumImprintGap(sim.shapes,sim.steps);
+ const cycleGap=focusCycleClearance(sim.shapes,sim.steps,manualFocusIndex);
+ const hopText=cycleGap?` <strong>За избрания ход:</strong> най-малко по X ${formatGap(cycleGap.x)}; 2D ${formatGap(cycleGap.twoD)}.`:'';
+ const ctext=clearance?.complete?` <strong>За целия период:</strong> най-малко по X ${formatGap(clearance.nearX.distance)}; реална 2D ${formatGap(clearance.near2.distance)}.`:'';
+ $('simDetail').innerHTML=`<strong>${manualFocusIndex===0?'Начално отпечатване':`Подаване преди него: ${nfmt(feed,3)} mm`}</strong> · X отместване ${nfmt(previous,3)} mm · ${n} хода/период. <span class="${valid?'ok-text':'bad-text'}">${valid?'Няма геометрично застъпване според резерва.':'Проверка: има геометричен конфликт.'}</span> <span>${hopText}${ctext}</span>`;
+ $('simFocusPreview').innerHTML=buildManualFocus(sim,manualFocusIndex);
+ const overview=$('smartFoilPreview'),scroll=overview.scrollLeft;
+ overview.innerHTML=buildManualOverview(sim);
+ overview.scrollLeft=resetScroll?0:scroll;
+ $('simZoomValue').textContent=Math.round(manualDrawScale/2.8*100)+'%';
+ $('simPrev').disabled=manualFocusIndex===0;
+ $('simNext').disabled=manualFocusIndex>=Math.min(65,2*n);
+}
+function redrawPreview(){
+ const p=state;
+ const shapes=expand(p.elements,p.cutLength,p.copies);
+ $('cutPreview').innerHTML=buildPreview(shapes,p);
+ updateSelected();
+}
+function previewReadable(){
+ previewCutMode='all';
+ $('readablePreview').classList.add('selected');$('fitPreview').classList.remove('selected');
+ redrawPreview();
+}
+$('readablePreview').addEventListener('click',previewReadable);
+$('simPrev').addEventListener('click',()=>{manualFocusIndex--;updateManualSim();});
+$('simNext').addEventListener('click',()=>{manualFocusIndex++;updateManualSim();});
+$('simZoomOut').addEventListener('click',()=>{manualDrawScale=Math.max(1,manualDrawScale/1.4);updateManualSim();});
+$('simZoomIn').addEventListener('click',()=>{manualDrawScale=Math.min(10,manualDrawScale*1.4);updateManualSim();});
+$('smartFoilPreview').addEventListener('click',e=>{
+ const target=e.target.closest('[data-sim-index]');
+ if(!target)return;
+ manualFocusIndex=Number(target.dataset.simIndex);updateManualSim();
+});
+let manualPreviewTimer=null;
+for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3']){
+ $(id).addEventListener('input',()=>{
+  clearTimeout(manualPreviewTimer);
+  manualPreviewTimer=setTimeout(()=>{
+   try{readState();const blocks=smartReadBlocks();const active=smartSettings();
+    const selected=smartVariants.find(v=>v.id===smartSelectedId&&v.valid);
+    smartResult(blocks,'Редактирана ръчна схема · симулация на живо',selected?{...active,gap:selected.gap,extra:selected.extra}:active);}
+   catch(err){manualSim=null;$('simFocusPreview').innerHTML='';$('smartFoilPreview').innerHTML='';$('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('simDetail').textContent='Проверка: '+err.message;$('smartStatus').textContent='Проверка: '+err.message;$('smartStatus').className='status error';}
+  },160);
+ });
+}
+// On startup, show only the first cut for a cleaner layout.
+$('fitPreview').click();
+
+
+
+/* V1.9.4 - Named recipes, independent of the previous single auto-saved project. */
+const JOBS_KEY='foilstep-lab:jobs:v1';
+const JOBS_FORMAT='foilstep-lab:saved-jobs:v1';
+const RECIPE_FORMAT='foilstep-lab:job:v1';
+let savedJobs=[],jobsPersistent=true;
+function jobStatus(message,kind=''){
+ const node=$('jobStatus');node.textContent=message;node.className='job-status'+(kind?' '+kind:'');
+}
+function getJobs(){
+ try{
+  const raw=localStorage.getItem(JOBS_KEY);
+  const parsed=raw?JSON.parse(raw):[];
+  if(!Array.isArray(parsed))throw Error('Непознат архив');
+  savedJobs=parsed.filter(x=>x&&x.id&&x.name&&x.recipe).slice(0,150);
+  jobsPersistent=true;
+ }catch(err){savedJobs=[];jobsPersistent=false;jobStatus('Локалното съхранение не е достъпно. Използвай „Файл“ или „Архив на всички“, за да не загубиш настройките.','error');}
+}
+function persistJobs(){
+ try{localStorage.setItem(JOBS_KEY,JSON.stringify(savedJobs));jobsPersistent=true;return true;}
+ catch(err){jobsPersistent=false;jobStatus('Не може да се запише трайно в този браузър. Изтегли JSON архив за резервно копие.','error');return false;}
+}
+function selectedJob(){return savedJobs.find(x=>x.id===$('jobSelect').value)||null;}
+function renderJobs(selectedId){
+ const sel=$('jobSelect');sel.replaceChildren();
+ const defaultOpt=document.createElement('option');defaultOpt.value='';defaultOpt.textContent=savedJobs.length?'Избери настройка…':'Няма запазени настройки';sel.appendChild(defaultOpt);
+ for(const item of savedJobs){
+  const option=document.createElement('option');option.value=item.id;option.textContent=item.name;sel.appendChild(option);
+ }
+ if(selectedId&&savedJobs.some(x=>x.id===selectedId))sel.value=selectedId;
+ const job=selectedJob();
+ $('loadJob').disabled=!job;$('deleteJob').disabled=!job;$('exportJob').disabled=!job;
+ const rows=job?.recipe?.manual?.blocks||[];
+ const summary=rows.map(x=>`${x.advance} mm × ${x.count}`).join(' → ');
+ $('jobDetails').textContent=job?`${summary} · ${job.recipe.project.elements.length} елемента · Запис: ${new Date(job.savedAt).toLocaleString('bg-BG')}`:`Запазени: ${savedJobs.length} настройки`;
+}
+function numberIs(value){return typeof value==='number'&&Number.isFinite(value);}
+function validRecipe(recipe){
+ if(!recipe||recipe.format!==RECIPE_FORMAT||!recipe.project||!recipe.manual)throw Error('Непознат формат на настройката.');
+ const p=recipe.project,m=recipe.manual;
+ if(!Array.isArray(p.elements)||p.elements.length<1||p.elements.length>80)throw Error('Невалиден брой елементи.');
+ if(!Number.isInteger(p.copies)||p.copies<1||p.copies>50)throw Error('Невалиден брой изрезки.');
+ if(!numberIs(p.cutLength)||p.cutLength<=0||p.cutLength>10000)throw Error('Невалидна дължина на изрезката.');
+ if(!numberIs(p.gapX)||!numberIs(p.gapY)||!numberIs(p.sheets))throw Error('Невалидни параметри на изрезката.');
+ if(p.elements.some(e=>!['x','y','w','h'].every(k=>numberIs(e[k]))||e.w<=0||e.h<=0))throw Error('Невалидни координати на елементите.');
+ if(!Array.isArray(m.blocks)||m.blocks.length<1||m.blocks.length>3)throw Error('Необходимо е от 1 до 3 ръчни реда.');
+ if(m.blocks.some(x=>!numberIs(x.advance)||x.advance<=0||!Number.isInteger(x.count)||x.count<1||x.count>200)||m.blocks.reduce((s,x)=>s+x.count,0)>250)throw Error('Невалидни ръчни стъпки/повторения.');
+ if(!m.settings||(m.settings.error!==undefined&&(!numberIs(m.settings.error)||m.settings.error<0||m.settings.error>30))||!numberIs(m.settings.gap)||m.settings.gap<0||m.settings.gap>30||!numberIs(m.settings.extra)||m.settings.extra<0||m.settings.extra>50||![.1,.5,1,1.5,2].includes(m.settings.grid)||![10,18,25].includes(m.settings.maxRep))throw Error('Невалидни ръчни резерви или точност.');
+ if(!numberIs(m.checkedMinimum)||m.checkedMinimum<0||m.checkedMinimum>30)throw Error('Невалиден проверяван минимум.');
+ solve(p);return true;
+}
+function currentRecipe(){
+ readState();solve(state);
+ const blocks=smartReadBlocks();const opts=smartSettings();
+ const variant=smartVariants.find(v=>v.id===smartSelectedId&&v.valid);
+ const actualSettings=variant?{...opts,gap:variant.gap,extra:variant.extra,error:variant.error}:opts;
+ const recipe={format:RECIPE_FORMAT,project:{id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements.map(({x,y,w,h})=>({x,y,w,h}))},manual:{blocks:blocks.map(({advance,count})=>({advance,count})),settings:actualSettings,checkedMinimum:variant?.gap??opts.gap,selectedVariant:variant?.id??null},savedAt:new Date().toISOString()};
+ validRecipe(recipe);return recipe;
+}
+function newJobId(){return (typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID():`job-${Date.now()}-${Math.floor(Math.random()*1e8)}`;}
+function saveNamedJob(){
+ try{
+  const name=$('jobName').value.trim().replace(/\s+/g,' ');
+  if(!name)throw Error('Въведи име на настройката.');
+  const recipe=currentRecipe();let item=savedJobs.find(x=>x.name.toLocaleLowerCase('bg-BG')===name.toLocaleLowerCase('bg-BG'));
+  if(item){if(!confirm(`Да заменя запазената настройка „${item.name}“ с текущите стойности?`))return;item.recipe=recipe;item.savedAt=recipe.savedAt;}
+  else{if(savedJobs.length>=150)throw Error('Библиотеката е пълна. Експортирай архив и изтрий ненужни настройки.');item={id:newJobId(),name,savedAt:recipe.savedAt,recipe};savedJobs.unshift(item);}
+  persistJobs();renderJobs(item.id);
+  if(jobsPersistent)jobStatus(`Запазена настройка „${name}“: ${recipe.manual.blocks.map(x=>`${x.advance} × ${x.count}`).join(' → ')}.`, 'good');
+ }catch(err){jobStatus('Запазването не успя: '+err.message,'error');}
+}
+function loadNamedJob(){
+ try{
+  const job=selectedJob();if(!job)throw Error('Избери настройка от списъка.');
+  const r=structuredClone(job.recipe);validRecipe(r);
+  const p={...r.project,manual:{safety:r.manual.settings.gap,clearExtra:r.manual.settings.extra,error:r.manual.settings.error??0,grid:r.manual.settings.grid,maxRep:r.manual.settings.maxRep,blocks:r.manual.blocks}};
+  load(p);
+  smartSetBlocks(r.manual.blocks);
+  // Critical: restore verification with the actual selected preset gap, not the custom edit fields.
+  const ok=smartResult(r.manual.blocks,`Заредена настройка: ${job.name}`,{...r.manual.settings,gap:r.manual.checkedMinimum,error:r.manual.settings.error??0});
+  smartSelectedId=null;
+  $('smartChosenGap').textContent=`Заредена „${job.name}“ · минимум ${nfmt(r.manual.checkedMinimum,1)} mm + грешка ${nfmt(r.manual.settings.error??0,1)} mm`;
+  $('jobName').value=job.name;
+  jobStatus(`Заредена „${job.name}“. ${ok?'Геометричната проверка премина.':'Внимание: текущата схема не премина геометричната проверка.'}`,ok?'good':'error');
+  $('savedJobsPanel').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(err){jobStatus('Зареждането не успя: '+err.message,'error');}
+}
+function downloadJson(data,filename){
+ const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+function fileSafe(name){return name.replace(/[^a-zA-Z0-9А-Яа-я0-9_-]+/g,'_').slice(0,35)||'setup';}
+function normalizeImportedJob(x){
+ if(!x||typeof x!=='object')throw Error('Невалиден запис.');
+ const recipe=x.format===RECIPE_FORMAT?x:x.recipe;
+ validRecipe(recipe);
+ const name=String(x.name||'Импортирана настройка').slice(0,70).trim()||'Импортирана настройка';
+ return {id:newJobId(),name,savedAt:recipe.savedAt||new Date().toISOString(),recipe:structuredClone(recipe)};
+}
+$('saveJob').addEventListener('click',saveNamedJob);
+$('jobName').addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();saveNamedJob();}});
+$('jobSelect').addEventListener('change',()=>renderJobs($('jobSelect').value));
+$('loadJob').addEventListener('click',loadNamedJob);
+$('deleteJob').addEventListener('click',()=>{const j=selectedJob();if(!j)return;if(!confirm(`Да изтрия настройката „${j.name}“ от този браузър?`))return;savedJobs=savedJobs.filter(x=>x.id!==j.id);persistJobs();renderJobs();jobStatus(`Изтрита настройка „${j.name}“.`, 'good');});
+$('exportJob').addEventListener('click',()=>{const j=selectedJob();if(!j)return;downloadJson({...j,format:RECIPE_FORMAT},`FoilStep_${fileSafe(j.name)}.json`);jobStatus(`Изтеглен файл за „${j.name}“.`, 'good');});
+$('exportJobLibrary').addEventListener('click',()=>{if(!savedJobs.length){jobStatus('Няма запазени настройки за архивиране.','error');return;}downloadJson({format:JOBS_FORMAT,exportedAt:new Date().toISOString(),jobs:savedJobs},'FoilStep_All_Saved_Jobs.json');jobStatus(`Изтеглен архив с ${savedJobs.length} настройки.`, 'good');});
+$('importJobLibrary').addEventListener('click',()=>$('jobFilePicker').click());
+$('jobFilePicker').addEventListener('change',async ev=>{
+ const f=ev.target.files?.[0];if(!f)return;
+ try{
+  if(f.size>2500000)throw Error('Архивът е твърде голям (макс. 2,5 MB).');
+  const data=JSON.parse(await f.text());
+  const arr=data.format===JOBS_FORMAT&&Array.isArray(data.jobs)?data.jobs:[data];
+  if(!arr.length||arr.length>150)throw Error('Архивът съдържа невалиден брой настройки.');
+  const incoming=arr.map(normalizeImportedJob);if(savedJobs.length+incoming.length>150)throw Error('Библиотеката ще надхвърли 150 настройки.');
+  savedJobs=[...incoming,...savedJobs];persistJobs();renderJobs(incoming[0].id);
+  jobStatus(`Импортирани ${incoming.length} настройки. Избери „Зареди“, за да отвориш някоя от тях.`,jobsPersistent?'good':'error');
+ }catch(err){jobStatus('Неуспешен импорт: '+err.message,'error');}
+ ev.target.value='';
+});
+getJobs();renderJobs();
+
+// PWA install requires the same app served from HTTPS/localhost; file:// is a standalone fallback.
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',ev=>{ev.preventDefault();deferredInstallPrompt=ev;$('installApp').hidden=false;$('installHint').textContent='Можеш да добавиш FoilStep Lab като приложение с икона на телефона.';});
+$('installApp').addEventListener('click',async()=>{if(!deferredInstallPrompt)return;const ev=deferredInstallPrompt;deferredInstallPrompt=null;$('installApp').hidden=true;try{await ev.prompt();}catch(err){$('installHint').textContent='Отвори менюто на Chrome и избери „Инсталирай приложение“.';}});
+if('serviceWorker' in navigator&&location.protocol!=='file:'&&location.protocol!=='content:'){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>{console.warn('Offline install unavailable',err);}));
+}
+
+</script>
+</body>
+</html>
