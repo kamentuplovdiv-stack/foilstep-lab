@@ -31,6 +31,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p android/app/src/main/java/bg/foilstep/lab android/app/src/main/assets android/app/src/main/res/drawable
+          cp index.html manifest.webmanifest sw.js icon-192.png icon-512.png android/app/src/main/assets/
+          test -s android/app/src/main/assets/index.html
           cat > android/settings.gradle <<'EOSET'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -175,6 +177,11 @@ jobs:
       - name: Compile APK
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK contains offline HTML
+        run: |
+          unzip -l android/app/build/outputs/apk/debug/app-debug.apk | grep 'assets/index.html'
+          unzip -l android/app/build/outputs/apk/debug/app-debug.apk | grep 'assets/icon-192.png'
+          test $(stat -c%s android/app/build/outputs/apk/debug/app-debug.apk) -gt 45000
       - name: Name APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk FoilStep_Lab_V1.9.7.apk
       - name: Upload APK
