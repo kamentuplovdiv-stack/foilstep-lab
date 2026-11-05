@@ -1,12 +1,11 @@
 {
-  "name": "FoilStep Lab — Ръчно подаване",
+  "name": "FoilStep Lab — Оптимизатор за фолио",
   "short_name": "FoilStep Lab",
-  "description": "Геометричен калкулатор за подаване на фолио с ръчни схеми.",
+  "description": "Офлайн калкулатор за подаване на фолио — 10 автоматични и 1 ръчен вариант",
   "lang": "bg",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#f3f6fb",
   "theme_color": "#101a31",
   "icons": [
