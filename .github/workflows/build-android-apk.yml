@@ -1,0 +1,188 @@
+name: Build FoilStep Lab Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-android-apk.yml'
+permissions:
+  contents: write
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Prepare offline Android app
+        shell: bash
+        run: |
+          mkdir -p android/app/src/main/java/bg/foilstep/lab android/app/src/main/assets android/app/src/main/res/drawable
+          cat > android/settings.gradle <<'EOSET'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name = 'FoilStepLab'
+          include ':app'
+          EOSET
+          cat > android/build.gradle <<'EOBUILD'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOBUILD
+          cat > android/gradle.properties <<'EOPROP'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOPROP
+          cat > android/app/build.gradle <<'EOAPP'
+          plugins { id 'com.android.application' }
+          android {
+           namespace 'bg.foilstep.lab'
+           compileSdk 35
+           defaultConfig { applicationId 'bg.foilstep.lab'; minSdk 26; targetSdk 34; versionCode 197; versionName '1.9.7' }
+           buildTypes { release { minifyEnabled false } }
+           compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+          }
+          EOAPP
+          cat > android/app/src/main/AndroidManifest.xml <<'EOMAN'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+           <application android:allowBackup="true" android:label="FoilStep Lab"
+              android:icon="@drawable/foilstep_icon"
+              android:theme="@android:style/Theme.Material.Light.NoActionBar"
+              android:usesCleartextTraffic="false">
+            <activity android:name=".MainActivity" android:exported="true"
+                 android:windowSoftInputMode="adjustResize">
+             <intent-filter><action android:name="android.intent.action.MAIN"/>
+             <category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+            </activity>
+           </application>
+          </manifest>
+          EOMAN
+          cat > android/app/src/main/java/bg/foilstep/lab/MainActivity.java <<'EOJAVA'
+          package bg.foilstep.lab;
+          import android.app.*;
+          import android.content.*;
+          import android.net.*;
+          import android.os.*;
+          import android.util.*;
+          import android.webkit.*;
+          import android.widget.*;
+          import java.io.*;
+          import java.util.*;
+          
+          public class MainActivity extends Activity {
+           static final String HOST="appassets.androidplatform.net",BASE="https://"+HOST+"/assets/";
+           static final int OPEN=101,SAVE=102;
+           WebView web; ValueCallback<Uri[]> chooser; byte[] pending; Handler ui=new Handler(Looper.getMainLooper());
+           static final String JS="(function(){if(window.__foilAndroid)return;window.__foilAndroid=1;"+
+           "var make=URL.createObjectURL.bind(URL),revoke=URL.revokeObjectURL.bind(URL),items=new Map();"+
+           "URL.createObjectURL=function(b){var id=make(b);items.set(id,b);return id};"+
+           "URL.revokeObjectURL=function(id){items.delete(id);return revoke(id)};"+
+           "var click=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){"+
+           "var b=items.get(this.href);if(b&&this.download){var filename=this.download,reader=new FileReader();"+
+           "reader.onload=function(){FoilStepAndroid.saveJson(filename,String(reader.result).split(',')[1])};"+
+           "reader.readAsDataURL(b);return}return click.apply(this,arguments)};"+
+           "var hint=document.getElementById('installHint');if(hint)hint.textContent='APK · Офлайн · Настройките се пазят на телефона.';"+
+           "})();";
+           @Override public void onCreate(Bundle state){super.onCreate(state);
+             web=new WebView(this);setContentView(web);
+             WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);
+             s.setAllowFileAccess(false);s.setAllowContentAccess(true);s.setJavaScriptCanOpenWindowsAutomatically(false);
+             s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+             web.addJavascriptInterface(new Bridge(),"FoilStepAndroid");
+             web.setWebViewClient(new WebViewClient(){
+               @Override public WebResourceResponse shouldInterceptRequest(WebView w,WebResourceRequest req){
+                 Uri u=req.getUrl();if(!"https".equals(u.getScheme())||!HOST.equals(u.getHost()))return null;
+                 String p=u.getPath();if(p==null||!p.startsWith("/assets/"))return missing();
+                 String file=p.substring(8);if(file.isEmpty())file="index.html";
+                 if(file.contains("..")||file.contains("\\")||file.startsWith("/"))return missing();
+                 try{
+                   String mime=file.endsWith(".html")?"text/html":file.endsWith(".js")?"application/javascript":
+                     file.endsWith(".json")||file.endsWith(".webmanifest")?"application/json":
+                     file.endsWith(".png")?"image/png":"text/plain";
+                   return new WebResourceResponse(mime,mime.equals("image/png")?null:"UTF-8",200,"OK",
+                     Collections.singletonMap("Access-Control-Allow-Origin","*"),getAssets().open(file));
+                 }catch(Exception e){return missing();}
+               }
+               @Override public boolean shouldOverrideUrlLoading(WebView w,WebResourceRequest r){
+                 return !r.getUrl().toString().startsWith(BASE);
+               }
+               @Override public void onPageFinished(WebView w,String url){w.evaluateJavascript(JS,null);}
+             });
+             web.setWebChromeClient(new WebChromeClient(){
+               @Override public boolean onShowFileChooser(WebView w,ValueCallback<Uri[]> cb,FileChooserParams p){
+                 if(chooser!=null)chooser.onReceiveValue(null);chooser=cb;
+                 try{Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                   i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("*/*");
+                   i.putExtra(Intent.EXTRA_MIME_TYPES,new String[]{"application/json","text/plain","application/octet-stream"});
+                   startActivityForResult(i,OPEN);return true;
+                 }catch(Exception e){chooser=null;return false;}
+               }
+             });
+             web.loadUrl(BASE+"index.html");
+           }
+           WebResourceResponse missing(){return new WebResourceResponse("text/plain","UTF-8",404,"Not Found",
+              Collections.emptyMap(),new ByteArrayInputStream(new byte[0]));}
+           public class Bridge{
+             @JavascriptInterface public void saveJson(String name,String b64){
+               if(b64==null||b64.length()>5000000){ui.post(()->msg("Архивът е твърде голям"));return;}
+               try{pending=Base64.decode(b64,Base64.DEFAULT);}catch(Exception e){ui.post(()->msg("Невалиден архив"));return;}
+               String filename=(name==null?"FoilStep.json":name).replaceAll("[^A-Za-z0-9._-]","_");
+               if(!filename.toLowerCase(Locale.ROOT).endsWith(".json"))filename+=".json";
+               final String safe=filename;
+               ui.post(()->{try{Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                 i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
+                 i.putExtra(Intent.EXTRA_TITLE,safe);startActivityForResult(i,SAVE);}
+                 catch(Exception e){msg("Неуспешно отваряне на файловия избор");}});
+             }
+           }
+           @Override protected void onActivityResult(int request,int result,Intent data){
+             super.onActivityResult(request,result,data);
+             if(request==OPEN){if(chooser!=null){chooser.onReceiveValue(result==RESULT_OK&&data!=null&&data.getData()!=null?
+               new Uri[]{data.getData()}:null);chooser=null;}}
+             else if(request==SAVE){if(result==RESULT_OK&&data!=null&&data.getData()!=null&&pending!=null){
+               try(OutputStream out=getContentResolver().openOutputStream(data.getData())){
+                 if(out==null)throw new Exception("No stream");out.write(pending);out.flush();msg("JSON архивът е записан");
+               }catch(Exception e){msg("Грешка при записване");}}
+               pending=null;
+             }
+           }
+           void msg(String message){Toast.makeText(this,message,Toast.LENGTH_SHORT).show();}
+           @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
+           @Override protected void onDestroy(){if(web!=null){web.removeJavascriptInterface("FoilStepAndroid");web.destroy();}super.onDestroy();}
+          }
+          EOJAVA
+          cat > android/app/src/main/res/drawable/foilstep_icon.xml <<'EOICON'
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+           android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+           <path android:fillColor="#15244B" android:pathData="M0,0h108v108h-108z"/>
+           <path android:fillColor="#FFFFFF" android:pathData="M28,22 L79,22 L79,35 L43,35 L43,48 L70,48 L70,60 L43,60 L43,86 L28,86 Z"/>
+           <path android:fillColor="#F6C34C" android:pathData="M70,73h13v13h-13z"/>
+          </vector>
+          EOICON
+      - name: Compile APK
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Name APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk FoilStep_Lab_V1.9.7.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FoilStep_Lab_V1.9.7_APK
+          path: FoilStep_Lab_V1.9.7.apk
+      - name: Publish downloadable APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.9.7-android
+          name: FoilStep Lab Android V1.9.7
+          body: 'Offline Android APK (debug signed). For future updates the signing key must be preserved; before reinstalling, export saved jobs as JSON.'
+          files: FoilStep_Lab_V1.9.7.apk
