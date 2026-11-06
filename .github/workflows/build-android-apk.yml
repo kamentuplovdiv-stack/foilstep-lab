@@ -53,7 +53,7 @@ jobs:
           android {
            namespace 'bg.foilstep.lab'
            compileSdk 35
-           defaultConfig { applicationId 'bg.foilstep.lab.v1916'; minSdk 26; targetSdk 34; versionCode 191601; versionName '1.9.16-separate' }
+           defaultConfig { applicationId 'bg.foilstep.lab.v1917'; minSdk 26; targetSdk 34; versionCode 191701; versionName '1.9.17-separate' }
            buildTypes { release { minifyEnabled false } }
            compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
           }
@@ -61,7 +61,7 @@ jobs:
           cat > android/app/src/main/AndroidManifest.xml <<'EOMAN'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-           <application android:allowBackup="true" android:label="FoilStep Lab 1.9.16"
+           <application android:allowBackup="true" android:label="FoilStep Lab 1.9.17"
               android:icon="@drawable/foilstep_icon"
               android:theme="@android:style/Theme.Material.Light.NoActionBar"
               android:usesCleartextTraffic="false">
@@ -185,16 +185,16 @@ jobs:
           unzip -l android/app/build/outputs/apk/debug/app-debug.apk | grep 'assets/icon-192.png'
           test $(stat -c%s android/app/build/outputs/apk/debug/app-debug.apk) -gt 45000
       - name: Name APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk FoilStep_Lab_V1.9.16_N_Counts.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk FoilStep_Lab_V1.9.17_Select_N.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: FoilStep_Lab_V1.9.16_N_Counts_APK
-          path: FoilStep_Lab_V1.9.16_N_Counts.apk
+          name: FoilStep_Lab_V1.9.17_Select_N_APK
+          path: FoilStep_Lab_V1.9.17_Select_N.apk
       - name: Publish downloadable APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.9.16-android-separate
-          name: FoilStep Lab Android V1.9.16 (separate install)
+          tag_name: v1.9.17-android-separate
+          name: FoilStep Lab Android V1.9.17 (separate install)
           body: 'Offline Android APK installed separately from old FoilStep Lab (different Android application ID). This DOES NOT update or remove the original app; export JSON backups there and import into the new app. Signed with a runner-generated debug key, so for future in-place updates a stable signing key will be needed.'
-          files: FoilStep_Lab_V1.9.16_N_Counts.apk
+          files: FoilStep_Lab_V1.9.17_Select_N.apk
