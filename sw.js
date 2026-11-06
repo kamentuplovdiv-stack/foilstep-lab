@@ -1,5 +1,5 @@
-// FoilStep Lab 1.9.10: updateable, offline-first, network-first for navigation.
-const CACHE='foilstep-lab-v1.9.10';
+// FoilStep Lab 1.9.11: updateable, offline-first, network-first for navigation.
+const CACHE='foilstep-lab-v1.9.11';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&k.startsWith('foilstep-lab-')).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
