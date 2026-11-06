@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101a31"/>
-<title>FoilStep Lab V1.9.14 · вложен вариант №12</title>
+<title>FoilStep Lab V1.9.15 · подобрен алгоритъм N</title>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -233,7 +233,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 <body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.14 TEST</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.15 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
 <div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Вграденият преглед на файла не изпълнява JavaScript. <a href="https://kamentuplovdiv-stack.github.io/foilstep-lab/?v=1.9.12" target="_blank" rel="noopener noreferrer" style="font-weight:800;color:#124aac;text-decoration:underline">Отвори работещата уеб версия в Chrome</a>. Тук добавянето и Y отметките са недостъпни.</div>
@@ -354,17 +354,13 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       <div><label for="manualRepeats">Макс. кратки повторения</label><select id="manualRepeats" class="input"><option value="10">10</option><option value="18">18</option><option value="25" selected>25</option></select></div>
     </div>
     <p class="note">Изчислява се действителната най-малка <b>2D междина</b> между отпечатъците и се проверяват повторенията. Резервът за грешка се добавя към целевата междина: например минимум 1,5 + грешка 2 = проверявани поне 3,5 mm. Това е <b>моделиран еднократен резерв за относителна неточност</b>, а не измерена грешка на машината; натрупващите се отклонения при много подавания не са моделирани. Изчистващите +8/+10 mm се добавят към дългия ход, когато има такъв. Алгоритъмът е евристичен и не гарантира абсолютен минимум.</p>
-    <div class="fields" style="max-width:280px;margin-top:12px"><div><label for="machineNMax">Автоматично търсене до N</label><select id="machineNMax" class="input"><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25" selected>25</option></select></div></div><p class="note">Изпробва всички N от 1 до максимума. Вариант №12 винаги присъства в списъка. Когато има допустим вложен цикъл, показва най-икономичния намерен за N в зададения диапазон, дори ако не е по-добър от №11. Ако няма намерена допустима схема, показва причината.</p><div class="variant-head flex between">
+    <div class="fields" style="margin-top:12px"><div><label for="machineNMax">Автоматично търсене до N</label><select id="machineNMax" class="input"><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25" selected>25</option></select></div><div><label for="nestedGapMode">Проверка на №12</label><select id="nestedGapMode" class="input"><option value="safe" selected>Със зададените резерви</option><option value="diagnostic">Диагностика: без допълнителна междина (0 mm)</option></select></div></div><p class="note">Алгоритъмът търси N от 1 до максимума и проверява целия период. <b>Диагностиката 0 mm допуска допиране на отпечатъците и НЕ доказва технологична безопасност</b>; използва се единствено за сравнение с действителни програми. Тя не променя настройките на другите 11 варианта.</p><div class="variant-head flex between">
       <div><strong>12 варианта · включително вложен N</strong><p class="sub" style="margin:2px 0 0">Сравнение за текущите елементи и изрезки</p></div>
       <button type="button" id="smartCompare" class="primary">Изчисли 12 варианта</button>
     </div>
     <div id="smartVariantStatus" class="note" aria-live="polite">Натисни „Изчисли 12 варианта“.</div>
     <div id="smartVariantDeck" class="variant-list" aria-live="polite"><div id="smartVariantList" style="display:contents"></div><article id="smartNestedResult" class="variant-card"><strong class="variant-title">№12 · Вложен цикъл N</strong><p class="variant-notice">Натисни „Изчисли 12 варианта“, за да се изчисли тази схема.</p></article></div>
-    <details class="math-audit" id="mathAuditPanel" style="margin:16px 0 8px;padding:13px;border:1px solid #c7d6ea;border-radius:14px;background:#f4f8ff">
-      <summary style="cursor:pointer;font-weight:800;color:#23497b">Математическо сравнение: двустъпкови схеми без допълнително изчистване</summary>
-      <p class="note">По желание, само за сверяване. <b>Тук няма резерв за грешка и изчистване</b>. Само геометрично сравнение за <b>една или две единични стъпки</b> (без дълги серии от повторения). <b>Тези схеми не включват резерв +5 / +8 / +10 mm</b> и не са готови машинни настройки. Проверяват се всички подавания на избраната стъпка на точност и многократните периоди. Не е доказан оптимум при 3 реда или повече.</p>
-      <button type="button" id="runMathAudit" class="mini">Пресметни двустъпковото сравнение</button><div id="mathAuditResult" aria-live="polite" class="note">При нужда натисни „Пресметни двустъпковото сравнение“.</div>
-    </details>
+
     <div class="divider"></div>
     <div class="flex between"><strong>Избран вариант · ръчна таблица</strong><span class="tag" id="smartChosenGap">Резерв 1 mm</span></div>
     <div class="manual-actions"><button type="button" id="smartAuto" class="primary">Изчисли моя вариант</button><button type="button" id="smartCheck">Провери въведените</button></div>
@@ -624,8 +620,13 @@ function forbiddenOffsetsDistance(shapes,minimum2D){
  if(!Number.isFinite(minimum2D)||minimum2D<0)throw Error('Невалиден минимален 2D резерв.');
  const intervals=[];
  for(const a of shapes)for(const b of shapes){
-  const yg=Math.max(0,axisGapY(a,b));
-  if(yg>=minimum2D-EPS && minimum2D>EPS)continue;
+  const signedY=axisGapY(a,b);
+  const yg=Math.max(0,signedY);
+  // For 0 mm clearance, separate/touching Y intervals must not block X moves.
+  // Without this branch a zero-gap model erroneously marks every Y-separated
+  // pair as colliding, forcing huge advances.
+  if(minimum2D<=EPS){if(signedY>=-EPS)continue;}
+  else if(yg>=minimum2D-EPS)continue;
   const needX=minimum2D>EPS?Math.sqrt(Math.max(0,minimum2D*minimum2D-yg*yg)):0;
   const lo=a.x-b.x-b.w-needX;
   const hi=a.x+a.w-b.x+needX;
@@ -773,7 +774,6 @@ function smartClearVariants(){
  smartCalculationSerial++;
  smartVariants=[];smartSelectedId=null;
  $('smartVariantList').innerHTML='';
- if($('mathAuditResult'))$('mathAuditResult').textContent='Настройките са променени. Изчисли отново.';
  $('smartVariantStatus').textContent='Данните са променени. Изчисли 12 варианта отново.';
  $('smartChosenGap').textContent='Избери вариант за ръчната таблица';
 }
@@ -801,58 +801,6 @@ function smartRenderVariants(){
     <button type="button" data-variant="${v.id}" ${selected?'class="selected"':''}>${selected?'✓ Избран':'Избери вариант'}</button>
    </article>`;
  }).join('');
-}
-/* V1.9.6. Independent grid-complete enumeration of *one- or two-step* periodic
-   feed schedules. The minimum clearance is measured between actual XY rectangles.
-   No cleanup buffer is added in this audit. Buffered operational proposals above
-   remain calculated by smartOptimize() with their own reserve. */
-function mathAuditTwoStep(shapes,minGap,grid){
- const forbidden=forbiddenOffsetsDistance(shapes,minGap);
- const maxOffset=forbidden.at(-1)[1];
- const step=Math.max(0.5,grid); // cap costly dense scans at 0.5 mm; 1 mm remains exact on its grid
- const from=Math.ceil((forbidden[0][1]-EPS)/step),to=Math.ceil((maxOffset+step-EPS)/step)+1;
- if(to-from>2000) return {reason:'Твърде дълга лента за пълно двустъпково търсене в браузъра.'};
- const allowed=[];
- for(let z=from;z<=to;z++){
-   const v=Math.round(z*step*1e6)/1e6;
-   if(v>EPS&&!offsetClash(v,forbidden))allowed.push(v);
- }
- const pairs=[];
- for(let i=0;i<allowed.length;i++){
-   const a=allowed[i];
-   for(let j=i;j<allowed.length;j++){
-    const b=allowed[j];
-    // The successive moves a,b are checked in ALL cyclic phases. Some sums
-    // are forbidden even when each individual move is separately safe.
-    if(offsetClash(a+b,forbidden))continue;
-    const avg=(a+b)/2;
-    pairs.push({a,b,avg});
-   }
- }
- pairs.sort((a,b)=>a.avg-b.avg||a.b-b.a||a.a-b.a);
- const result=[],keys=new Set();
- for(const pair of pairs){
-   const pattern=pair.a===pair.b?[pair.a]:[pair.a,pair.b];
-   if(!verifyPeriodic(pattern,forbidden))continue;
-   const key=pattern.join('|');if(keys.has(key))continue;
-   const measured=minimumImprintGap(shapes,pattern);
-   if(!measured?.complete||measured.near2.distance+1e-6<minGap)continue;
-   keys.add(key);
-   result.push({steps:pattern,avg:pair.avg,min:measured.near2.distance});
-   if(result.length===2)break;
- }
- return {results:result,grid:step,exhaustive:true};
-}
-function mathAuditRender(shapes,grid){
- const list=[];
- for(const gap of [1,1.5,2,2.5,3]){
-  const r=mathAuditTwoStep(shapes,gap,grid);
-  if(r.reason){list.push(`<div><b>${nfmt(gap,1)} mm:</b> ${esc(r.reason)}</div>`);continue;}
-  const found=r.results.map((v,i)=>`${i+1}) <b>${v.steps.map(s=>`${nfmt(s,2)} mm × 1`).join(' → ')}</b> = <b>${nfmt(v.avg,3)} mm/ход</b> · реална междина ${nfmt(v.min,3)} mm`).join('<br/>');
-  list.push(`<div style="padding:10px 0;border-bottom:1px solid #dbe5ef"><b>Минимална междина ${nfmt(gap,1)} mm:</b><br/>${found||'Няма проверен двустъпков кандидат.'}</div>`);
- }
- // The comparison is optional, do not force the panel open.
- $('mathAuditResult').innerHTML=list.join('')+`<p class="note">Двустъпковото търсене е пълно по използваната решетка ${nfmt(Math.max(0.5,grid),1)} mm в разгледания диапазон. Проверката обхваща повторението на периода. Не отчита грешки в действителното изтегляне или неограничени схеми с повече ходове.</p>`;
 }
 async function smartRunCompare(){
  const ticket=++smartCalculationSerial;
@@ -908,11 +856,12 @@ $('smartNestedResult').addEventListener('click',ev=>{
  if(machineNRead3('machine').every(x=>Number.isFinite(x)&&x>0)) machineNCompare();
  else {
   $('machineNStatus').className='status warn';
-  $('machineNStatus').textContent='Кандидат №12 е зареден като схема Б. За сравнение можеш да въведеш собствена схема А.';
+  $('machineNStatus').textContent='Кандидат №12 е зареден като схема Б. Ако е избран диагностичният режим 0 mm, той не е проверен с технологичните резерви. За сравнение въведи схема А.';
  }
  $('machineNCycle').scrollIntoView({behavior:'smooth',block:'start'});
 });
 $('machineNMax').addEventListener('change',smartClearVariants);
+$('nestedGapMode').addEventListener('change',smartClearVariants);
 function smartSelectVariant(id){
  const variant=smartVariants.find(v=>v.id===Number(id)&&v.valid);
  if(!variant)return;
@@ -1608,7 +1557,6 @@ for(const id of ['manualClearExtra','manualError','manualGrid','manualRepeats'])
 $('manualSafety').addEventListener('input',()=>{smartSelectedId=null;smartRenderVariants();$('smartChosenGap').textContent='Мой резерв: '+$('manualSafety').value+' mm';});
 $('smartCompare').addEventListener('click',smartRunCompare);
 $('smartVariantList').addEventListener('click',event=>{const b=event.target.closest('button[data-variant]');if(b)smartSelectVariant(Number(b.dataset.variant));});
-$('runMathAudit').addEventListener('click',()=>{try{readState();const r=solve(state);mathAuditRender(r.shapes,smartSettings().grid);}catch(e){$('mathAuditResult').textContent='Проверка: '+e.message;}});
 function selfTest(){
  let ok=0;
  try{
@@ -2077,114 +2025,137 @@ function machineNCheckSequence(seq,shapes,required){
 }
 function machineNCompare(){
  try{
-  readState();const sh=solve(state).shapes;
-  const N=toNum($('machineN').value);
-  const m=machineNRead3('machine'),f=machineNRead3('foil');
-  const ms=machineNSequence(...m,N),fs=machineNSequence(...f,N);
-  const settings=smartSettings(),required=settings.gap+settings.error;
-  const one=machineNCheckSequence(ms,sh,required),two=machineNCheckSequence(fs,sh,required);
-  const delta=two.total-one.total;
-  const tag=(title,series,result)=>`<div class="n-result ${result.verified?'pass':'fail'}"><small>${title}</small><b>${nfmt(result.avg,3)} mm/ход</b><div class="n-status">${nfmt(result.total,3)} mm за ${series.length} хода<br/>Най-малка изчислена 2D междина: ${nfmt(result.smallest,3)} mm<br/>${esc(result.status)}</div><div class="n-code" style="margin-top:8px">${series.map(v=>nfmt(v,1)).join(' → ')}</div></div>`;
-  $('machineNResult').innerHTML=`<p class="note">Програма: <b>(1 → 2) × ${N} → 1 → 3</b> · ${ms.length} хода · целева междина ${nfmt(required,2)} mm (минимум + грешка)</p><div class="n-result-grid">${tag('Схема А · ръчно въведени стойности',ms,one)}${tag('Схема Б · кандидат',fs,two)}</div><p class="note"><b>${Math.abs(delta)<1e-8?'Еднакъв общ разход':delta>0?'Схема А използва по-малко фолио':'Схема Б използва по-малко фолио'}:</b> разлика ${nfmt(Math.abs(delta),3)} mm за периода (${nfmt(Math.abs(delta)/ms.length,3)} mm на ход). Това е количествено сравнение, а не доказателство, че схемата може безопасно да се изпълнява на машината.</p>`;
-  const cls=one.verified&&two.verified?'':'warn';
-  $('machineNStatus').className='status '+cls;
-  $('machineNStatus').textContent=(one.verified&&two.verified?(relationalMode()?'⚠ И двете схеми са само условно допустими по Y отметките.':'✓ И двете схеми преминават геометричната проверка.'):'⚠ Не приемай сравнението като готова настройка: поне една схема не е напълно потвърдена по геометрията.')+' N е брой изпълнения на (1 → 2) в този модел.';
- }catch(err){$('machineNResult').innerHTML='';$('machineNStatus').className='status error';$('machineNStatus').textContent='Неуспешна проверка: '+err.message;}
+  readState();const shapes=solve(state).shapes;
+  const N=toNum($('machineN').value),settings=smartSettings(),required=settings.gap+settings.error;
+  const a=machineNRead3('machine'),b=machineNRead3('foil');
+  const haveA=a.every(Number.isFinite),haveB=b.every(Number.isFinite);
+  if(!haveA&&!haveB)throw Error('Въведи поне една схема A или Б с трите подавания.');
+  const report=(name,arr)=>{
+   if(!arr.every(Number.isFinite))return null;
+   const seq=machineNSequence(...arr,N);
+   const result=machineNCheckSequence(seq,shapes,required);
+   const diagGap=minimumImprintGap(shapes,seq);
+   const d=diagGap?.complete?diagGap.near2.distance:NaN;
+   return {seq,result,d,name};
+  };
+  const entries=[report('Схема А',a),report('Схема Б',b)].filter(Boolean);
+  $('machineNResult').innerHTML='<p class="note">(1 → 2) × '+N+' → 1 → 3 · изисквана междина '+nfmt(required,2)+' mm</p><div class="n-result-grid">'+entries.map(e=>'<div class="n-result '+(e.result.verified?'pass':'fail')+'"><small>'+e.name+'</small><b>'+nfmt(e.result.avg,3)+' mm/ход</b><div class="n-status">'+nfmt(e.result.total,2)+' mm за '+e.seq.length+' хода<br/>Изчислена междина '+nfmt(e.d,3)+' mm · изисквана '+nfmt(required,3)+' mm<br/>'+(e.result.verified?'Преминала проверката за въведените резерви.':'⚠ Под зададените резерви / непълна проверка.')+'</div><div class="n-code">'+e.seq.map(v=>nfmt(v,2)).join(' → ')+'</div></div>').join('')+'</div>';
+  if(entries.length===2){
+   const difference=entries[0].result.avg-entries[1].result.avg;
+   $('machineNResult').insertAdjacentHTML('beforeend','<p class="note">Разлика по среден аванс: '+nfmt(Math.abs(difference),3)+' mm/ход в полза на '+(difference>0?'схема Б':difference<0?'схема А':'нито една (равни)')+'. Внимание: икономичност не означава допустимост.</p>');
+  }
+  const allOK=entries.every(e=>e.result.verified);
+  $('machineNStatus').className='status '+(allOK?'':'warn');
+  $('machineNStatus').textContent=(allOK?'Моделът потвърждава въведените резерви.':'⚠ Поне една схема не изпълнява зададените резерви. Възможно е все пак да работи на конкретната машина; моделът не включва всички механични условия.')+(relationalMode()?' Y отметките дават само условна оценка.':'');
+ }catch(err){$('machineNResult').innerHTML='';$('machineNStatus').className='status error';$('machineNStatus').textContent='Проверка: '+err.message;}
 }
-// Optimization uses the current geometry and ignores fixed customer examples.
 
-/* V1.9.13 — bounded search over ALL N=1..maxN. A and B are sampled
-   from allowed grid points and forbidden interval boundaries. C is the
-   least clearing advance with the configured extra safety distance.
-   Every candidate and the infinite period are geometrically verified.
-   Heuristic: does NOT prove the global minimum. */
+/* V1.9.15: geometry-led bounded search over N=1..25.
+   First search all grid A/B in an adaptive near-field domain, then check
+   the entire prefix and solve the clearing C by forbidden intervals.
+   For finest grids we sample A/B and disclose that limitation. No claim
+   of a global optimum; zero gap is diagnostic only, not production-safe. */
 let nestedTicket=0;
 async function machineNOptimize(auto=false,compareToken=null){
  const run=++nestedTicket;
  const output=auto?$('smartNestedResult'):$('machineNOptimization');
- if(auto)resetNestedCard('Търсене на N от 1 до зададения максимум…');
+ const mode=$('nestedGapMode').value;
+ if(auto)resetNestedCard('Търсене на вложен N цикъл…');
  try{
   readState();const shapes=solve(state).shapes,opts=smartSettings();
-  const req=opts.gap+opts.error,forb=forbiddenOffsetsDistance(shapes,req);
+  const req=mode==='diagnostic'?0:opts.gap+opts.error,forb=forbiddenOffsetsDistance(shapes,req);
   const maxN=Number($('machineNMax').value),g=opts.grid;
   if(!Number.isInteger(maxN)||maxN<1||maxN>25)throw Error('N трябва да е между 1 и 25.');
-  const set=new Set(),first=forb[0][1],last=forb[forb.length-1][1];
-  const add=v=>{
-   if(!Number.isFinite(v)||v<=0)return;
-   const x=Math.round(Math.ceil((v-EPS)/g)*g*1e6)/1e6;
-   if(x>=first-EPS&&x<=last+g+EPS&&!offsetClash(x,forb))set.add(x);
-  };
-  for(const [lo,hi] of forb){add(hi);add(hi+g);add(hi+2*g);add(lo-g);}
-  for(let i=0;i<=32;i++)add(first+i*g);
-  for(let i=0;i<=60;i++)add(first+(last+g-first)*i/60);
-  // No hardcoded or user-example seeds: search is geometry-driven.
-  const allowed=[...set].sort((a,b)=>a-b);
-  let candidates=allowed;
-  if(candidates.length>18){
-   const p=new Set(allowed.slice(0,9));
-   for(let i=0;i<9;i++)p.add(allowed[Math.round(i*(allowed.length-1)/8)]);
-   candidates=[...p].sort((a,b)=>a-b);
+  const first=forb[0][1],last=forb.at(-1)[1];
+  // Near-field region covers short moves A/B near source geometry,
+  // including the candidate regions around X=35 and X=95 for small motifs.
+  const ceiling=Math.min(last+g,Math.max(first+180,first*5));
+  const allowed=[];
+  for(let k=Math.ceil((first-EPS)/g);k*g<=ceiling+EPS&&allowed.length<2000;k++){
+   const x=Math.round(k*g*1e6)/1e6;
+   if(!offsetClash(x,forb))allowed.push(x);
   }
-  let pairs=[];for(const a of candidates)for(const b of candidates)pairs.push([a,b]);
-  pairs.sort((p,q)=>(p[0]+p[1])-(q[0]+q[1])||p[0]-q[0]);
-  if(pairs.length>40){
-   const selected=new Map();
-   for(const p of pairs.slice(0,20))selected.set(p.join('/'),p);
-   for(let i=0;i<20;i++){const p=pairs[Math.round(i*(pairs.length-1)/19)];selected.set(p.join('/'),p);}
-   pairs=[...selected.values()].sort((p,q)=>(p[0]+p[1])-(q[0]+q[1])||p[0]-q[0]);
+  // Always include exact forbidden-interval endpoints on the grid.
+  for(const [lo,hi] of forb){
+   for(const p of [lo-g,hi,hi+g]){
+    const x=Math.round(Math.ceil((p-EPS)/g)*g*1e6)/1e6;
+    if(x>=first-EPS&&x<=last+g+EPS&&!offsetClash(x,forb))allowed.push(x);
+   }
   }
-  let best=null,checked=0;
+  const uniq=[...new Set(allowed)].sort((a,b)=>a-b);
+  const limit=90;
+  let samples=uniq;
+  if(uniq.length>limit){
+   const indices=new Set();
+   for(let i=0;i<30;i++)indices.add(i);
+   for(let j=0;j<limit-30;j++)indices.add(Math.round(j*(uniq.length-1)/(limit-31)));
+   samples=[...indices].filter(i=>i<uniq.length).map(i=>uniq[i]).sort((a,b)=>a-b);
+  }
+  // Remove A/B combinations whose first A,B,A prefix is already unsafe.
+  const pairs=[];
+  for(const a of samples)for(const b of samples){
+   const prefix=[a,b,a],starts=[0,a,a+b,2*a+b];
+   if(verifySteps(starts,forb))pairs.push({a,b,prefix,starts});
+  }
+  pairs.sort((p,q)=>(p.a+p.b)-(q.a+q.b)||p.a-q.a||p.b-q.b);
+  const maxAnalyticPerN=600;
+  let best=null,checks=0,limitReached=false,active=pairs;
   for(let n=1;n<=maxN;n++){
-   let trials=0;
-   for(const [a,b] of pairs){
+   const next=[];let nChecks=0;
+   for(const pair of active){
+    if(n>1){
+     pair.prefix.push(pair.b,pair.a);
+     const pos=pair.starts.at(-1);
+     pair.starts.push(pos+pair.b,pos+pair.b+pair.a);
+     if(!verifySteps(pair.starts,forb))continue;
+    }
+    next.push(pair);
+    const {a,b,prefix}=pair;
+    // Conservative lower bound: the last clearing step cannot be shorter
+    // than the biggest short movement in smartLastAdvance.
     const lower=((n+1)*a+n*b+Math.max(a,b))/(2*n+2);
     if(best&&lower>=best.avg-EPS)continue;
-    const prefix=[];
-    for(let i=0;i<n;i++)prefix.push(a,b);
-    prefix.push(a);
-    const starts=[0];
-    for(const d of prefix)starts.push(starts[starts.length-1]+d);
-    if(!verifySteps(starts,forb))continue;
-    if(trials>=24)break;
-    trials++;checked++;
+    if(nChecks>=maxAnalyticPerN){limitReached=true;continue;}
+    nChecks++;checks++;
     const c=smartLastAdvance(prefix,forb,g,opts.extra);
     if(c===null)continue;
-    const steps=prefix.concat(c);
-    if(!verifyPeriodic(steps,forb))continue;
-    const sum=steps.reduce((x,y)=>x+y,0),avg=sum/steps.length;
-    if(!best||avg<best.avg-EPS)best={a,b,c,n,steps,sum,avg};
+    const seq=prefix.concat(c);
+    if(!verifyPeriodic(seq,forb))continue;
+    const sum=seq.reduce((x,y)=>x+y,0),avg=sum/seq.length;
+    if(!best||avg<best.avg-EPS||(Math.abs(avg-best.avg)<EPS&&n<best.n))
+     best={a,b,c,n,steps:seq,sum,avg};
    }
+   active=next;
    if(run!==nestedTicket||(auto&&compareToken!==smartCalculationSerial))return;
-   if(auto)resetNestedCard('Търси N='+n+'/'+maxN+' · '+checked+' проверени комбинации…');
-   else output.textContent='Търси N='+n+'/'+maxN+' · '+checked+' кандидата';
+   const msg='Проверка на вложен N '+n+'/'+maxN+' · '+checks+' комбинации';
+   if(auto)resetNestedCard(msg);else output.textContent=msg;
    await new Promise(resolve=>setTimeout(resolve,0));
   }
   if(run!==nestedTicket||(auto&&compareToken!==smartCalculationSerial))return;
   if(best){
-   const clear=minimumImprintGap(shapes,best.steps);
-   if(!clear?.complete||clear.near2.distance+1e-6<req)best=null;
-   else best.clearance=clear;
+   const clearance=minimumImprintGap(shapes,best.steps);
+   if(!clearance?.complete||clearance.near2.distance+1e-6<req)best=null;
+   else best.clearance=clearance;
   }
+  const limitMsg=(samples.length<uniq.length||limitReached)?'Ограничена извадка от комбинациите,':'Проверени всички A/B по решетката в разгледания диапазон,';
+  const caution=mode==='diagnostic'?'⚠ ДИАГНОСТИКА: 0 mm резерв. Възможно е допиране на отпечатъци; това НЕ е валидирана настройка за производство.':(relationalMode()?'⚠ Проверка само по зададените Y застъпвания.':'Геометрична проверка със зададените резерви.');
   if(auto){
-   const own=smartVariants.find(v=>v.id===11&&v.valid),normal=own?.avg??Infinity;
    smartNestedLast=best;
-   if(!best){
-    resetNestedCard('Няма намерен допустим вложен цикъл в рамките на N=1…'+maxN+' ('+checked+' изпробвани комбинации). №12 остава видим, но не може да бъде избран.');
-    return;
-   }
+   if(!best){resetNestedCard('Не е намерен допустим вложен цикъл при N=1…'+maxN+' ('+checks+' комбинации). '+limitMsg+' '+caution);return;}
+   const own=smartVariants.find(v=>v.id===11&&v.valid),normal=own?.avg??Infinity;
    const delta=normal-best.avg;
-   const compar=Number.isFinite(normal)?(delta>EPS?'По-икономичен с '+nfmt(delta,3)+' mm/ход':delta<-EPS?'По-голям разход с '+nfmt(-delta,3)+' mm/ход':'Еднакъв разход с №11'):'Няма валиден №11 за количествено сравнение';
-   output.className='variant-card'+(delta>EPS?' best-geom':'');
-   output.innerHTML='<strong class="variant-title">№12 · Вложен цикъл N='+best.n+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · изчислена междина '+nfmt(best.clearance.near2.distance,3)+' mm.</p><p><b>'+compar+'</b></p><p class="variant-notice">'+(relationalMode()?'⚠ Условно по Y връзките. ':'')+'Проверени N=1…'+maxN+', '+checked+' кандидата. Няма доказателство за глобален минимум.</p><button type="button" data-nested-use="1">Избери вложения N вариант</button>';
+   const compare=mode==='diagnostic'?'Сравнение с №11 не е равностойно: използвани са по-малки резерви.':Number.isFinite(normal)?delta>EPS?'По-икономичен с '+nfmt(delta,3)+' mm/ход спрямо №11':delta<-EPS?'По-голям разход с '+nfmt(-delta,3)+' mm/ход спрямо №11':'Равен разход с №11':'Няма валиден №11 за сравнение';
+   output.className='variant-card'+(delta>EPS&&mode!=='diagnostic'?' best-geom':'');
+   output.innerHTML='<strong class="variant-title">№12 · Вложен N='+best.n+(mode==='diagnostic'?' · диагностичен':'')+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · най-малка междина '+nfmt(best.clearance.near2.distance,3)+' mm</p><p><b>'+compare+'</b></p><p class="variant-notice">'+caution+' '+limitMsg+' N=1…'+maxN+', '+checks+' комбинации. Няма доказан абсолютен минимум.</p><button type="button" data-nested-use="1">Отвори за проверка</button>';
   }else{
-   if(!best){output.textContent='Няма геометрично потвърден N цикъл (N=1…'+maxN+', '+checked+' проверки).';return;}
+   if(!best){output.textContent='Няма намерен вложен N цикъл (N=1…'+maxN+', '+checks+' проверки). '+caution;return;}
    $('machineN').value=String(best.n);
    for(const [key,val] of [['A',best.a],['B',best.b],['C',best.c]])$('foil'+key).value=String(val);
    if(machineNRead3('machine').every(x=>Number.isFinite(x)&&x>0))machineNCompare();
-   else {$('machineNStatus').className='status warn';$('machineNStatus').textContent='Намереният кандидат е записан като схема Б. За сравнение въведи собствена схема А.';}
-   output.innerHTML='<div class="n-set"><b>Най-добър намерен N цикъл</b><p>('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><b>'+nfmt(best.avg,3)+' mm/ход</b> · '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · междина '+nfmt(best.clearance.near2.distance,3)+' mm.<p class="note">'+checked+' проверки, N от 1 до '+maxN+'. '+(relationalMode()?'⚠ Условно по Y. ':'')+'Ограничено търсене, без гарантиран глобален минимум.</p></div>';
+   else {$('machineNStatus').className='status warn';$('machineNStatus').textContent='Кандидатът е записан като схема Б. Въведи схема А за сравнение. '+caution;}
+   output.innerHTML='<div class="n-set"><b>Най-добър намерен вложен N цикъл</b><p>('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><b>'+nfmt(best.avg,3)+' mm/ход</b> · '+nfmt(best.sum,2)+' mm за '+best.steps.length+' хода · изчислена междина '+nfmt(best.clearance.near2.distance,3)+' mm.<p class="note">'+caution+' '+limitMsg+' проверени '+checks+' комбинации. Няма гаранция за глобален минимум.</p></div>';
   }
- }catch(err){output.textContent='Търсенето на N не успя: '+err.message;}
+ }catch(err){if(auto)resetNestedCard('Грешка при търсене: '+err.message);else output.textContent='Грешка при търсене: '+err.message;}
 }
 
 $('machineNCompare').addEventListener('click',machineNCompare);
@@ -2200,7 +2171,7 @@ $('machineNUseManual').addEventListener('click',()=>{
 for(const id of ['machineA','machineB','machineC','foilA','foilB','foilC','machineN']){
  $(id).addEventListener('input',()=>{ $('machineNStatus').className='status warn';$('machineNStatus').textContent='Стойностите са променени. Натисни „Сравни и провери вложения цикъл“.';$('machineNResult').innerHTML='';$('machineNOptimization').innerHTML='';});
 }
-// Synthetic arithmetic checks; no order-specific example is preloaded.
+// Pure synthetic arithmetic assertions, unrelated to any customer order.
 (function machineNSelfTest(){
  const a=machineNSequence(10,20,70,1);
  if(a.join(',')!=='10,20,10,70')throw Error('nested N=1 sequence');
