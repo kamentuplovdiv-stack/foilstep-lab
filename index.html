@@ -771,6 +771,7 @@ function resetNestedCard(message='Натисни „Изчисли 12 вариа
  card.innerHTML='<strong class="variant-title">№12 · Вложен цикъл N</strong><p class="variant-notice">'+esc(message)+'</p>';
 }
 function smartClearVariants(){
+ setNestedManualMode(false);
  smartNestedLast=null;
  resetNestedCard('Настройките са променени. Изчисли 12 варианта отново.');
  smartCalculationSerial++;
@@ -806,6 +807,7 @@ function smartRenderVariants(){
 }
 async function smartRunCompare(){
  const ticket=++smartCalculationSerial;
+ setNestedManualMode(false);
  try{
   readState();const opts=smartSettings(),r=solve(state);
   smartVariants=[];smartSelectedId=null;
@@ -897,6 +899,7 @@ function chooseNested12(){
  $('smartNestedN').value=String(v.n);
  setNestedManualMode(true,v.mode||$('nestedGapMode').value);
  smartSelectedId=12;smartAutomatic=true;
+ smartRenderVariants();
  const blocks=smartReadBlocks();
  smartResult(blocks,'Избран №12 · вложен N='+v.n,nestedManualSettings(),nestedManualSteps());
  $('smartChosenGap').textContent='№12 · N='+v.n+(nestedManualSafety==='diagnostic'?' · диагностика 0 mm':' · зададени резерви');
@@ -1159,6 +1162,7 @@ function smartRefreshLabel(){
  if(smartSelectedId!==null){smartSelectedId=null;smartRenderVariants();}
  $('smartStatus').className='status warn';
  $('smartStatus').textContent='Стойностите са променени. Натисни „Провери въведените“ или „Изчисли моя вариант“.';
+ if(nestedManualActive){$('smartChosenGap').textContent='№12 · редактиран вложен цикъл';$('smartNestedResult').classList.remove('is-chosen');if($('smartNestedSelect')){$('smartNestedSelect').textContent='Избери вариант №12';$('smartNestedSelect').classList.remove('selected');}}
 }
 function smartRunOptimized(){
  setNestedManualMode(false);
@@ -1597,11 +1601,13 @@ $('smartAuto').addEventListener('click',smartRunOptimized);
 $('smartCheck').addEventListener('click',smartRunCheck);
 
 $('smartCopy').addEventListener('click',()=>{
- if(!smartLast||smartDirty||!smartLast.valid){$('smartCopyStatus').textContent='Първо въведи и провери геометрично допустима схема.';return;}
- const textRows=smartLast.blocks.map((b,i)=>`${i+1}. ${nfmt(b.advance,3)} mm × ${b.count} пъти`).join('\n');
- copyPlain(textRows+`\nПовтаря се от ред 1. Средно ${nfmt(smartLast.average,3)} mm. ${smartLast.valid?'Геометрично допустимо.':'НЕ Е ДОПУСТИМО.'}`,'smartCopyStatus');
+ if(!smartLast||smartDirty||(!smartLast.valid&&!smartLast.nested)){$('smartCopyStatus').textContent='Първо въведи и провери геометрично допустима схема.';return;}
+ const textRows=smartLast.nested
+  ? smartLast.blocks.map((b,i)=>`Ред ${i+1}: ${nfmt(b.advance,3)} mm`).join('\n')+`\nN = ${smartLast.nested.n}\nСхема (1→2)×N→1→3 · ${smartLast.seq.length} хода. ${smartLast.nested.safety==='diagnostic'?'⚠ ДИАГНОСТИКА 0 mm: не е производствена настройка.':'Провери технологичните резерви преди употреба.'}`
+  :smartLast.blocks.map((b,i)=>`${i+1}. ${nfmt(b.advance,3)} mm × ${b.count} пъти`).join('\n');
+ copyPlain(textRows+`\nСредно ${nfmt(smartLast.average,3)} mm/ход. ${smartLast.valid?'Геометрично допустимо по модела.':'Условен резултат: провери геометрията и Y разделянето.'}`,'smartCopyStatus');
 });
-for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3','manualSafety','manualClearExtra','manualError','manualGrid','manualRepeats']) $(id).addEventListener('input',smartRefreshLabel);
+for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3','manualSafety','manualClearExtra','manualError','manualGrid','manualRepeats','smartNestedN']) $(id).addEventListener('input',()=>{if(nestedManualActive)renderNestedEntry();smartRefreshLabel();});
 for(const id of ['manualClearExtra','manualError','manualGrid','manualRepeats']) $(id).addEventListener('input',()=>{if(smartVariants.length)smartClearVariants();});
 $('manualSafety').addEventListener('input',()=>{smartSelectedId=null;smartRenderVariants();$('smartChosenGap').textContent='Мой резерв: '+$('manualSafety').value+' mm';});
 $('smartCompare').addEventListener('click',smartRunCompare);
@@ -1887,13 +1893,14 @@ $('smartFoilPreview').addEventListener('click',e=>{
  manualFocusIndex=Number(target.dataset.simIndex);updateManualSim();
 });
 let manualPreviewTimer=null;
-for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3']){
+for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3','smartNestedN']){
  $(id).addEventListener('input',()=>{
   clearTimeout(manualPreviewTimer);
   manualPreviewTimer=setTimeout(()=>{
-   try{readState();const blocks=smartReadBlocks();const active=smartSettings();
+   try{readState();if(nestedManualActive)renderNestedEntry();const blocks=smartReadBlocks();const active=smartSettings();
     const selected=smartVariants.find(v=>v.id===smartSelectedId&&v.valid);
-    smartResult(blocks,'Редактирана ръчна схема · симулация на живо',selected?{...active,gap:selected.gap,extra:selected.extra}:active);}
+    if(nestedManualActive)smartResult(blocks,'Редактиран вложен №12 · симулация на живо',nestedManualSettings(),nestedManualSteps());
+    else smartResult(blocks,'Редактирана ръчна схема · симулация на живо',selected?{...active,gap:selected.gap,extra:selected.extra,error:selected.error}:active);}
    catch(err){manualSim=null;$('simFocusPreview').innerHTML='';$('smartFoilPreview').innerHTML='';$('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('simDetail').textContent='Проверка: '+err.message;$('smartStatus').textContent='Проверка: '+err.message;$('smartStatus').className='status error';}
   },160);
  });
