@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101a31"/>
-<title>FoilStep Lab V1.9.17 · избор на №12</title>
+<title>FoilStep Lab V1.9.18 · много N схеми с луфт и без луфт</title>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -237,12 +237,26 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 .nested-entry-rows span{display:block;font-size:12px;color:#607089}
 .nested-entry-rows strong{display:block;font-size:19px;color:#163d7b;font-variant-numeric:tabular-nums}
 .nested-selected-panel .warntext{color:#7a4f10;font-weight:650}
+
+.nested-search-info{align-self:end;background:#edf4ff;padding:10px;border:1px solid #d0e0f6;border-radius:10px}.nested-search-info strong,.nested-search-info small{display:block}.nested-search-info small{font-size:12px;color:#536983}
+.nested-suite{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr));gap:12px;min-width:0;margin:10px 0}
+.nested-suite-head,.nested-suite-status{grid-column:1/-1;padding:12px;background:#edf5ff;border:1px solid #cbdcf2;border-radius:10px;color:#245183;font-weight:750}
+.nested-suite-head small{display:block;color:#63758d;font-weight:500;line-height:1.5;margin-top:4px}
+.nested-profile{display:flex;flex-direction:column;gap:9px;background:#fff;border:1px solid #d9e3ef;border-radius:12px;padding:12px;min-width:0}
+.nested-profile.is-chosen{border:2px solid #1a6bc4;background:#f0f7ff}.nested-profile h3{font-size:16px;margin:0;color:#214b85}
+.nested-profile .profile-meta,.nested-profile .profile-detail{font-size:12px;color:#536b83;line-height:1.5}
+.nested-profile .profile-avg{font-size:24px;color:#087052;font-weight:850;font-variant-numeric:tabular-nums}
+.nested-profile .profile-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:10px;background:#f0f5fd;border:1px solid #d9e6f6;border-radius:9px}
+.nested-profile .profile-steps div{min-width:0;text-align:center}.nested-profile .profile-steps b{display:block;color:#183f7b;font-size:19px;overflow-wrap:anywhere}
+.nested-profile .profile-steps small{font-size:10px;color:#69788d}.nested-profile button{margin-top:auto;width:100%;min-height:44px}
+.nested-profile .profile-warning{font-size:11px;color:#8e5a16;line-height:1.5}
+@media(max-width:640px){.nested-suite{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.17 TEST</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.18 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
 <div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Вграденият преглед на файла не изпълнява JavaScript. <a href="https://kamentuplovdiv-stack.github.io/foilstep-lab/?v=1.9.12" target="_blank" rel="noopener noreferrer" style="font-weight:800;color:#124aac;text-decoration:underline">Отвори работещата уеб версия в Chrome</a>. Тук добавянето и Y отметките са недостъпни.</div>
@@ -363,12 +377,12 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       <div><label for="manualRepeats">Макс. кратки повторения</label><select id="manualRepeats" class="input"><option value="10">10</option><option value="18">18</option><option value="25" selected>25</option></select></div>
     </div>
     <p class="note">Изчислява се действителната най-малка <b>2D междина</b> между отпечатъците и се проверяват повторенията. Резервът за грешка се добавя към целевата междина: например минимум 1,5 + грешка 2 = проверявани поне 3,5 mm. Това е <b>моделиран еднократен резерв за относителна неточност</b>, а не измерена грешка на машината; натрупващите се отклонения при много подавания не са моделирани. Изчистващите +8/+10 mm се добавят към дългия ход, когато има такъв. Алгоритъмът е евристичен и не гарантира абсолютен минимум.</p>
-    <div class="fields" style="margin-top:12px"><div><label for="machineNMax">Автоматично търсене до N</label><select id="machineNMax" class="input"><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25" selected>25</option></select></div><div><label for="nestedGapMode">Проверка на №12</label><select id="nestedGapMode" class="input"><option value="safe" selected>Със зададените резерви</option><option value="diagnostic">Диагностика: без допълнителна междина (0 mm)</option></select></div></div><p class="note">Алгоритъмът търси N от 1 до максимума и проверява целия период. <b>Диагностиката 0 mm допуска допиране на отпечатъците и НЕ доказва технологична безопасност</b>; използва се единствено за сравнение с действителни програми. Тя не променя настройките на другите 11 варианта.</p><div class="variant-head flex between">
+    <div class="fields" style="margin-top:12px"><div><label for="machineNMax">Автоматично търсене до N</label><select id="machineNMax" class="input"><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25" selected>25</option></select></div><div class="nested-search-info"><strong>Автоматично: 12 N профила</strong><small>Луфт 0 / 0,5 / 1 / 1,5 / 2 / 2,5 / 3 / 3,5 mm, плюс четири варианта с дълъг трети ход C</small></div></div><p class="note">За всеки профил се търсят N от 1 до максимума. <b>0 mm е само диагностика с възможно допиране.</b> Положителният луфт е геометричен минимум без включена машинна грешка. C ≥ дължината на изрезката е изследвана хипотеза, не официално OACS правило. Търсенето е ограничено и не гарантира глобален оптимум.</p><div class="variant-head flex between">
       <div><strong>12 варианта · включително вложен N</strong><p class="sub" style="margin:2px 0 0">Сравнение за текущите елементи и изрезки</p></div>
       <button type="button" id="smartCompare" class="primary">Изчисли 12 варианта</button>
     </div>
     <div id="smartVariantStatus" class="note" aria-live="polite">Натисни „Изчисли 12 варианта“.</div>
-    <div id="smartVariantDeck" class="variant-list" aria-live="polite"><div id="smartVariantList" style="display:contents"></div><article id="smartNestedResult" class="variant-card"><strong class="variant-title">№12 · Вложен цикъл N</strong><p class="variant-notice">Натисни „Изчисли 12 варианта“, за да се изчисли тази схема.</p></article></div>
+    <div id="smartVariantDeck" class="variant-list" aria-live="polite"><div id="smartVariantList" style="display:contents"></div><div id="smartNestedResult" class="nested-suite"><div class="nested-suite-status">№12 · Автоматично сравнение на 12 вложени N профила.</div></div></div>
 
     <div class="divider"></div>
     <div class="flex between"><strong>Избран вариант · ръчна таблица</strong><span class="tag" id="smartChosenGap">Резерв 1 mm</span></div>
@@ -765,14 +779,14 @@ function renderMinimumGap(measure,previous){
   (dm.distance<EPS&&!collision?' Има допиране без пресичане на площите.':'')+
   (relationalMode()?' * Само за Y-застъпващите се двойки; останалите изискват физическа проверка на Y резерва.':' Измерени са и преходите между периодите.');
 }
-function resetNestedCard(message='Натисни „Изчисли 12 варианта“, за да се провери този режим.'){
- const card=$('smartNestedResult');if(!card)return;
- card.className='variant-card';
- card.innerHTML='<strong class="variant-title">№12 · Вложен цикъл N</strong><p class="variant-notice">'+esc(message)+'</p>';
+function resetNestedCard(message='Изчисли вариантите, за да видиш всички N схеми.'){
+ const area=$('smartNestedResult');if(!area)return;
+ area.className='nested-suite';
+ area.innerHTML='<div class="nested-suite-status">№12 · '+esc(message)+'</div>';
 }
 function smartClearVariants(){
  setNestedManualMode(false);
- smartNestedLast=null;
+ smartNestedLast=null;smartNestedOptions=[];
  resetNestedCard('Настройките са променени. Изчисли 12 варианта отново.');
  smartCalculationSerial++;
  smartVariants=[];smartSelectedId=null;
@@ -851,10 +865,10 @@ async function smartRunCompare(){
    if(ticket===smartCalculationSerial)await machineNOptimize(ticket);
  }catch(err){$('smartVariantStatus').textContent='Грешка при сравнение: '+err.message;smartVariants=[];$('smartVariantList').innerHTML='';}
 }
-let smartNestedLast=null;
+let smartNestedLast=null,smartNestedOptions=[];
 $('machineNMax').addEventListener('change',smartClearVariants);
-$('nestedGapMode').addEventListener('change',smartClearVariants);
-$('smartNestedResult').addEventListener('click',ev=>{if(ev.target.closest('#smartNestedSelect'))chooseNested12();});
+
+$('smartNestedResult').addEventListener('click',ev=>{const b=ev.target.closest('button[data-nested-index]');if(b)chooseNested12(Number(b.dataset.nestedIndex));});
 
 function nestedSaveInfo(){
  if(!nestedManualActive)return null;
@@ -967,8 +981,8 @@ function smartSettings(){
 // Precompute forbidden regions for one variable "last" advance in a cyclic period.
 // Each distance to a previous imprint is a*A + b*last. We solve the forbidden
 // inequality analytically and merge intervals (rather than scanning by 0.1 mm).
-function smartLastAdvance(prefix,forbidden,grid,extra=0){
- const F=forbidden.at(-1)[1],minGap=forbidden[0][1],baseMin=Math.max(minGap,...prefix);
+function smartLastAdvance(prefix,forbidden,grid,extra=0,minC=0){
+ const F=forbidden.at(-1)[1],minGap=forbidden[0][1],baseMin=Math.max(minGap,minC,...prefix);
  const n=prefix.length+1,mins=Math.min(baseMin,...prefix);
  if(!Number.isFinite(mins)||mins<=0||n>54)return null;
  const maxSteps=Math.min(1200,Math.ceil(F/mins)+n+2);
