@@ -856,6 +856,19 @@ $('machineNMax').addEventListener('change',smartClearVariants);
 $('nestedGapMode').addEventListener('change',smartClearVariants);
 $('smartNestedResult').addEventListener('click',ev=>{if(ev.target.closest('#smartNestedSelect'))chooseNested12();});
 
+function nestedSaveInfo(){
+ if(!nestedManualActive)return null;
+ try{return {n:readNestedValues().n,safety:nestedManualSafety,sequence:'(1,2)^N,1,3'};}
+ catch(err){return null;}
+}
+function restoreNestedManual(manual){
+ const item=manual?.nested;
+ if(!item||!Number.isInteger(Number(item.n))||Number(item.n)<1||Number(item.n)>25||
+  !Array.isArray(manual.blocks)||manual.blocks.length!==3||!['safe','diagnostic'].includes(item.safety))return;
+ $('smartNestedN').value=String(item.n);
+ setNestedManualMode(true,item.safety);
+ smartRunCheck();
+}
 function setNestedManualMode(enabled,safety='safe'){
  nestedManualActive=enabled;if(enabled)nestedManualSafety=safety;
  $('selectedNestedPanel').hidden=!enabled;
@@ -1402,8 +1415,8 @@ function load(p){
  smartLast=null;smartDirty=true;
  $('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('smartMinX').textContent='—';$('smartMin2D').textContent='—';$('smartMinPair').textContent='Изчислява се след проверка на ръчната схема.';$('smartMinXDelta').textContent='';$('smartMin2DDelta').textContent='';$('smartFoilPreview').innerHTML='';if($('simFocusPreview'))$('simFocusPreview').innerHTML='';if($('simDetail'))$('simDetail').textContent='Въведи стъпките за визуализация.';
  $('smartStatus').className='status warn';$('smartStatus').textContent='Избери „Изчисли 4 варианта“ или „Провери въведените“.';
- selectedIndex=0;if($('oacsCompare'))$('oacsCompare').value=p.id===6?'56.333':'';state=normalizeRelations({id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements),yMode:p.yMode||'coords',yOverlaps:p.yOverlaps,relationsEdited:p.relationsEdited});setFields();renderRows();compute();}
-function saveLocal(){try{localStorage.setItem('foilstep-lab-v16',JSON.stringify({id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}}));}catch(e){/* file-browser privacy mode */}}
+ selectedIndex=0;if($('oacsCompare'))$('oacsCompare').value=p.id===6?'56.333':'';state=normalizeRelations({id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements),yMode:p.yMode||'coords',yOverlaps:p.yOverlaps,relationsEdited:p.relationsEdited});setFields();renderRows();compute();restoreNestedManual(p.manual);}
+function saveLocal(){try{localStorage.setItem('foilstep-lab-v16',JSON.stringify({id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),nested:nestedSaveInfo(),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}}));}catch(e){/* file-browser privacy mode */}}
 function clearResults(){for(const id of ['resultAdvance','per1000','totalUsage','totalElements','totalWidth'])$(id).textContent='—';$('tightContact').textContent='Въведи валидни размери.';$('cutPreview').innerHTML='';$('cyclePreview').innerHTML='';$('allPositions').innerHTML='';$('previewQuickLegend').innerHTML='';$('machineReport').value='';$('heroAdvance').textContent='—';$('heroPer1000').textContent='—';$('heroStatus').textContent='Провери въведените данни';$('xyNotes').textContent='Въведи валидни размери.';manualRecord=null;for(const id of ['manualValue','manualExact','sequenceAverage','sequenceSaving'])$(id).textContent='—';$('manualNote').textContent='Няма валиден резултат за ръчно сверяване.';$('copyManual').disabled=true;$('copyManualSummary').disabled=true;$('manualCopied').textContent='';$('manualStepList').innerHTML='';$('manualDiagram').innerHTML='';$('manualModeState').textContent='Няма резултат';$('oacsCompareResult').textContent='Няма въведена стойност за сравнение.';$('sequenceChips').innerHTML='';$('sequenceRows').innerHTML='';$('sequencePreview').innerHTML='';currentSequence=null;}
 function drawRect(e,x,y,w,h,color,opacity=1,stroke='#fff',interactive=false){
  const label=`${esc(e.label)}: X=${nfmt(e.x,2)}; Y=${nfmt(e.y,2)}; дължина=${nfmt(e.w,2)}; височина=${nfmt(e.h,2)}`;
@@ -1705,7 +1718,7 @@ $('simulationCount').addEventListener('change',compute);
 $('copySequence').addEventListener('click',()=>{if(currentSequence)copyPlain(currentSequence.moves.map((v,i)=>`${i+1}. ${nfmt(v,3)} mm`).join('\n'),'manualCopied');});
 $('newProject').addEventListener('click',()=>load({...structuredClone(sample2),id:0,elements:[{x:0,w:20,y:10,h:10}],yMode:'relations',yOverlaps:[]}));
 $('exportProject').addEventListener('click',()=>{
- readState();const content=JSON.stringify({format:'foilstep-lab/v1.6',cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}},null,2);
+ readState();const content=JSON.stringify({format:'foilstep-lab/v1.6',cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),nested:nestedSaveInfo(),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}},null,2);
  const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
  a.href=url;a.download='FoilStep_Proekt.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
 });
@@ -1942,7 +1955,7 @@ function renderJobs(selectedId){
  const job=selectedJob();
  $('loadJob').disabled=!job;$('deleteJob').disabled=!job;$('exportJob').disabled=!job;
  const rows=job?.recipe?.manual?.blocks||[];
- const summary=rows.map(x=>`${x.advance} mm × ${x.count}`).join(' → ');
+ const summary=(job?.recipe?.manual?.nested?`N=${job.recipe.manual.nested.n} · `:'')+rows.map(x=>`${x.advance} mm × ${x.count}`).join(' → ');
  $('jobDetails').textContent=job?`${summary} · ${job.recipe.project.elements.length} елемента · Запис: ${new Date(job.savedAt).toLocaleString('bg-BG')}`:`Запазени: ${savedJobs.length} настройки`;
 }
 function numberIs(value){return typeof value==='number'&&Number.isFinite(value);}
@@ -1962,6 +1975,7 @@ function validRecipe(recipe){
  if(!Array.isArray(m.blocks)||m.blocks.length<1||m.blocks.length>3)throw Error('Необходимо е от 1 до 3 ръчни реда.');
  if(m.blocks.some(x=>!numberIs(x.advance)||x.advance<=0||!Number.isInteger(x.count)||x.count<1||x.count>200)||m.blocks.reduce((s,x)=>s+x.count,0)>250)throw Error('Невалидни ръчни стъпки/повторения.');
  if(!m.settings||(m.settings.error!==undefined&&(!numberIs(m.settings.error)||m.settings.error<0||m.settings.error>30))||!numberIs(m.settings.gap)||m.settings.gap<0||m.settings.gap>30||!numberIs(m.settings.extra)||m.settings.extra<0||m.settings.extra>50||![.1,.5,1,1.5,2].includes(m.settings.grid)||![10,18,25].includes(m.settings.maxRep))throw Error('Невалидни ръчни резерви или точност.');
+ if(m.nested){const n=m.nested;if(!Number.isInteger(n.n)||n.n<1||n.n>25||!['safe','diagnostic'].includes(n.safety)||m.blocks.length!==3||m.blocks[0].count!==n.n+1||m.blocks[1].count!==n.n||m.blocks[2].count!==1)throw Error('Невалидна вложена N програма.');}
  if(m.customSettings){const c=m.customSettings;if(!numberIs(c.gap)||c.gap<0||c.gap>30||!numberIs(c.extra)||c.extra<0||c.extra>50||!numberIs(c.error)||c.error<0||c.error>30||![.1,.5,1,1.5,2].includes(c.grid)||![10,18,25].includes(c.maxRep))throw Error('Невалидни лични резерви.');}
  if(!numberIs(m.checkedMinimum)||m.checkedMinimum<0||m.checkedMinimum>30)throw Error('Невалиден проверяван минимум.');
  solve(p);return true;
@@ -1973,8 +1987,8 @@ function currentRecipe(){
  // Persist the *effective* safety constraints of the selected proposal and also
  // the user's independent custom inputs. Otherwise loading could silently check
  // an automatic proposal against weaker custom settings.
- const effective=variant?{...customSettings,gap:variant.gap,extra:variant.extra,error:variant.error}:customSettings;
- const recipe={format:RECIPE_FORMAT,project:{id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements.map(({x,y,w,h})=>({x,y,w,h})),yMode:state.yMode,yOverlaps:[...(state.yOverlaps||[])],relationsEdited:state.relationsEdited},manual:{blocks:blocks.map(({advance,count})=>({advance,count})),settings:effective,customSettings,checkedMinimum:effective.gap,selectedVariant:variant?.id??null},savedAt:new Date().toISOString()};
+ const effective=nestedManualActive?nestedManualSettings():variant?{...customSettings,gap:variant.gap,extra:variant.extra,error:variant.error}:customSettings;
+ const recipe={format:RECIPE_FORMAT,project:{id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements.map(({x,y,w,h})=>({x,y,w,h})),yMode:state.yMode,yOverlaps:[...(state.yOverlaps||[])],relationsEdited:state.relationsEdited},manual:{blocks:blocks.map(({advance,count})=>({advance,count})),nested:nestedSaveInfo(),settings:effective,customSettings,checkedMinimum:effective.gap,selectedVariant:nestedManualActive?12:variant?.id??null},savedAt:new Date().toISOString()};
  validRecipe(recipe);return recipe;
 }
 function newJobId(){return (typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID():`job-${Date.now()}-${Math.floor(Math.random()*1e8)}`;}
@@ -1994,11 +2008,12 @@ function loadNamedJob(){
   const job=selectedJob();if(!job)throw Error('Избери настройка от списъка.');
   const r=structuredClone(job.recipe);validRecipe(r);
   const own=r.manual.customSettings||r.manual.settings;
-  const p={...r.project,manual:{safety:own.gap,clearExtra:own.extra,error:own.error??0,grid:own.grid,maxRep:own.maxRep,blocks:r.manual.blocks}};
+  const p={...r.project,manual:{safety:own.gap,clearExtra:own.extra,error:own.error??0,grid:own.grid,maxRep:own.maxRep,blocks:r.manual.blocks,nested:r.manual.nested||null}};
   load(p);
   smartSetBlocks(r.manual.blocks);
-  // Verify against the effective saved constraints; keep own inputs separately.
-  const ok=smartResult(r.manual.blocks,`Заредена настройка: ${job.name}`,{...r.manual.settings,gap:r.manual.checkedMinimum,error:r.manual.settings.error??0});
+  // Preserve alternating N steps on reload; grouped rows are not equivalent.
+  const ok=r.manual.nested?!!(smartLast&&(smartLast.valid||smartLast.conditional)):
+    smartResult(r.manual.blocks,`Заредена настройка: ${job.name}`,{...r.manual.settings,gap:r.manual.checkedMinimum,error:r.manual.settings.error??0});
   smartSelectedId=null;
   $('smartChosenGap').textContent=`Заредена „${job.name}“ · минимум ${nfmt(r.manual.checkedMinimum,1)} mm`;
   $('jobName').value=job.name;
