@@ -264,6 +264,25 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 .compact-help>summary{cursor:pointer;font-size:12px;font-weight:720;color:#315b93;padding:4px 0}
 .compact-help p{margin:7px 0 3px}
 @media(max-width:540px){.base-option-group{padding:6px 9px}.base-option-group>.variant-list{grid-template-columns:repeat(2,minmax(0,1fr))}.compact-help{padding:6px 9px;margin:7px 0}}
+
+/* Compact N candidates: all rows accessible, technical notes collapsed */
+.nested-mini{padding:10px;gap:7px}
+.nested-mini h3{font-size:13px;line-height:1.3}
+.nested-mini-top{display:flex;justify-content:space-between;gap:9px;align-items:flex-start}
+.nested-mini-top>div{min-width:0;flex:1}.nested-mini-top>div>small{display:block;font-size:11px;color:#62758d;margin-top:3px}
+.nested-mini-top .profile-avg{font-size:21px;white-space:nowrap;text-align:right;line-height:1.1}
+.nested-mini-top .profile-avg small{display:block;color:#6d7b8f;font-size:11px;font-weight:600}
+.nested-mini-feeds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.nested-mini-feeds span{display:block;text-align:center;padding:5px 4px;background:#f0f5fd;border:1px solid #dde7f5;border-radius:7px;min-width:0}
+.nested-mini-feeds b{font-size:16px;color:#1d4a87;font-variant-numeric:tabular-nums}
+.nested-mini-feeds small{color:#667b94;font-size:10px}
+.nested-mini-bottom{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.nested-mini-bottom small{font-size:11px;color:#55708b;flex:1}
+.nested-mini-bottom button{width:auto;min-width:86px;min-height:36px;padding:7px 9px;margin:0;background:#2563eb;color:white;border-color:#2563eb}
+.nested-mini-more{border-top:1px solid #e8edf5;padding-top:5px}
+.nested-mini-more>summary{cursor:pointer;font-size:11px;color:#28529b;font-weight:700}
+.nested-mini-more p{margin:5px 0;font-size:11px;color:#596b82;line-height:1.45}
+@media(max-width:540px){.nested-mini{padding:8px;gap:6px}.nested-mini-top .profile-avg{font-size:20px}.nested-mini-feeds b{font-size:15px}}
 </style>
 </head>
 <body class="is-relations">
@@ -2067,24 +2086,28 @@ function nestedProfiles(){
  return set;
 }
 function renderNestedProfiles(message=''){
- const parent=$('smartNestedResult');
- parent.className='nested-suite';
+ const area=$('smartNestedResult');
+ area.className='nested-suite';
  const entries=smartNestedOptions;
- const finite=entries.filter(v=>v.best).map(v=>v.best.avg),minimum=finite.length?Math.min(...finite):Infinity;
- parent.innerHTML='<div class="nested-suite-head">№12 · Вложени N схеми при различен луфт<small>Изчислените геометрични варианти не са автоматично потвърдени машинни настройки. '+esc(message)+'</small></div>'+
+ const available=entries.filter(v=>v.best).map(v=>v.best.avg);
+ const minAvg=available.length?Math.min(...available):Infinity;
+ area.innerHTML='<div class="nested-suite-head">№12 · Автоматични N схеми<small>'+esc(entries.length)+' / 12 проверени профила · избери схема или разгъни техническите подробности. '+esc(message)+'</small></div>'+
  entries.map((v,i)=>{
   const title='<h3>'+esc(v.label)+'</h3>';
-  if(!v.best)return '<article class="nested-profile">'+title+'<small class="profile-warning">Няма намерен допустим кандидат в ограничения диапазон.</small><small class="profile-meta">N=1…'+v.maxN+' · '+v.checked+' проверки.</small></article>';
+  if(!v.best)return '<article class="nested-profile nested-mini">'+title+'<small class="profile-warning">Няма допустим кандидат в този диапазон.</small><details><summary>Изчисления</summary><small>N=1…'+v.maxN+' · '+v.checked+' проверки.</small></details></article>';
   const b=v.best,chosen=smartSelectedId===12&&smartNestedLast===v;
-  const steps='<div class="profile-steps">'+[['1 · A',b.a],['2 · B',b.b],['3 · C',b.c]].map(x=>'<div><small>Ред '+x[0]+'</small><b>'+nfmt(x[1],2)+'</b><small>mm</small></div>').join('')+'</div>';
-  const warning=v.gap<=EPS?'⚠ Диагностика 0 mm: допуска допиране. Не е производствена настройка.':'⚠ Само геометричен луфт, без резерв за грешка на машината.';
-  return '<article class="nested-profile'+(chosen?' is-chosen':'')+'">'+title+
-    '<small class="profile-meta">N = <b>'+b.n+'</b> · ред 1: '+(b.n+1)+' пъти · ред 2: '+b.n+' път'+(b.n===1?'':'и')+' · ред 3: 1 път · '+b.steps.length+' хода</small>'+
-    steps+'<strong class="profile-avg">'+nfmt(b.avg,3)+' mm/ход</strong>'+
-    '<div class="profile-detail">Общо '+nfmt(b.sum,2)+' mm · измерена междина по модела '+nfmt(b.clearance.near2.distance,3)+' mm'+(Math.abs(b.avg-minimum)<=EPS?' · най-ниско намерено средно':'')+'</div>'+
-    '<small class="profile-warning">'+warning+(relationalMode()?' Y-разделянето е условно по отметките.':'')+'</small>'+
-    '<small class="profile-meta">'+(b.provenance?'Допустим кандидат, намерен първо при друг профил: '+esc(b.provenance)+'. ':'')+(v.limited?'Изследвана ограничена извадка. ':'')+'N=1…'+v.maxN+' · '+v.checked+' аналитични проверки. Не е доказан глобален минимум.</small>'+
-    '<button type="button" data-nested-index="'+i+'">'+(chosen?'✓ Избран':'Избери тази N схема')+'</button></article>';
+  const caution=v.gap<=EPS?'⚠ Луфт 0 mm: възможно допиране. Само диагностика.':'⚠ Само геометричен луфт; не включва действителна грешка на машината.';
+  const values=[b.a,b.b,b.c].map((k,j)=>'<span><small>Ред '+(j+1)+'</small><b>'+nfmt(k,2)+'</b><small> mm</small></span>').join('');
+  return '<article class="nested-profile nested-mini'+(chosen?' is-chosen':'')+'">'+
+    '<div class="nested-mini-top"><div>'+title+'<small>N = '+b.n+' · '+b.steps.length+' хода</small></div><strong class="profile-avg">'+nfmt(b.avg,3)+'<small> mm/ход</small></strong></div>'+
+    '<div class="nested-mini-feeds">'+values+'</div>'+
+    '<div class="nested-mini-bottom"><small>Измерена междина: '+nfmt(b.clearance.near2.distance,3)+' mm'+(Math.abs(b.avg-minAvg)<=EPS?' · най-ниско намерено':'')+'</small>'+
+    '<button type="button" data-nested-index="'+i+'">'+(chosen?'✓ Избран':'Избери')+'</button></div>'+
+    '<details class="nested-mini-more"><summary>Повторения и ограничения</summary>'+
+    '<p>Ред 1: '+(b.n+1)+' пъти · ред 2: '+b.n+' пъти · ред 3: 1 път. Общо '+nfmt(b.sum,2)+' mm за периода.</p>'+
+    '<p>'+caution+(relationalMode()?' Y-разделянето е условно по отметките.':'')+'</p>'+
+    '<p>'+(v.limited?'Ограничена извадка. ':'')+'N=1…'+v.maxN+' · '+v.checked+' проверки. Няма доказан абсолютен минимум.'+(b.provenance?' Допустим кандидат, открит в профил '+esc(b.provenance)+'.':'')+'</p>'+
+    '</details></article>';
  }).join('');
 }
 async function nestedSearchOne(shapes,profile,grid,maxN,aborted){
