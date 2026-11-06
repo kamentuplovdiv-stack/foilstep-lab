@@ -255,6 +255,15 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 /* V1.9.19 compact full-strip-only visualization */
 .manual-simbox{padding:12px!important;margin-top:13px!important;background:#fbfdff}
 .strip-heading{gap:8px;margin-bottom:8px}.strip-heading h3{margin:0;font-size:16px}.strip-heading .sub{margin:2px 0 0;font-size:12px}.strip-zoom{gap:5px}.strip-zoom .mini{min-width:36px;min-height:36px;padding:3px 8px}.strip-status{font-size:12px;color:#42608b;margin:6px 0 8px;line-height:1.4}#smartFoilPreview{min-height:90px}.sim-legend{margin-top:7px}@media(max-width:540px){.manual-simbox{padding:9px!important}.strip-heading h3{font-size:15px}.strip-zoom .tag{font-size:11px}}
+
+/* V1.9.19 reduced scroll on mobile */
+.base-option-group{grid-column:1/-1;border:1px solid #dce5f2;border-radius:10px;padding:8px 11px;background:#f7faff;margin-bottom:3px}
+.base-option-group>summary{cursor:pointer;color:#2752a0;font-weight:750;font-size:13px;min-height:30px;padding:5px 1px}
+.base-option-group>.variant-list{margin:10px 0 4px}
+.compact-help{margin:9px 0 11px;border:1px solid #e6ecf5;border-radius:9px;padding:7px 10px}
+.compact-help>summary{cursor:pointer;font-size:12px;font-weight:720;color:#315b93;padding:4px 0}
+.compact-help p{margin:7px 0 3px}
+@media(max-width:540px){.base-option-group{padding:6px 9px}.base-option-group>.variant-list{grid-template-columns:repeat(2,minmax(0,1fr))}.compact-help{padding:6px 9px;margin:7px 0}}
 </style>
 </head>
 <body class="is-relations">
@@ -372,27 +381,33 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
    </section>
    <section class="panel" id="manualSmart" aria-live="polite">
     <div class="flex between"><h2>5. Ръчно подаване · 12 варианта</h2><span class="tag">Подаване × повторения</span></div>
-    <p class="sub">Програмата сравнява <b>10 автоматични базови варианта</b> за минимална действителна междина <b>1 / 1,5 / 2 / 2,5 / 3 mm</b>. За всеки минимум има два режима: <b>А: изчистване +8 mm и резерв за грешка 1,5 mm</b>; <b>Б: изчистване +10 mm и резерв за грешка 2 mm</b>. <b>№11 „Мой избор“</b> се настройва отделно, а <b>№12 „Вложен N“</b> винаги е видим в общия списък. В режим с отметки резултатите са условни: за немаркираните двойки трябва да е проверена достатъчна действителна междина по Y.</p>
-    <div class="fields">
+    <p class="sub">Изчисли вариантите и избери подходящ N профил. №12 сравнява схеми с луфт, без луфт и с дълъг изчистващ ход. Останалите 11 са прибрани за по-лесен преглед.</p>
+        <div class="fields">
       <div><label for="manualSafety">Мой вариант · минимум между отпечатъци (mm)</label><input id="manualSafety" class="input" inputmode="decimal" value="1"/></div>
       <div><label for="manualClearExtra">Мой вариант · изчистващ резерв (mm)</label><input id="manualClearExtra" class="input" inputmode="decimal" min="0" max="50" step="0.5" value="8"/></div>
       <div><label for="manualError">Мой вариант · резерв за грешка (mm)</label><input id="manualError" class="input" inputmode="decimal" min="0" max="30" step="0.5" value="1.5"/></div>
       <div><label for="manualGrid">Стъпка на изчисление (не грешка)</label><select id="manualGrid" class="input"><option value="0.1">0,1 mm</option><option value="0.5">0,5 mm</option><option value="1" selected>1 mm</option><option value="1.5">1,5 mm</option><option value="2">2 mm</option></select></div>
       <div><label for="manualRepeats">Макс. кратки повторения</label><select id="manualRepeats" class="input"><option value="10">10</option><option value="18">18</option><option value="25" selected>25</option></select></div>
     </div>
-    <p class="note">Изчислява се действителната най-малка <b>2D междина</b> между отпечатъците и се проверяват повторенията. Резервът за грешка се добавя към целевата междина: например минимум 1,5 + грешка 2 = проверявани поне 3,5 mm. Това е <b>моделиран еднократен резерв за относителна неточност</b>, а не измерена грешка на машината; натрупващите се отклонения при много подавания не са моделирани. Изчистващите +8/+10 mm се добавят към дългия ход, когато има такъв. Алгоритъмът е евристичен и не гарантира абсолютен минимум.</p>
-    <div class="fields" style="margin-top:12px"><div><label for="machineNMax">Автоматично търсене до N</label><select id="machineNMax" class="input"><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25" selected>25</option></select></div><div class="nested-search-info"><strong>Автоматично: 12 N профила</strong><small>Луфт 0 / 0,5 / 1 / 1,5 / 2 / 2,5 / 3 / 3,5 mm, плюс четири варианта с дълъг трети ход C</small></div></div><p class="note">За всеки профил се търсят N от 1 до максимума. <b>0 mm е само диагностика с възможно допиране.</b> Положителният луфт е геометричен минимум без включена машинна грешка. C ≥ дължината на изрезката е изследвана хипотеза, не официално OACS правило. Търсенето е ограничено и не гарантира глобален оптимум.</p><div class="variant-head flex between">
+    <details class="compact-help"><summary>Как се изчисляват резервите?</summary><p class="note">Проверяват се всички повторения на периода и най-малката 2D междина. При базовите варианти резервът за грешка се прибавя към целевата междина, но той е модел, а не измерена точност. Алгоритъмът не гарантира глобален минимум или производствена безопасност.</p></details>
+        <div class="fields" style="margin-top:12px"><div><label for="machineNMax">Автоматично търсене до N</label><select id="machineNMax" class="input"><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25" selected>25</option></select></div><div class="nested-search-info"><strong>Автоматично: 12 N профила</strong><small>Луфт 0 / 0,5 / 1 / 1,5 / 2 / 2,5 / 3 / 3,5 mm, плюс четири варианта с дълъг трети ход C</small></div></div><p class="note">За всеки профил се търсят N от 1 до максимума. <b>0 mm е само диагностика с възможно допиране.</b> Положителният луфт е геометричен минимум без включена машинна грешка. C ≥ дължината на изрезката е изследвана хипотеза, не официално OACS правило. Търсенето е ограничено и не гарантира глобален оптимум.</p><div class="variant-head flex between">
       <div><strong>12 варианта · включително вложен N</strong><p class="sub" style="margin:2px 0 0">Сравнение за текущите елементи и изрезки</p></div>
       <button type="button" id="smartCompare" class="primary">Изчисли 12 варианта</button>
     </div>
     <div id="smartVariantStatus" class="note" aria-live="polite">Натисни „Изчисли 12 варианта“.</div>
-    <div id="smartVariantDeck" class="variant-list" aria-live="polite"><div id="smartVariantList" style="display:contents"></div><div id="smartNestedResult" class="nested-suite"><div class="nested-suite-status">№12 · Автоматично сравнение на 12 вложени N профила.</div></div></div>
+    <div id="smartVariantDeck" class="variant-list" aria-live="polite">
+      <details id="basicVariantsDetails" class="base-option-group">
+        <summary>10 основни + №11 · покажи / скрий</summary>
+        <div id="smartVariantList" class="variant-list"></div>
+      </details>
+      <div id="smartNestedResult" class="nested-suite"><div class="nested-suite-status">№12 · Автоматично сравнение на 12 вложени N профила.</div></div>
+    </div>
 
-    <div class="divider"></div>
+        <div class="divider"></div>
     <div class="flex between"><strong>Избран вариант · ръчна таблица</strong><span class="tag" id="smartChosenGap">Резерв 1 mm</span></div>
     <div class="manual-actions"><button type="button" id="smartAuto" class="primary">Изчисли моя вариант</button><button type="button" id="smartCheck">Провери въведените</button></div>
-    <p class="note" id="repeat13Explanation"><b>Ново:</b> алгоритъмът търси и <b>повторения на ред 1 и ред 3</b> с единичен изчистващ ход на ред 2: например A × 5 → изчистване B × 1 → C × 4. Проверяват се всички преходи и повторението на цикъла. Не е доказан глобален минимум.</p>
-    <div class="manualSmartTable">
+    <details class="compact-help"><summary>Какво означават повторенията?</summary><p class="note" id="repeat13Explanation">При основните варианти се проверяват редове с повторения. При вложен №12 е (1 → 2) × N → 1 → 3. Изчисленията проверяват всички преходи по геометричния модел.</p></details>
+        <div class="manualSmartTable">
       <div class="manualSmartHead"><span>Ред</span><span>Подаване (mm)</span><span>Брой</span></div>
       <div class="manualSmartRow"><b>1</b><input id="smartA1" class="input" inputmode="decimal" value="10" aria-label="Стъпка ред 1"/><input id="smartN1" class="input" inputmode="numeric" value="17" aria-label="Повторения ред 1"/></div>
       <div class="manualSmartRow"><b>2</b><input id="smartA2" class="input" inputmode="decimal" value="205" aria-label="Стъпка ред 2"/><input id="smartN2" class="input" inputmode="numeric" value="1" aria-label="Повторения ред 2"/></div>
@@ -426,7 +441,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       <div class="svgbox sim-figure" id="smartFoilPreview"></div>
       <div class="sim-legend"><span><i class="sim-dot dark"></i> Отпечатък</span><span><i class="sim-dot blue"></i> Избран ход</span><span><i class="sim-dot red"></i> Конфликт</span></div>
     </section>
-    <p class="note">Проверяват се отпечатъците между различните цикли, включително при прехода от последния към първия ред. По Y няма изкуствен резерв: само истинско припокриване блокира X. Допълнителният резерв за изчистващия ход е различен за всеки вариант. Тези стойности не заместват проверка на отклоненията при изтегляне. Изчислените ходове са геометрични предложения, не потвърдени машинни настройки.</p>
+    <details class="compact-help"><summary>Допълнителни ограничения на геометричната проверка</summary><p class="note">Проверяват се преходите през границите на периода. При отметки за Y резултатите са условни. Реалните грешки при изтегляне не са измерени; това са геометрични предложения, не машинни настройки.</p></details>
    </section>
    <section class="panel" id="manualPanel" aria-live="polite" hidden style="display:none">
     <div class="flex between"><h2>Предишен пример за ръчни ходове</h2><span class="tag">X/Y → подавания</span></div>
