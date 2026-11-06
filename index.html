@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101a31"/>
-<title>FoilStep Lab V1.9.15 · подобрен алгоритъм N</title>
+<title>FoilStep Lab V1.9.16 · N във вариант 12</title>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -215,25 +215,23 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 /* V1.9.11: categorical Y overlap selector */
 .y-mode-selector{margin:12px 0}.y-mode-selector label{font-size:13px}.overlap-editor{margin-top:14px;padding:13px;border:1px solid #cbd8f4;border-radius:12px;background:#f5f8ff}.overlap-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}.overlap-option{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #dce5f6;background:white;border-radius:9px;font-size:13px;cursor:pointer}.overlap-option input{width:18px;height:18px;accent-color:#2563eb;flex:none}.overlap-option strong{font-size:12px;color:#27549b}.is-relations .yCoordsOnly{display:none!important}.is-coords #yOverlapEditor{display:none!important}.is-relations .layout-hint{color:#7c560f}
 
-/* V1.9.12 machine mode 4: (row1 -> row2)^N -> row1 -> row3. */
-.n-cycle-panel{margin:16px 0;padding:16px;border:1px solid #a8c8e8;border-radius:14px;background:#f3f8fe}
-.n-cycle-panel h3{margin:0 0 6px;font-size:17px;color:#193c6b}
-.n-cycle-panel .n-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;margin-top:8px}
-.n-cycle-panel label{display:block;font-size:12px;font-weight:700;color:#455a74;margin-bottom:4px}
-.n-cycle-panel .n-set{padding:12px;border:1px solid #d5e2f2;border-radius:11px;background:white;margin-top:12px}
-.n-cycle-panel .n-result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.n-cycle-panel .n-result{border:1px solid #cadbea;background:#fff;border-radius:10px;padding:12px;min-width:0}
-.n-cycle-panel .n-result b{font-size:21px;color:#234a80;display:block;margin:4px 0}
-.n-cycle-panel .n-status{font-size:12px;color:#516982;line-height:1.6;overflow-wrap:anywhere}
-.n-cycle-panel .n-result.pass{border-color:#9dcdb8}.n-cycle-panel .n-result.fail{border-color:#e9a4a7}
-.n-cycle-panel .n-code{padding:9px 10px;border:1px dashed #b4c8db;border-radius:8px;background:#fff;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-@media(max-width:420px){.n-cycle-panel .n-result-grid{grid-template-columns:1fr}}
+
+.nested-counts{background:#edf5ff;border:1px solid #c6dafa;border-radius:11px;padding:12px;margin:12px 0;font-size:13px;color:#1c365d}
+.nested-counts-title{font-weight:720;margin-bottom:9px}.nested-counts-title strong{font-size:18px;color:#174f9a}
+.nested-count-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.nested-count-grid>div{display:flex;flex-direction:column;gap:4px;background:white;border:1px solid #d5e2f3;border-radius:9px;padding:8px;min-width:0}
+.nested-count-grid b{font-size:12px}.nested-count-grid strong{font-size:19px;color:#184b89;font-variant-numeric:tabular-nums}.nested-count-grid small{font-size:11px;color:#596f8d}
+.nested-count-total{margin:11px 0 6px;font-size:13px;font-weight:600}
+.nested-moves summary{cursor:pointer;color:#2052a2;font-size:12px;font-weight:800;padding:6px 0}
+.nested-moves-list{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.n-seq-chip{background:#dceaff;border:1px solid #bad1f4;border-radius:6px;color:#19447a;font-size:11px;font-weight:750;padding:5px}
+@media(max-width:380px){.nested-counts{padding:8px}.nested-count-grid{gap:4px}.nested-count-grid>div{padding:6px}.nested-count-grid strong{font-size:16px}}
 </style>
 </head>
 <body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.15 TEST</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.16 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
 <div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Вграденият преглед на файла не изпълнява JavaScript. <a href="https://kamentuplovdiv-stack.github.io/foilstep-lab/?v=1.9.12" target="_blank" rel="noopener noreferrer" style="font-weight:800;color:#124aac;text-decoration:underline">Отвори работещата уеб версия в Chrome</a>. Тук добавянето и Y отметките са недостъпни.</div>
@@ -372,21 +370,6 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       <div class="manualSmartRow"><b>3</b><input id="smartA3" class="input" inputmode="decimal" placeholder="—" aria-label="Стъпка ред 3"/><input id="smartN3" class="input" inputmode="numeric" placeholder="—" aria-label="Повторения ред 3"/></div>
     </div>
 
-    <section class="n-cycle-panel" id="machineNCycle" aria-label="Алгоритъм за вложен цикъл N">
-      <h3>Вложен цикъл N · ръчна проверка и оптимизация</h3>
-      <p class="note">Поддържаният модел е <b>(1 → 2) × N → 1 → 3</b>. Редове 1, 2 и 3 тук се изпълняват по веднъж при извикване; N управлява броя повторения на <b>двойката 1 → 2</b>. N е променлив параметър, който се оптимизира независимо от примерни настройки.</p>
-      <div class="n-fields" style="max-width:240px"><div><label for="machineN">N · повторения на 1 → 2</label><input class="input" type="number" min="1" max="25" step="1" id="machineN" value="1"/></div></div>
-      <div class="n-set"><strong>Схема А · ръчно въведени подавания</strong>
-        <div class="n-fields"><div><label for="machineA">Ред 1 (mm)</label><input class="input" id="machineA" inputmode="decimal" placeholder="Подаване 1"/></div><div><label for="machineB">Ред 2 (mm)</label><input class="input" id="machineB" inputmode="decimal" placeholder="Подаване 2"/></div><div><label for="machineC">Ред 3 (mm)</label><input class="input" id="machineC" inputmode="decimal" placeholder="Подаване 3"/></div></div>
-      </div>
-      <div class="n-set"><strong>Схема Б · кандидат за проверка</strong>
-        <div class="n-fields"><div><label for="foilA">Ред 1 (mm)</label><input class="input" id="foilA" inputmode="decimal" placeholder="Подаване 1"/></div><div><label for="foilB">Ред 2 (mm)</label><input class="input" id="foilB" inputmode="decimal" placeholder="Подаване 2"/></div><div><label for="foilC">Ред 3 (mm)</label><input class="input" id="foilC" inputmode="decimal" placeholder="Подаване 3"/></div></div>
-      </div>
-      <div class="manual-actions" style="margin-top:12px"><button id="machineNCompare" type="button" class="primary">Сравни и провери вложения цикъл</button><button id="machineNUseManual" type="button">Вземи числата от ръчната таблица</button><button id="machineNOptimize" type="button">Търси вложен N (1…макс.)</button></div>
-      <div id="machineNStatus" class="status warn" style="margin-top:10px" aria-live="polite">Въведи две схеми за сравнение или използвай автоматично намерения вариант №12.</div>
-      <div id="machineNResult" aria-live="polite"></div><div id="machineNOptimization" aria-live="polite" class="note"></div>
-      <p class="note">Моделът проверява геометрията на целия период и прехода към следващия. При Y отметки резултатите са условни. N тук означава брой изпълнения на двойката 1 → 2. Други реализации могат да броят повторенията различно.</p>
-    </section>
     <div class="manual-compare"><div><span class="m-label">СРЕДНО РЪЧНО ПОДАВАНЕ</span><strong id="smartAverage">—</strong></div><div><span class="m-label">ПОДАВАНЕ ЗА ПЕРИОДА</span><strong id="smartPeriod">—</strong></div></div>
     <div class="clearance-block" aria-live="polite">
       <h3>Най-малки разстояния между отпечатъците</h3>
@@ -844,22 +827,10 @@ async function smartRunCompare(){
   const valid=smartVariants.filter(v=>v.valid);
   $('smartVariantStatus').textContent=`${valid.length}/11 основни ${relationalMode()?'условно допустими (Y разделянето не е измерено)':'геометрично проверени'} кандидата. Двете схеми за всяко отстояние са с +8 mm/грешка 1,5 mm и +10 mm/грешка 2 mm. Търсят се и цикли с повторения на първи и трети ред. Минималната действителна междина се проверява с добавен резерв за грешка, включително при повторение на периода. Не е доказан абсолютен оптимум и не е проверено натрупване на грешка при изтегляне.`;
   if(valid.length)smartSelectVariant(valid[0].id);
-   if(ticket===smartCalculationSerial)await machineNOptimize(true,ticket);
+   if(ticket===smartCalculationSerial)await machineNOptimize(ticket);
  }catch(err){$('smartVariantStatus').textContent='Грешка при сравнение: '+err.message;smartVariants=[];$('smartVariantList').innerHTML='';}
 }
 let smartNestedLast=null;
-$('smartNestedResult').addEventListener('click',ev=>{
- if(!ev.target.closest('button[data-nested-use]')||!smartNestedLast)return;
- const v=smartNestedLast;
- $('machineN').value=String(v.n);
- for(const [id,value] of [['A',v.a],['B',v.b],['C',v.c]])$('foil'+id).value=String(value);
- if(machineNRead3('machine').every(x=>Number.isFinite(x)&&x>0)) machineNCompare();
- else {
-  $('machineNStatus').className='status warn';
-  $('machineNStatus').textContent='Кандидат №12 е зареден като схема Б. Ако е избран диагностичният режим 0 mm, той не е проверен с технологичните резерви. За сравнение въведи схема А.';
- }
- $('machineNCycle').scrollIntoView({behavior:'smooth',block:'start'});
-});
 $('machineNMax').addEventListener('change',smartClearVariants);
 $('nestedGapMode').addEventListener('change',smartClearVariants);
 function smartSelectVariant(id){
@@ -1994,60 +1965,21 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'&&location.protocol!
 }
 
 
-// V1.9.12: machine's fourth mode has a nested inner loop.
-// Machine icon 1,2,1,3 means N times (1,2), then (1,3), then restart.
-function machineNSequence(a,b,c,n){
- if(!Number.isInteger(n)||n<1||n>25)throw Error('N трябва да е цяло число от 1 до 25.');
- for(const [label,value] of [['1',a],['2',b],['3',c]]){
-  if(!Number.isFinite(value)||value<=0||value>50000)throw Error('Невалидно подаване в ред '+label+'.');
- }
- const moves=[];
- for(let i=0;i<n;i++)moves.push(a,b);
- moves.push(a,c);
- return moves;
+
+function nestedCounts(n){
+ if(!Number.isInteger(n)||n<1||n>25)throw Error('Невалидно N.');
+ const rows=[];for(let i=0;i<n;i++)rows.push(1,2);rows.push(1,3);
+ return {n,one:n+1,two:n,three:1,total:2*n+2,rows};
 }
-function machineNRead3(prefix){
- return ['A','B','C'].map(id=>toNum($(prefix+id).value));
-}
-function machineNCheckSequence(seq,shapes,required){
- const total=seq.reduce((x,y)=>x+y,0),avg=total/seq.length;
- let status='Няма проверена геометрия.',verified=false,smallest=NaN,complete=false;
- try{
-  const intervals=forbiddenOffsetsDistance(shapes,required);
-  const periodic=verifyPeriodic(seq,intervals);
-  const clearance=minimumImprintGap(shapes,seq);
-  complete=!!clearance?.complete;
-  smallest=clearance?.near2.distance??NaN;
-  verified=periodic&&complete&&smallest+1e-6>=required;
-  status=!complete?'Геометричната проверка не е завършила.':verified?(relationalMode()?'Условно допустима по отбелязаните Y връзки; провери останалите Y междини.':'Геометрично допустима с въведения резерв.'):'Под изискваната междина или с пресичане на отпечатъци.';
- }catch(err){status='Проверка: '+err.message;}
- return {total,avg,verified,smallest,complete,status};
-}
-function machineNCompare(){
- try{
-  readState();const shapes=solve(state).shapes;
-  const N=toNum($('machineN').value),settings=smartSettings(),required=settings.gap+settings.error;
-  const a=machineNRead3('machine'),b=machineNRead3('foil');
-  const haveA=a.every(Number.isFinite),haveB=b.every(Number.isFinite);
-  if(!haveA&&!haveB)throw Error('Въведи поне една схема A или Б с трите подавания.');
-  const report=(name,arr)=>{
-   if(!arr.every(Number.isFinite))return null;
-   const seq=machineNSequence(...arr,N);
-   const result=machineNCheckSequence(seq,shapes,required);
-   const diagGap=minimumImprintGap(shapes,seq);
-   const d=diagGap?.complete?diagGap.near2.distance:NaN;
-   return {seq,result,d,name};
-  };
-  const entries=[report('Схема А',a),report('Схема Б',b)].filter(Boolean);
-  $('machineNResult').innerHTML='<p class="note">(1 → 2) × '+N+' → 1 → 3 · изисквана междина '+nfmt(required,2)+' mm</p><div class="n-result-grid">'+entries.map(e=>'<div class="n-result '+(e.result.verified?'pass':'fail')+'"><small>'+e.name+'</small><b>'+nfmt(e.result.avg,3)+' mm/ход</b><div class="n-status">'+nfmt(e.result.total,2)+' mm за '+e.seq.length+' хода<br/>Изчислена междина '+nfmt(e.d,3)+' mm · изисквана '+nfmt(required,3)+' mm<br/>'+(e.result.verified?'Преминала проверката за въведените резерви.':'⚠ Под зададените резерви / непълна проверка.')+'</div><div class="n-code">'+e.seq.map(v=>nfmt(v,2)).join(' → ')+'</div></div>').join('')+'</div>';
-  if(entries.length===2){
-   const difference=entries[0].result.avg-entries[1].result.avg;
-   $('machineNResult').insertAdjacentHTML('beforeend','<p class="note">Разлика по среден аванс: '+nfmt(Math.abs(difference),3)+' mm/ход в полза на '+(difference>0?'схема Б':difference<0?'схема А':'нито една (равни)')+'. Внимание: икономичност не означава допустимост.</p>');
-  }
-  const allOK=entries.every(e=>e.result.verified);
-  $('machineNStatus').className='status '+(allOK?'':'warn');
-  $('machineNStatus').textContent=(allOK?'Моделът потвърждава въведените резерви.':'⚠ Поне една схема не изпълнява зададените резерви. Възможно е все пак да работи на конкретната машина; моделът не включва всички механични условия.')+(relationalMode()?' Y отметките дават само условна оценка.':'');
- }catch(err){$('machineNResult').innerHTML='';$('machineNStatus').className='status error';$('machineNStatus').textContent='Проверка: '+err.message;}
+function nestedCountsHtml(n,a,b,c){
+ const d=nestedCounts(n);
+ const row=(i,k,v)=>'<div><b>Ред '+i+'</b><strong>'+k+' път'+(k===1?'':'и')+'</strong><small>Подаване '+nfmt(v,2)+' mm</small></div>';
+ return '<div class="nested-counts"><div class="nested-counts-title">N = <strong>'+n+'</strong> · двойката 1 → 2 се повтаря '+n+' път'+(n===1?'':'и')+'</div>'+
+  '<div class="nested-count-grid">'+row(1,d.one,a)+row(2,d.two,b)+row(3,d.three,c)+'</div>'+
+  '<div class="nested-count-total">Общо: <b>'+d.total+' хода</b> за целия период</div>'+
+  '<details class="nested-moves"><summary>Покажи всички '+d.total+' хода по ред</summary><div class="nested-moves-list">'+
+  d.rows.map((r,i)=>'<span class="n-seq-chip">Ход '+(i+1)+': ред '+r+'</span>').join('')+
+  '</div></details></div>';
 }
 
 /* V1.9.15: geometry-led bounded search over N=1..25.
@@ -2056,11 +1988,11 @@ function machineNCompare(){
    For finest grids we sample A/B and disclose that limitation. No claim
    of a global optimum; zero gap is diagnostic only, not production-safe. */
 let nestedTicket=0;
-async function machineNOptimize(auto=false,compareToken=null){
+async function machineNOptimize(compareToken){
  const run=++nestedTicket;
- const output=auto?$('smartNestedResult'):$('machineNOptimization');
+ const output=$('smartNestedResult');
  const mode=$('nestedGapMode').value;
- if(auto)resetNestedCard('Търсене на вложен N цикъл…');
+ resetNestedCard('Търсене на вложен N цикъл…');
  try{
   readState();const shapes=solve(state).shapes,opts=smartSettings();
   const req=mode==='diagnostic'?0:opts.gap+opts.error,forb=forbiddenOffsetsDistance(shapes,req);
@@ -2126,12 +2058,12 @@ async function machineNOptimize(auto=false,compareToken=null){
      best={a,b,c,n,steps:seq,sum,avg};
    }
    active=next;
-   if(run!==nestedTicket||(auto&&compareToken!==smartCalculationSerial))return;
+   if(run!==nestedTicket||compareToken!==smartCalculationSerial)return;
    const msg='Проверка на вложен N '+n+'/'+maxN+' · '+checks+' комбинации';
-   if(auto)resetNestedCard(msg);else output.textContent=msg;
+   resetNestedCard(msg);
    await new Promise(resolve=>setTimeout(resolve,0));
   }
-  if(run!==nestedTicket||(auto&&compareToken!==smartCalculationSerial))return;
+  if(run!==nestedTicket||compareToken!==smartCalculationSerial)return;
   if(best){
    const clearance=minimumImprintGap(shapes,best.steps);
    if(!clearance?.complete||clearance.near2.distance+1e-6<req)best=null;
@@ -2139,44 +2071,26 @@ async function machineNOptimize(auto=false,compareToken=null){
   }
   const limitMsg=(samples.length<uniq.length||limitReached)?'Ограничена извадка от комбинациите,':'Проверени всички A/B по решетката в разгледания диапазон,';
   const caution=mode==='diagnostic'?'⚠ ДИАГНОСТИКА: 0 mm резерв. Възможно е допиране на отпечатъци; това НЕ е валидирана настройка за производство.':(relationalMode()?'⚠ Проверка само по зададените Y застъпвания.':'Геометрична проверка със зададените резерви.');
-  if(auto){
+  {
    smartNestedLast=best;
    if(!best){resetNestedCard('Не е намерен допустим вложен цикъл при N=1…'+maxN+' ('+checks+' комбинации). '+limitMsg+' '+caution);return;}
    const own=smartVariants.find(v=>v.id===11&&v.valid),normal=own?.avg??Infinity;
    const delta=normal-best.avg;
    const compare=mode==='diagnostic'?'Сравнение с №11 не е равностойно: използвани са по-малки резерви.':Number.isFinite(normal)?delta>EPS?'По-икономичен с '+nfmt(delta,3)+' mm/ход спрямо №11':delta<-EPS?'По-голям разход с '+nfmt(-delta,3)+' mm/ход спрямо №11':'Равен разход с №11':'Няма валиден №11 за сравнение';
    output.className='variant-card'+(delta>EPS&&mode!=='diagnostic'?' best-geom':'');
-   output.innerHTML='<strong class="variant-title">№12 · Вложен N='+best.n+(mode==='diagnostic'?' · диагностичен':'')+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · най-малка междина '+nfmt(best.clearance.near2.distance,3)+' mm</p><p><b>'+compare+'</b></p><p class="variant-notice">'+caution+' '+limitMsg+' N=1…'+maxN+', '+checks+' комбинации. Няма доказан абсолютен минимум.</p><button type="button" data-nested-use="1">Отвори за проверка</button>';
-  }else{
-   if(!best){output.textContent='Няма намерен вложен N цикъл (N=1…'+maxN+', '+checks+' проверки). '+caution;return;}
-   $('machineN').value=String(best.n);
-   for(const [key,val] of [['A',best.a],['B',best.b],['C',best.c]])$('foil'+key).value=String(val);
-   if(machineNRead3('machine').every(x=>Number.isFinite(x)&&x>0))machineNCompare();
-   else {$('machineNStatus').className='status warn';$('machineNStatus').textContent='Кандидатът е записан като схема Б. Въведи схема А за сравнение. '+caution;}
-   output.innerHTML='<div class="n-set"><b>Най-добър намерен вложен N цикъл</b><p>('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><b>'+nfmt(best.avg,3)+' mm/ход</b> · '+nfmt(best.sum,2)+' mm за '+best.steps.length+' хода · изчислена междина '+nfmt(best.clearance.near2.distance,3)+' mm.<p class="note">'+caution+' '+limitMsg+' проверени '+checks+' комбинации. Няма гаранция за глобален минимум.</p></div>';
+   output.innerHTML='<strong class="variant-title">№12 · Вложен N='+best.n+(mode==='diagnostic'?' · диагностичен':'')+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p>'+nestedCountsHtml(best.n,best.a,best.b,best.c)+'<strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · най-малка междина '+nfmt(best.clearance.near2.distance,3)+' mm</p><p><b>'+compare+'</b></p><p class="variant-notice">'+caution+' '+limitMsg+' N=1…'+maxN+', '+checks+' комбинации. Няма доказан абсолютен минимум.</p>';
   }
- }catch(err){if(auto)resetNestedCard('Грешка при търсене: '+err.message);else output.textContent='Грешка при търсене: '+err.message;}
+ }catch(err){resetNestedCard('Грешка при търсене: '+err.message);}
 }
 
-$('machineNCompare').addEventListener('click',machineNCompare);
-$('machineNOptimize').addEventListener('click',()=>machineNOptimize(false));
-$('machineNUseManual').addEventListener('click',()=>{
- try{
-  const blocks=smartReadBlocks();if(blocks.length!==3)throw Error('В ръчната таблица са необходими и трите стъпки.');
-  for(const [i,id] of ['A','B','C'].entries())$('foil'+id).value=String(blocks[i].advance);
-  $('machineNStatus').className='status warn';$('machineNStatus').textContent='Числата от ръчната таблица са прехвърлени за сравнение. Натисни „Сравни“. ';
-  $('machineNResult').innerHTML='';$('machineNOptimization').innerHTML='';
- }catch(err){$('machineNStatus').textContent=err.message;}
-});
-for(const id of ['machineA','machineB','machineC','foilA','foilB','foilC','machineN']){
- $(id).addEventListener('input',()=>{ $('machineNStatus').className='status warn';$('machineNStatus').textContent='Стойностите са променени. Натисни „Сравни и провери вложения цикъл“.';$('machineNResult').innerHTML='';$('machineNOptimization').innerHTML='';});
-}
-// Pure synthetic arithmetic assertions, unrelated to any customer order.
-(function machineNSelfTest(){
- const a=machineNSequence(10,20,70,1);
- if(a.join(',')!=='10,20,10,70')throw Error('nested N=1 sequence');
- if(Math.abs(a.reduce((x,y)=>x+y,0)-110)>EPS)throw Error('nested N=1 sum');
- if(machineNSequence(10,20,70,2).join(',')!=='10,20,10,20,10,70')throw Error('nested N=2 sequence');
+
+(function testNestedCounts(){
+ for(const n of [1,2,3,25]){
+  const x=nestedCounts(n);
+  if(x.total!==2*n+2||x.one!==n+1||x.two!==n||x.three!==1||x.rows.length!==x.total||
+     x.rows.filter(t=>t===1).length!==n+1||x.rows.filter(t=>t===2).length!==n||x.rows.filter(t=>t===3).length!==1)
+    throw Error('N repetition count mismatch: '+n);
+ }
 })();
 </script>
 </body>
