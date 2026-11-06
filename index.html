@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101a31"/>
-<title>FoilStep Lab V1.9.7 · 10+1 ръчни варианта</title>
+<title>FoilStep Lab V1.9.10 · Y застъпвания и повторения</title>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -203,14 +203,18 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 .job-saved-summary{font-size:11px;line-height:1.5;margin-top:6px;color:#65748c}
 #installApp[hidden]{display:none!important}
 @media(max-width:600px){.job-grid{grid-template-columns:1fr}.job-panel{padding:15px}.job-name-line button{padding:8px 11px}}
+[hidden]{display:none!important}
+/* V1.9.10: categorical Y overlap selector */
+.y-mode-selector{margin:12px 0}.y-mode-selector label{font-size:13px}.overlap-editor{margin-top:14px;padding:13px;border:1px solid #cbd8f4;border-radius:12px;background:#f5f8ff}.overlap-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}.overlap-option{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #dce5f6;background:white;border-radius:9px;font-size:13px;cursor:pointer}.overlap-option input{width:18px;height:18px;accent-color:#2563eb;flex:none}.overlap-option strong{font-size:12px;color:#27549b}.is-relations .yCoordsOnly{display:none!important}.is-coords #yOverlapEditor{display:none!important}.is-relations .layout-hint{color:#7c560f}
 </style>
 </head>
-<body>
+<body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.7</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.9 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
+<div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Отвори приложението директно в Chrome или през публикуваната уеб версия. В противен случай няма да работят отметките и бутонът „Добави елемент“.</div>
 <main>
  <div class="hero" aria-live="polite">
   <div><span class="hero-kicker">ИЗБРАНО СРЕДНО ПОДАВАНЕ</span><strong id="heroAdvance">—</strong><span id="heroStatus">Изчисляване…</span></div>
@@ -224,7 +228,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
     <div>
       <label class="job-title" for="jobName">Име на нова настройка</label>
       <div class="job-name-line"><input class="input" id="jobName" maxlength="70" placeholder="Напр. Кутия 250 · фолио 1" autocomplete="off"/><button id="saveJob" type="button" class="primary">Запази</button></div>
-      <div class="job-saved-summary">Записва до 3 ръчни реда и текущата геометрия. Съществуващото име може да се презапише след потвърждение.</div>
+      <div class="job-saved-summary">Записва до 3 ръчни реда с отделни повторения и текущата геометрия. Съществуващото име може да се презапише след потвърждение.</div>
     </div>
     <div>
       <label class="job-title" for="jobSelect">Запазени настройки</label>
@@ -250,16 +254,18 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
      <div><label for="cutLength">Дължина на изрезката (mm)</label><input class="input" id="cutLength" inputmode="decimal" value="266"/></div>
      <div><label for="copies">Брой изрезки в цикъл</label><input class="input" id="copies" inputmode="numeric" value="2"/></div>
      <div><label for="gapX">Минимален луфт X (mm)</label><input class="input" id="gapX" inputmode="decimal" value="3.5"/></div>
-     <div><label for="gapY">Минимален луфт Y (mm)</label><input class="input" id="gapY" inputmode="decimal" value="2"/></div>
+     <div class="yCoordsOnly"><label for="gapY">Минимален луфт Y (mm)</label><input class="input" id="gapY" inputmode="decimal" value="2"/></div>
      <div class="wideGrid"><label for="sheets">Тираж (листа / цикли)</label><input class="input" id="sheets" inputmode="numeric" value="1000"/></div>
     </div>
    </section>
    <section class="panel">
     <div class="flex between"><h2>2. Елементи в първата изрезка</h2><span class="tag" id="elementCount">4 елемента</span></div>
-    <p class="sub">Елемент 1 започва по подразбиране от <strong>X = 0 mm</strong>, но можеш да зададеш друг X. Позициите на останалите елементи не се променят автоматично.</p>
+    <p class="sub">Въведи X и размера на елемента, а за Y избери кои елементи се застъпват по височина. Няма нужда да въвеждаш Y-координати, когато работиш с връзки.</p>
+    <div class="y-mode-selector"><label for="yRelationMode">Как описваш Y разположението?</label><select id="yRelationMode" class="input"><option value="relations">С отметки: кои елементи се застъпват по Y</option><option value="coords">С точни Y координати (стар режим)</option></select></div>
+    <div class="status warn" id="yModeWarning">При отметките се проверява геометрията само на двойките, застъпващи се по Y. За останалите се приема, че са разделени с достатъчна реална междина — провери това на машината.</div>
     <div class="originHint"><span class="originDot">0</span><div><strong>Начало X = 0 mm · по подразбиране</strong><small>Натисни X начало в редактора, за да зададеш друга позиция.</small></div></div>
     <div class="layout-title">
-      <div><h3>Разположение на елементите</h3><span>Само първата изрезка · точно по въведените X и Y</span></div>
+      <div><h3>Разположение на елементите</h3><span id="layoutModeSubtitle">Първа изрезка · при Y отметки чертежът е схематичен, изчислението е по връзките</span></div>
       <div class="layout-switch" role="group" aria-label="Изглед на изрезките" hidden style="display:none">
         <button id="readablePreview" type="button">Всички</button>
         <button id="fitPreview" class="selected" type="button">Първа</button>
@@ -269,18 +275,19 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       </div>
     </div>
     <div class="simple-cut-grid" id="cutPreview" aria-label="Разположение на елементите по изрезките"></div>
-    <p class="layout-hint">Докосни правоъгълник, за да редактираш елемента. Визуализацията е само на първата изрезка.</p>
+    <p class="layout-hint">Докосни правоъгълник, за да редактираш. В режим „застъпване“ Y позициите на чертежа са ориентировъчни; алгоритъмът използва отметките.</p>
     <div id="previewQuickLegend" class="quickLegend" aria-label="Елементи и координати"></div><details id="allPositionsDetails"><summary class="summarylink">Всички координати по изрезки <span id="positionsCount"></span></summary><div id="allPositions" class="allPositions"></div></details>
     <div class="editor" id="selectedEditor" aria-label="Редактор на избрания елемент">
       <div class="flex between"><strong id="selectedTitle">Елемент 1</strong><div class="flex"><button type="button" id="prevElement" class="mini" aria-label="Предишен елемент">‹</button><button type="button" id="nextElement" class="mini" aria-label="Следващ елемент">›</button></div></div>
       <div class="fields editfields">
         <div><label for="editX" id="editXLabel">X начало (mm)</label><input class="input" id="editX" inputmode="decimal"/></div>
         <div><label for="editW">Дължина X (mm)</label><input class="input" id="editW" inputmode="decimal"/></div>
-        <div><label for="editY">Y начало (mm)</label><input class="input" id="editY" inputmode="decimal"/></div>
-        <div><label for="editH">Височина Y (mm)</label><input class="input" id="editH" inputmode="decimal"/></div>
+        <div class="yCoordsOnly"><label for="editY">Y начало (mm)</label><input class="input" id="editY" inputmode="decimal"/></div>
+        <div class="yCoordsOnly"><label for="editH">Височина Y (mm)</label><input class="input" id="editH" inputmode="decimal"/></div>
       </div>
+      <section id="yOverlapEditor" class="overlap-editor" aria-label="Кои елементи се застъпват по Y"><strong id="yOverlapTitle">Застъпване по Y</strong><p class="note">Отметнато означава, че двата елемента имат обща Y зона. Немаркирано означава, че са разделени по Y. По подразбиране новите двойки са отбелязани за по-консервативно изчисление.</p><div id="yOverlapChoices" class="overlap-choices"><span class="note">Нужен е Chrome или друг браузър с разрешен JavaScript, за да се покажат отметките.</span></div></section>
     </div>
-    <details id="tableDetails"><summary class="summarylink">Таблица с всички елементи <span id="tableCounter"></span></summary><div class="scroll"><table><thead><tr><th>№</th><th>X начало</th><th>Размер X</th><th>Y начало</th><th>Размер Y</th><th></th></tr></thead><tbody id="elementRows"></tbody></table></div></details>
+    <details id="tableDetails"><summary class="summarylink">Таблица с всички елементи <span id="tableCounter"></span></summary><div class="scroll"><table><thead><tr><th>№</th><th>X начало</th><th>Размер X</th><th class="yCoordsOnly">Y начало</th><th class="yCoordsOnly">Размер Y</th><th></th></tr></thead><tbody id="elementRows"></tbody></table></div></details>
     <div class="flex actionbar" style="margin-top:12px"><button id="addElement">+ Добави елемент</button><button id="exportProject">↓ Проект JSON</button><button id="importButton">↑ Зареди JSON</button><input id="filePicker" type="file" accept=".json,application/json"/></div>
     <p class="note" aria-live="polite">Заредените проекти запазват оригиналните X координати. Нов проект започва с X = 0 mm, който можеш да промениш.</p>
    </section>
@@ -304,7 +311,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 
    <section class="panel" id="sequencePanel" aria-live="polite">
     <div class="flex between"><h2>4. Автоматичен режим · подавания</h2><span class="tag">По реалните X/Y позиции</span></div>
-    <p class="sub">Търси геометрично допустими периоди според X/Y позициите и сравнява със снимките от OACS.</p>
+    <p class="sub">Търси периоди според X и избраните Y-застъпвания, или точните X/Y координати в стария режим. Сравнява със снимките от OACS.</p>
     <div class="fields" style="margin-bottom:9px"><div><label for="simulationCount">Проверени подавания</label><select class="input" id="simulationCount"><option value="30">30</option><option value="60" selected>60</option><option value="120">120</option></select></div><div><label>Търсене</label><div class="tag" style="min-height:44px;display:flex;align-items:center">Автоматично · без местене на елементи</div></div></div>
     <div class="seq-stats"><div class="seq-metric seq-highlight"><small>Средно подаване от симулацията</small><strong id="sequenceAverage">—</strong></div><div class="seq-metric"><small>Промяна спрямо постоянното</small><strong id="sequenceSaving">—</strong></div></div>
     <div id="sequenceStatus" class="status warn">Проверка…</div>
@@ -316,7 +323,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
    </section>
    <section class="panel" id="manualSmart" aria-live="polite">
     <div class="flex between"><h2>5. Ръчно подаване · 10 + 1 варианта</h2><span class="tag">Подаване × повторения</span></div>
-    <p class="sub">Програмата сравнява <b>10 автоматични варианта</b> за минимална действителна междина <b>1 / 1,5 / 2 / 2,5 / 3 mm</b>. За всеки минимум има два режима: <b>А: изчистване +8 mm и резерв за грешка 1,5 mm</b>; <b>Б: изчистване +10 mm и резерв за грешка 2 mm</b>. <b>№11 „Мой избор“</b> се настройва отделно. По Y се използват реалните координати, без измислен Y луфт.</p>
+    <p class="sub">Програмата сравнява <b>10 автоматични варианта</b> за минимална действителна междина <b>1 / 1,5 / 2 / 2,5 / 3 mm</b>. За всеки минимум има два режима: <b>А: изчистване +8 mm и резерв за грешка 1,5 mm</b>; <b>Б: изчистване +10 mm и резерв за грешка 2 mm</b>. <b>№11 „Мой избор“</b> се настройва отделно. В режим с отметки резултатите са условни: за немаркираните двойки трябва да е проверена достатъчна действителна междина по Y.</p>
     <div class="fields">
       <div><label for="manualSafety">Мой вариант · минимум между отпечатъци (mm)</label><input id="manualSafety" class="input" inputmode="decimal" value="1"/></div>
       <div><label for="manualClearExtra">Мой вариант · изчистващ резерв (mm)</label><input id="manualClearExtra" class="input" inputmode="decimal" min="0" max="50" step="0.5" value="8"/></div>
@@ -326,7 +333,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
     </div>
     <p class="note">Изчислява се действителната най-малка <b>2D междина</b> между отпечатъците и се проверяват повторенията. Резервът за грешка се добавя към целевата междина: например минимум 1,5 + грешка 2 = проверявани поне 3,5 mm. Това е <b>моделиран еднократен резерв за относителна неточност</b>, а не измерена грешка на машината; натрупващите се отклонения при много подавания не са моделирани. Изчистващите +8/+10 mm се добавят към дългия ход, когато има такъв. Алгоритъмът е евристичен и не гарантира абсолютен минимум.</p>
     <div class="variant-head flex between">
-      <div><strong>Десет предложения с резерв за грешка + „Мой избор“</strong><p class="sub" style="margin:2px 0 0">Сравнение за текущите елементи и изрезки</p></div>
+      <div><strong>Десет предложения · ново търсене с повторения на редове 1 и 3</strong><p class="sub" style="margin:2px 0 0">Сравнение за текущите елементи и изрезки</p></div>
       <button type="button" id="smartCompare" class="primary">Изчисли 11 варианта</button>
     </div>
     <div id="smartVariantStatus" class="note" aria-live="polite">Натисни „Изчисли 11 варианта“.</div>
@@ -339,6 +346,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
     <div class="divider"></div>
     <div class="flex between"><strong>Избран вариант · ръчна таблица</strong><span class="tag" id="smartChosenGap">Резерв 1 mm</span></div>
     <div class="manual-actions"><button type="button" id="smartAuto" class="primary">Изчисли моя вариант</button><button type="button" id="smartCheck">Провери въведените</button></div>
+    <p class="note" id="repeat13Explanation"><b>Ново:</b> алгоритъмът търси и <b>повторения на ред 1 и ред 3</b> с единичен изчистващ ход на ред 2: например A × 5 → изчистване B × 1 → C × 4. Проверяват се всички преходи и повторението на цикъла. Не е доказан глобален минимум.</p>
     <div class="manualSmartTable">
       <div class="manualSmartHead"><span>Ред</span><span>Подаване (mm)</span><span>Брой</span></div>
       <div class="manualSmartRow"><b>1</b><input id="smartA1" class="input" inputmode="decimal" value="10" aria-label="Стъпка ред 1"/><input id="smartN1" class="input" inputmode="numeric" value="17" aria-label="Повторения ред 1"/></div>
@@ -350,7 +358,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       <h3>Най-малки разстояния между отпечатъците</h3>
       <div class="clearance-grid">
         <div class="clearance-tile"><span class="kicker">По X · когато се застъпват по Y</span><strong id="smartMinX">—</strong><small id="smartMinXDelta">Сравнение след проверка</small></div>
-        <div class="clearance-tile"><span class="kicker">Реална най-малка междина · 2D</span><strong id="smartMin2D">—</strong><small id="smartMin2DDelta">Разстояние между краищата</small></div>
+        <div class="clearance-tile"><span class="kicker" id="smartMin2DLabel">Реална най-малка междина · 2D</span><strong id="smartMin2D">—</strong><small id="smartMin2DDelta">Разстояние между краищата</small></div>
       </div>
       <p class="clearance-pair" id="smartMinPair">Изчислява се между отпечатъци от различни ходове, включително след повторение на периода.</p>
       <p class="note">Разстоянието по X е определящо, когато елементите пресичат един и същ диапазон по Y. 2D разстоянието отчита и разминаването по височина. Показаните mm са по геометрията, не измерена грешка на машината.</p>
@@ -406,7 +414,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
   </div>
  </div>
  <details class="panel more"><summary><strong>Кратко обяснение и ограничения</strong></summary><div class="small" style="padding-top:12px;color:#55677d">Елементите се копират през дължината на изрезката. Програмата сравнява постоянна стъпка и евристично подреждане на последователни подавания: по X се спазва луфтът, освен когато елементите са достатъчно разделени по Y. Това е независим тестов модел, а не софтуерът на BOBST. Няма връзка с машината и не отчита всички нейни ограничения; сверявай реалните настройки с OACS.</div></details>
- <p class="footer">FoilStep Lab V1.9.7 · 10 автоматични + 1 собствен вариант · Първа изрезка в подредбата · Начален X = 0 по подразбиране, но е редактируем · Офлайн · Проектите могат да се експортират като JSON · Не управлява машината.</p>
+ <p class="footer">FoilStep Lab V1.9.10 · 10 автоматични + 1 собствен вариант · Първа изрезка в подредбата · Начален X = 0 по подразбиране, но е редактируем · Офлайн · Проектите могат да се експортират като JSON · Не управлява машината.</p>
 </main>
 <script>
 'use strict';
@@ -428,14 +436,63 @@ let state = structuredClone(sample2);
 const startupX = state.elements[0].x;
 state.elements.forEach(e => {e.x=Math.round((e.x-startupX)*1e9)/1e9;});
 let selectedIndex=0;
+function relationKey(a,b){return `${Math.min(a,b)}:${Math.max(a,b)}`;}
+function inferOverlaps(elements){
+ const out=[];
+ for(let i=0;i<elements.length;i++)for(let j=i+1;j<elements.length;j++){
+  const a=elements[i],b=elements[j];
+  if(axisGap(a.y,a.h,b.y,b.h)<0)out.push(relationKey(i,j));
+ }
+ return out;
+}
+function defaultOverlaps(elements){
+ const out=[];for(let i=0;i<elements.length;i++)for(let j=i+1;j<elements.length;j++)out.push(relationKey(i,j));return out;
+}
+function normalizeRelations(p){
+ if(p.yMode!=='relations')return {...p,yMode:'coords',yOverlaps:Array.isArray(p.yOverlaps)?p.yOverlaps:[],relationsEdited:Boolean(p.relationsEdited)};
+ let a=Array.isArray(p.yOverlaps)?p.yOverlaps:defaultOverlaps(p.elements);
+ const valid=new Set(defaultOverlaps(p.elements));
+ return {...p,yMode:'relations',yOverlaps:[...new Set(a.filter(k=>valid.has(k)))],relationsEdited:true};
+}
+// Initial sample remains backwards compatible but opens the simpler Y editor.
+state=normalizeRelations({...state,yMode:'relations',yOverlaps:inferOverlaps(state.elements)});
+function axisGapY(a,b){
+ if(a.yRelations instanceof Set && b.yRelations===a.yRelations){
+  return a.index===b.index||a.yRelations.has(relationKey(a.index-1,b.index-1))?-1:Number.POSITIVE_INFINITY;
+ }
+ return axisGap(a.y,a.h,b.y,b.h);
+}
+function relationalMode(){return state.yMode==='relations';}
+function updateOverlapEditor(){
+ document.body.classList.toggle('is-relations',relationalMode());document.body.classList.toggle('is-coords',!relationalMode());
+ $('yRelationMode').value=state.yMode;
+ $('yOverlapTitle').textContent=`Елемент ${selectedIndex+1}: кои други елементи се застъпват с него по Y?`;
+ const keys=new Set(state.yOverlaps||[]);
+ $('yOverlapChoices').innerHTML=state.elements.map((e,i)=>i===selectedIndex?'':`<label class="overlap-option"><input type="checkbox" data-overlap="${i}" ${keys.has(relationKey(i,selectedIndex))?'checked':''}/><span>Елемент ${selectedIndex+1} ↔ ${i+1}<br/><strong>${keys.has(relationKey(i,selectedIndex))?'Застъпват се по Y':'Разделени по Y'}</strong></span></label>`).join('')||'<span class="note">Добави втори елемент, за да избереш застъпването.</span>';
+ $('yModeWarning').textContent=relationalMode()?'⚠ Условен модел. Немаркираните двойки се приемат за физически разделени по Y с поне необходимия технологичен резерв. Без измерено Y разстояние не може да се гарантира точната 2D междина. Чертежът е схематичен.':'Точен X/Y модел: междините се изчисляват от числовите координати и размери.';
+ $('yModeWarning').className='status '+(relationalMode()?'warn':'');
+ $('layoutModeSubtitle').textContent=relationalMode()?'X в мащаб · Y е само схематичен, проверката е по отметките':'Точно по въведените X/Y координати';
+ $('smartMin2DLabel').textContent=relationalMode()?'Изчислена междина за двойките с Y застъпване *':'Реална най-малка междина · 2D';
+}
+$('yOverlapChoices').addEventListener('change',ev=>{
+ const box=ev.target.closest('input[data-overlap]');if(!box)return;
+ const key=relationKey(selectedIndex,Number(box.dataset.overlap));
+ const set=new Set(state.yOverlaps||[]);if(box.checked)set.add(key);else set.delete(key);
+ state.yOverlaps=[...set];updateOverlapEditor();compute();
+});
+$('yRelationMode').addEventListener('change',ev=>{
+ if(ev.target.value==='relations' && state.yMode!=='relations' && !state.relationsEdited)state.yOverlaps=inferOverlaps(state.elements);
+ if(ev.target.value==='relations')state.relationsEdited=true;
+ state.yMode=ev.target.value;updateOverlapEditor();renderRows();compute();
+});
 const toNum = v => {const s=String(v??'').trim().replace(',','.'); return s===''?NaN:Number(s)};
 const nfmt=(v,d=1)=> Number.isFinite(v)?new Intl.NumberFormat('bg-BG',{maximumFractionDigits:d,minimumFractionDigits:d}).format(v):'—';
 const esc = s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 function axisGap(p,wp,q,wq){return Math.max(q-p-wp,p-q-wq)}
-function expand(elements,cutLength,copies){
+function expand(elements,cutLength,copies,yRelations=null){
  const shapes=[];
  for(let c=0;c<copies;c++)for(let i=0;i<elements.length;i++){
-  const e=elements[i];shapes.push({...e,x:e.x+c*cutLength,label:`Елемент ${i+1} / изрезка ${c+1}`,index:i+1,copy:c+1});
+  const e=elements[i];shapes.push({...e,yRelations,x:e.x+c*cutLength,label:`Елемент ${i+1} / изрезка ${c+1}`,index:i+1,copy:c+1});
  }
  return shapes;
 }
@@ -444,7 +501,7 @@ function validAdvance(shapes,A,gx,gy){
  const extent=Math.max(...shapes.map(e=>e.x+e.w))-Math.min(...shapes.map(e=>e.x));
  const maxK=Math.ceil((extent+gx)/A)+1;
  for(let k=1;k<=maxK;k++)for(const a of shapes)for(const b of shapes){
-  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  if(axisGapY(a,b)>=gy-EPS)continue;
   if(axisGap(a.x+k*A,a.w,b.x,b.w)<gx-EPS)return false;
  }
  return true;
@@ -461,13 +518,14 @@ function solve(p){
   if(![e.x,e.w,e.y,e.h].every(Number.isFinite)||e.x<0||e.y<0||e.w<=0||e.h<=0||e.x+e.w>cutLength+EPS)
    throw Error(`Елемент ${i+1}: проверѝ X, Y, размерите и дали се побира в дължината на изрезката.`);
  }
- const shapes=expand(elements,cutLength,copies);
+ const relations=p.yMode==='relations'?new Set(p.yOverlaps||[]):null;
+ const shapes=expand(elements,cutLength,copies,relations);
  // Check that shapes from the same machine cycle already have required clearance.
  for(let i=0;i<shapes.length;i++)for(let j=i+1;j<shapes.length;j++){
   const a=shapes[i], b=shapes[j];
   // Same press cycle: virgin foil is used only once. Adjacent stamp shapes may touch.
   // True area overlap in both X and Y remains invalid. Inter-cycle clearance is checked separately.
-  if(axisGap(a.y,a.h,b.y,b.h)<-EPS && axisGap(a.x,a.w,b.x,b.w)<-EPS)
+  if(axisGapY(a,b)<-EPS && axisGap(a.x,a.w,b.x,b.w)<-EPS)
    throw Error(`Елементите ${a.label} и ${b.label} се застъпват физически в самата изрезка.`);
  }
  const lower=Math.max(0,...shapes.map(e=>e.w+gx));
@@ -478,7 +536,7 @@ function solve(p){
  if(maxK*shapes.length*shapes.length>500000)throw Error('Твърде много геометрични комбинации. Намали размера или броя на елементите.');
  const forbidden=[];
  for(const a of shapes)for(const b of shapes){
-  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  if(axisGapY(a,b)>=gy-EPS)continue;
   for(let k=1;k<=maxK;k++){
    const lo=(b.x-a.x-a.w-gx)/k;
    const hi=(b.x+b.w-a.x+gx)/k;
@@ -496,7 +554,7 @@ function solve(p){
  if(!validAdvance(shapes,A,gx,gy))throw Error('Числена грешка при изчисляването — проверѝ настройките.');
  const tight=[];
  for(let k=1;k<=Math.ceil((span+gx)/A)+1;k++)for(const a of shapes)for(const b of shapes){
-  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  if(axisGapY(a,b)>=gy-EPS)continue;
   const d=axisGap(a.x+k*A,a.w,b.x,b.w);
   if(Math.abs(d-gx)<1e-5)tight.push({old:b,newer:a,k,d});
  }
@@ -507,7 +565,7 @@ function solve(p){
 function forbiddenOffsets(shapes,gx,gy){
  const intervals=[];
  for(const a of shapes)for(const b of shapes){
-  if(axisGap(a.y,a.h,b.y,b.h)>=gy-EPS)continue;
+  if(axisGapY(a,b)>=gy-EPS)continue;
   const lo=a.x-b.x-b.w-gx,hi=a.x+a.w+gx-b.x;
   if(hi>EPS)intervals.push([Math.max(0,lo),hi]);
  }
@@ -528,7 +586,7 @@ function forbiddenOffsetsDistance(shapes,minimum2D){
  if(!Number.isFinite(minimum2D)||minimum2D<0)throw Error('Невалиден минимален 2D резерв.');
  const intervals=[];
  for(const a of shapes)for(const b of shapes){
-  const yg=Math.max(0,axisGap(a.y,a.h,b.y,b.h));
+  const yg=Math.max(0,axisGapY(a,b));
   if(yg>=minimum2D-EPS && minimum2D>EPS)continue;
   const needX=minimum2D>EPS?Math.sqrt(Math.max(0,minimum2D*minimum2D-yg*yg)):0;
   const lo=a.x-b.x-b.w-needX;
@@ -603,7 +661,7 @@ function minimumImprintGap(shapes,steps){
  const p=steps.length, minStep=Math.min(...steps);
  const xPairs=[];
  for(let a=0;a<shapes.length;a++)for(let b=0;b<shapes.length;b++){
-  const old=shapes[a],next=shapes[b],ySigned=axisGap(old.y,old.h,next.y,next.h);
+  const old=shapes[a],next=shapes[b],ySigned=axisGapY(old,next);
   xPairs.push({old,next,ySigned,yGap:Math.max(0,ySigned)});
  }
  let near2={distance:Infinity},nearX={distance:Infinity};
@@ -656,7 +714,7 @@ function renderMinimumGap(measure,previous){
  }
  const xm=measure.nearX,dm=measure.near2;
  $('smartMinX').textContent=formatGap(xm.distance);
- $('smartMin2D').textContent=formatGap(dm.distance);
+ $('smartMin2D').textContent=relationalMode()?formatGap(dm.distance)+'*':formatGap(dm.distance);
  $('smartMinXDelta').innerHTML=gapDeltaHtml(previous?.complete?xm.distance-previous.nearX.distance:NaN);
  $('smartMin2DDelta').innerHTML=gapDeltaHtml(previous?.complete?dm.distance-previous.near2.distance:NaN);
  const collision=dm.overlap||xm.distance<-EPS;
@@ -664,7 +722,7 @@ function renderMinimumGap(measure,previous){
   `<b>Критична двойка по X:</b> ${gapPairText(xm)}. `+
   `<b>Най-близка 2D двойка:</b> ${gapPairText(dm)}.`+
   (dm.distance<EPS&&!collision?' Има допиране без пресичане на площите.':'')+
-  ' Измерени са и преходите между периодите.';
+  (relationalMode()?' * Само за Y-застъпващите се двойки; останалите изискват физическа проверка на Y резерва.':' Измерени са и преходите между периодите.');
 }
 function smartClearVariants(){
  smartCalculationSerial++;
@@ -679,7 +737,7 @@ function smartRenderVariants(){
  const best=available.length?Math.min(...available.map(v=>v.avg)):NaN;
  $('smartVariantList').innerHTML=smartVariants.map(v=>{
   const name=v.custom?'№ 11 · Мой избор':`№ ${v.id} · ${nfmt(v.gap,1)} mm · режим ${v.mode}`;
-  const details=`Изчистване +${nfmt(v.extra,1)} mm · грешка ${nfmt(v.error,1)} mm`;
+  const details=`Изчистване +${nfmt(v.extra,1)} mm · грешка ${nfmt(v.error,1)} mm${relationalMode()?' · условен Y модел':''}`;
   const need=v.gap+(v.error||0);
   if(!v.valid)return `<article class="variant-card"><b class="variant-title">${name}</b><p class="variant-notice">${details}<br>Не е намерена и напълно проверена схема с междина поне ${nfmt(need,1)} mm в обхвата на търсенето.</p></article>`;
   const same=Math.abs(v.avg-best)<EPS, selected=smartSelectedId===v.id;
@@ -691,7 +749,8 @@ function smartRenderVariants(){
     <strong class="variant-avg">${nfmt(v.avg,3)} mm</strong>
     <span class="variant-usage">Среден аванс на ход · ${nfmt(v.avg,3)} m / 1000 хода</span>
     <div class="variant-strokes">${strokes}</div>
-    <div class="variant-clearance"><b>Най-малка измерена 2D междина: ${formatGap(real)}</b><small>Цел ${nfmt(v.gap,1)} mm + резерв за грешка ${nfmt(v.error||0,1)} mm = изисквани ${nfmt(need,1)} mm · след резерва остават ${nfmt(Math.max(0,real-(v.error||0)),3)} mm</small></div>
+    <div class="variant-clearance"><b>${relationalMode()?'Изчислена междина за застъпващите се по Y':'Най-малка измерена 2D междина'}: ${formatGap(real)}</b><small>Цел ${nfmt(v.gap,1)} mm + резерв за грешка ${nfmt(v.error||0,1)} mm = изисквани ${nfmt(need,1)} mm · след резерва остават ${nfmt(Math.max(0,real-(v.error||0)),3)} mm</small></div>
+    ${relationalMode()?'<small class="variant-notice">⚠ Условен вариант: провери действителното Y разделяне на немаркираните двойки преди употреба.</small>':''}
     <small class="variant-notice">${v.blocks.length===1?'Постоянно подаване, без изчистващ ход':`Период от ${v.steps.length} хода · +${nfmt(v.extra,1)} mm при изчистване`}</small>
     ${same?'<span class="best-tag">Най-нисък намерен среден разход</span>':''}
     <button type="button" data-variant="${v.id}" ${selected?'class="selected"':''}>${selected?'✓ Избран':'Избери вариант'}</button>
@@ -789,7 +848,7 @@ async function smartRunCompare(){
   smartVariants=variants;
   smartRenderVariants();
   const valid=smartVariants.filter(v=>v.valid);
-  $('smartVariantStatus').textContent=`${valid.length}/11 геометрично проверени кандидата. Двете схеми за всяко отстояние са с +8 mm/грешка 1,5 mm и +10 mm/грешка 2 mm. Минималната действителна междина се проверява с добавен резерв за грешка, включително при повторение на периода. Не е доказан абсолютен оптимум и не е проверено натрупване на грешка при изтегляне.`;
+  $('smartVariantStatus').textContent=`${valid.length}/11 ${relationalMode()?'условно допустими (Y разделянето не е измерено)':'геометрично проверени'} кандидата. Двете схеми за всяко отстояние са с +8 mm/грешка 1,5 mm и +10 mm/грешка 2 mm. Търсят се и цикли с повторения на първи и трети ред. Минималната действителна междина се проверява с добавен резерв за грешка, включително при повторение на периода. Не е доказан абсолютен оптимум и не е проверено натрупване на грешка при изтегляне.`;
   if(valid.length)smartSelectVariant(valid[0].id);
  }catch(err){$('smartVariantStatus').textContent='Грешка при сравнение: '+err.message;smartVariants=[];$('smartVariantList').innerHTML='';}
 }
@@ -873,9 +932,9 @@ function smartLastAdvance(prefix,forbidden,grid,extra=0){
  return b;
 }
 function smartOptimize(shapes,opts){
- // Search within three manual rows: 1–2 short runs and an optional clearing run.
- // The six recommendations are TWO different lowest-average candidates found
- // per target 2D clearance, not a claim of global optimum.
+ // Search up to three manual rows, including two separately repeated runs
+ // (row 1 and row 3) with a single clearing movement at row 2.
+ // Heuristic search, not a proof of global optimality.
  const forbidden=forbiddenOffsetsDistance(shapes,opts.gap);
  const g=opts.grid,firstAllowed=forbidden[0][1];
  const maxForbidden=forbidden.at(-1)[1];
@@ -942,6 +1001,46 @@ function smartOptimize(shapes,opts){
    propose([{advance:a,count:n},{advance:b,count:m},{advance:c,count:1}]);
   }
  }
+ // V1.9.8: additional pattern with repeats on rows 1 and 3:
+ // A × n, clearing B × 1, C × m. Rotate the cyclic sequence to
+ // C × m, A × n, B so the existing analytic last-advance solver finds B.
+ // Check the C→A boundary before solving: it has no clearing move.
+ // This can be more economical than the former A × n → B × m → C × 1.
+ const shortSet=cands.slice(0,22);
+ const maxN=Math.min(opts.maxRep,12),maxM=Math.min(opts.maxRep,10);
+ let repeatedChecks=0,searchLimit=false;
+ const runSafe=(x,k)=>{
+  for(let j=1;j<k;j++)if(offsetClash(x*j,forbidden))return false;
+  return true;
+ };
+ const boundarySafe=(a,n,c,m)=>{
+  // The cyclic join C×m → A×n must never collide, even after reset to row 1.
+  for(let j=1;j<=m;j++)for(let i=1;i<=n;i++){
+   if(offsetClash(j*c+i*a,forbidden))return false;
+  }
+  return true;
+ };
+ outerRepeat13:
+ for(const a of shortSet){
+  for(let n=1;n<=maxN;n++){
+   if(!runSafe(a,n))break;
+   for(const c of shortSet){
+    for(let m=2;m<=maxM;m++){
+     if(n+m+1>47)break;
+     if(!runSafe(c,m))break;
+     if(!boundarySafe(a,n,c,m))continue;
+     const b=smartLastAdvance(Array(m).fill(c).concat(Array(n).fill(a)),forbidden,g,opts.extra);
+     repeatedChecks++;
+     if(b===null)continue;
+     tested++;
+     const blocks=[{advance:a,count:n},{advance:b,count:1},{advance:c,count:m}];
+     // Rotated solver validates the full periodic program; propose() verifies again.
+     propose(blocks);
+     if(repeatedChecks>=2400){searchLimit=true;break outerRepeat13;}
+    }
+   }
+  }
+ }
  const ordered=[...choices.values()].sort((a,b)=>a.avg-b.avg||a.steps.length-b.steps.length);
  // Remove cyclically identical or trivial variants to present meaningful alternatives.
  const unique=[];
@@ -989,12 +1088,12 @@ function smartResult(blocks,source='Проверка на ръчно въвед�
  renderMinimumGap(clearance,previous);
  $('smartAverage').textContent=nfmt(avg,3)+' mm';
  $('smartPeriod').textContent=nfmt(sum,2)+' mm / '+seq.length+' хода';
- $('smartStatus').className='status '+(valid?'':'error');
- $('smartStatus').textContent=valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap?`✓ Измерена 2D междина ${nfmt(clearance.near2.distance,3)} mm · цел ${nfmt(settings.gap,2)} + грешка ${nfmt(settings.error||0,2)} = изисквани ${nfmt(effectiveGap,2)} mm. Проверени са повторенията.`:'✕ Геометричната междина е под минимума, схемата се пресича или проверката не е завършила. Не използвай като потвърдена настройка.';
+ $('smartStatus').className='status '+(valid?(relationalMode()?'warn':''):'error');
+ $('smartStatus').textContent=valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap?(relationalMode()?`⚠ Условно допустима схема по X и отметките за Y. За разделените двойки е необходим реален Y резерв поне ${nfmt(effectiveGap,2)} mm. Проверѝ физическото разположение. Изчислена междина за застъпващите се двойки: ${nfmt(clearance.near2.distance,3)} mm.`:`✓ Измерена 2D междина ${nfmt(clearance.near2.distance,3)} mm · цел ${nfmt(settings.gap,2)} + грешка ${nfmt(settings.error||0,2)} = изисквани ${nfmt(effectiveGap,2)} mm. Проверени са повторенията.`):'✕ Геометричната междина е под минимума, схемата се пресича или проверката не е завършила. Не използвай като потвърдена настройка.';
  const automAvg=currentSequence?(currentSequence.period?currentSequence.period.reduce((a,b)=>a+b,0)/currentSequence.period.length:currentSequence.avg):NaN;
  const compare=Number.isFinite(automAvg)?` Автоматичен геометричен модел: ${nfmt(automAvg,3)} mm; ръчен кандидат: ${nfmt(avg,3)} mm; разлика: ${nfmt(automAvg-avg,3)} mm. Двата режима използват различни резерви.`:'';
  $('smartMeta').textContent=`${source}. ${blocks.length} активни реда · ${seq.length} подавания/период · средно ${nfmt(avg,3)} mm · ${nfmt(avg,3)} m за 1000 цикъла.${compare} Допълнителният изчистващ резерв се прилага при автоматичното търсене; ръчно написаните ходове се проверяват геометрично без автоматично удължаване.`;
- smartLast={blocks:blocks.map(b=>({...b})),seq,average:avg,sum,valid:valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap,settings,source,clearance};smartDirty=false;
+ smartLast={blocks:blocks.map(b=>({...b})),seq,average:avg,sum,valid:valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap&&!relationalMode(),conditional:relationalMode()&&valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap,settings,source,clearance};smartDirty=false;
  manualSimSet(result.shapes, seq, effectiveGap);
  return smartLast.valid;
 }
@@ -1220,10 +1319,11 @@ function setFields(){
  for(const name of ['cutLength','copies','gapX','gapY','sheets'])$(name).value=state[name];
 }
 function renderRows(){
- $('elementRows').innerHTML=state.elements.map((e,i)=>`<tr data-i="${i}"><td class="rowno">${i+1}</td>${['x','w','y','h'].map(key=>`<td><input class="input" inputmode="decimal" data-key="${key}" aria-label="Елемент ${i+1}: ${key}" value="${esc(e[key])}"/></td>`).join('')}<td><button class="ghost del" data-del="${i}" title="Премахни елемент" aria-label="Премахни елемент ${i+1}">✕</button></td></tr>`).join('');
+ $('elementRows').innerHTML=state.elements.map((e,i)=>`<tr data-i="${i}"><td class="rowno">${i+1}</td>${['x','w','y','h'].map(key=>`<td class="${(key==='y'||key==='h')?'yCoordsOnly':''}"><input class="input" inputmode="decimal" data-key="${key}" aria-label="Елемент ${i+1}: ${key}" value="${esc(e[key])}"/></td>`).join('')}<td><button class="ghost del" data-del="${i}" title="Премахни елемент" aria-label="Премахни елемент ${i+1}">✕</button></td></tr>`).join('');
  $('elementCount').textContent=`${state.elements.length} елемента`;
  $('tableCounter').textContent=`(${state.elements.length})`;
  $('positionsCount').textContent=`(${state.elements.length * state.copies})`;
+ updateOverlapEditor();
  selectedIndex=Math.max(0,Math.min(selectedIndex,state.elements.length-1));
  updateSelected();
 }
@@ -1240,8 +1340,8 @@ function load(p){
  smartLast=null;smartDirty=true;
  $('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('smartMinX').textContent='—';$('smartMin2D').textContent='—';$('smartMinPair').textContent='Изчислява се след проверка на ръчната схема.';$('smartMinXDelta').textContent='';$('smartMin2DDelta').textContent='';$('smartFoilPreview').innerHTML='';if($('simFocusPreview'))$('simFocusPreview').innerHTML='';if($('simDetail'))$('simDetail').textContent='Въведи стъпките за визуализация.';
  $('smartStatus').className='status warn';$('smartStatus').textContent='Избери „Изчисли 4 варианта“ или „Провери въведените“.';
- selectedIndex=0;if($('oacsCompare'))$('oacsCompare').value=p.id===6?'56.333':'';state={id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements)};setFields();renderRows();compute();}
-function saveLocal(){try{localStorage.setItem('foilstep-lab-v16',JSON.stringify({id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}}));}catch(e){/* file-browser privacy mode */}}
+ selectedIndex=0;if($('oacsCompare'))$('oacsCompare').value=p.id===6?'56.333':'';state=normalizeRelations({id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements),yMode:p.yMode||'coords',yOverlaps:p.yOverlaps,relationsEdited:p.relationsEdited});setFields();renderRows();compute();}
+function saveLocal(){try{localStorage.setItem('foilstep-lab-v16',JSON.stringify({id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}}));}catch(e){/* file-browser privacy mode */}}
 function clearResults(){for(const id of ['resultAdvance','per1000','totalUsage','totalElements','totalWidth'])$(id).textContent='—';$('tightContact').textContent='Въведи валидни размери.';$('cutPreview').innerHTML='';$('cyclePreview').innerHTML='';$('allPositions').innerHTML='';$('previewQuickLegend').innerHTML='';$('machineReport').value='';$('heroAdvance').textContent='—';$('heroPer1000').textContent='—';$('heroStatus').textContent='Провери въведените данни';$('xyNotes').textContent='Въведи валидни размери.';manualRecord=null;for(const id of ['manualValue','manualExact','sequenceAverage','sequenceSaving'])$(id).textContent='—';$('manualNote').textContent='Няма валиден резултат за ръчно сверяване.';$('copyManual').disabled=true;$('copyManualSummary').disabled=true;$('manualCopied').textContent='';$('manualStepList').innerHTML='';$('manualDiagram').innerHTML='';$('manualModeState').textContent='Няма резултат';$('oacsCompareResult').textContent='Няма въведена стойност за сравнение.';$('sequenceChips').innerHTML='';$('sequenceRows').innerHTML='';$('sequencePreview').innerHTML='';currentSequence=null;}
 function drawRect(e,x,y,w,h,color,opacity=1,stroke='#fff',interactive=false){
  const label=`${esc(e.label)}: X=${nfmt(e.x,2)}; Y=${nfmt(e.y,2)}; дължина=${nfmt(e.w,2)}; височина=${nfmt(e.h,2)}`;
@@ -1323,7 +1423,7 @@ function checkYRelations(p,shapes,A){
  // Show pairings in the original cut, and cross-cycle ones that have the same X band.
  for(let i=0;i<p.elements.length;i++)for(let j=i+1;j<p.elements.length;j++){
   const a=p.elements[i],b=p.elements[j];
-  const xgap=axisGap(a.x,a.w,b.x,b.w),ygap=axisGap(a.y,a.h,b.y,b.h);
+  const xgap=axisGap(a.x,a.w,b.x,b.w),ygap=relationalMode()?(state.yOverlaps.includes(relationKey(i,j))?-1:Infinity):axisGapY(a,b);
   if(xgap<p.gapX-EPS&&ygap>=p.gapY-EPS){
    matched++;
    if(examples.length<5)examples.push(`Ел. ${i+1} и ${j+1}: X се застъпва; свободно Y = ${nfmt(ygap,2)} mm`);
@@ -1331,7 +1431,7 @@ function checkYRelations(p,shapes,A){
  }
  let staggerCross=0;
  for(const a of shapes)for(const b of shapes){
-  const xgap=axisGap(a.x+A,a.w,b.x,b.w),ygap=axisGap(a.y,a.h,b.y,b.h);
+  const xgap=axisGap(a.x+A,a.w,b.x,b.w),ygap=axisGapY(a,b);
   if(xgap<p.gapX-EPS&&ygap>=p.gapY-EPS)staggerCross++;
  }
  let html=`<div class="xyinfo"><span class="xyok">✓ ${matched} двойки</span> в първата изрезка ползват припокриващи се X позиции без конфликт, защото са раздалечени по Y.</div>`;
@@ -1353,13 +1453,13 @@ function compute(){
   $('resultAdvance').textContent=nfmt(A,3)+' mm';
   $('heroAdvance').textContent=nfmt(plan.period?plan.period.reduce((a,b)=>a+b,0)/plan.period.length:plan.avg,3)+' mm';
   $('heroPer1000').textContent=nfmt(sumForSheets(plan,1000).total/1000,3)+' m';
-  $('heroStatus').textContent=`${result.shapes.length} отпечатъка / цикъл · ${plan.period?'проверен период':'симулация'} · постоянна алтернатива ${nfmt(A,3)} mm`; 
+  $('heroStatus').textContent=`${result.shapes.length} отпечатъка / цикъл · ${relationalMode()?'условен Y модел':'точни Y координати'} · ${plan.period?'проверен период':'симулация'} · постоянна алтернатива ${nfmt(A,3)} mm`; 
   $('per1000').textContent=nfmt(sumForSheets(plan,1000).total/1000,3)+' m';
   $('totalUsage').textContent=(plan.period?'':'≈ ')+nfmt(sumForSheets(plan,cycles).total/1000,2)+' m';
   $('totalElements').textContent=String(result.shapes.length);
   $('totalWidth').textContent=nfmt(state.cutLength*state.copies,1)+' mm';
-  $('status').className='status';
-  $('status').textContent='✓ Геометрично изчисление. Елементите остават на въведените X/Y позиции. Периодичните стъпки се показват отделно.';
+  $('status').className='status '+(relationalMode()?'warn':'');
+  $('status').textContent=relationalMode()?'⚠ Условна проверка по X и избраното Y застъпване. За разделените по Y елементи е необходим реален резерв. Y чертежът е схематичен.':'✓ Геометрично изчисление по действителните X/Y координати. Периодичните стъпки се показват отделно.';
   const c=result.tight[0];
   if(c){
    $('tightContact').innerHTML=`<strong>Определяща двойка при стъпката:</strong><br/>Предишен цикъл: ${esc(c.old.label)} ↔ следващ цикъл: ${esc(c.newer.label)}${c.k>1?` (${c.k} цикъла напред)`:''}.<br/>Разстояние X: <strong>${nfmt(c.d,3)} mm</strong> (зададен минимум: ${nfmt(state.gapX,3)} mm).`;
@@ -1372,9 +1472,9 @@ function compute(){
   $('cyclePreview').innerHTML=buildCycles(result.shapes,A,state);
   $('xyNotes').innerHTML=checkYRelations(state,result.shapes,A);
   $('positionsCount').textContent=`(${result.shapes.length})`;
-  $('previewQuickLegend').innerHTML=state.elements.map((e,i)=>`<button type="button" class="tinyElement" data-select="${i}" title="Избери елемент ${i+1}"><b>${i+1}</b><span>X ${nfmt(e.x,1)} · Y ${nfmt(e.y,1)}<br>${nfmt(e.w,1)} × ${nfmt(e.h,1)} mm</span></button>`).join('');
+  $('previewQuickLegend').innerHTML=state.elements.map((e,i)=>`<button type="button" class="tinyElement" data-select="${i}" title="Избери елемент ${i+1}"><b>${i+1}</b><span>X ${nfmt(e.x,1)}${relationalMode()?' · Y по отметки':' · Y '+nfmt(e.y,1)}<br>${nfmt(e.w,1)} mm${relationalMode()?'':' × '+nfmt(e.h,1)+' mm'}</span></button>`).join('');
   $('allPositions').innerHTML=Array.from({length:state.copies},(_,c)=>`<div class="cutTable"><strong>Изрезка ${c+1} · от ${nfmt(c*state.cutLength,1)} mm</strong>${state.elements.map((e,i)=>`<div class="positionRow"><span>Ел. ${i+1}</span><span>X ${nfmt(e.x+c*state.cutLength,2)}</span><span>Y ${nfmt(e.y,2)}</span><span>${nfmt(e.w,2)} × ${nfmt(e.h,2)}</span></div>`).join('')}</div>`).join('');
-  $('machineReport').value=manualSummary()+`\n\nПостоянно подаване (геометричен модел): ${nfmt(A,3)} mm\nДължина изрезка: ${nfmt(state.cutLength,3)} mm\nБрой изрезки: ${state.copies}\nЛуфт X: ${nfmt(state.gapX,2)} mm; Y: ${nfmt(state.gapY,2)} mm\n\nКООРДИНАТИ НА ПЪРВА ИЗРЕЗКА\n`+state.elements.map((e,i)=>`${i+1}. X=${nfmt(e.x,3)}, Y=${nfmt(e.y,3)}, размер X=${nfmt(e.w,3)}, размер Y=${nfmt(e.h,3)} mm`).join('\n')+`\n\nАВТОМАТИЧНО КОПИРАНИ ИЗРЕЗКИ\n`+result.shapes.map(e=>`${e.label}: X=${nfmt(e.x,3)}, Y=${nfmt(e.y,3)}`).join('\n')+`\n\nВНИМАНИЕ: Изчислителен прототип. Потвърди с OACS.`;
+  $('machineReport').value=manualSummary()+`\n\nПостоянно подаване (геометричен модел): ${nfmt(A,3)} mm\nДължина изрезка: ${nfmt(state.cutLength,3)} mm\nБрой изрезки: ${state.copies}\nЛуфт X: ${nfmt(state.gapX,2)} mm; Y: ${nfmt(state.gapY,2)} mm\n\nКООРДИНАТИ НА ПЪРВА ИЗРЕЗКА\n`+state.elements.map((e,i)=>`${i+1}. X=${nfmt(e.x,3)}, Y=${nfmt(e.y,3)}, размер X=${nfmt(e.w,3)}, размер Y=${nfmt(e.h,3)} mm`).join('\n')+`\n\nАВТОМАТИЧНО КОПИРАНИ ИЗРЕЗКИ\n`+result.shapes.map(e=>`${e.label}: X=${nfmt(e.x,3)}, Y=${nfmt(e.y,3)}`).join('\n')+`\n\nY РЕЖИМ: ${relationalMode()?'ОТМЕТКИ; разделените по Y двойки се приемат с достатъчен резерв, без измерена 2D междина.':'ТОЧНИ КООРДИНАТИ'}\nЗастъпвания: ${(state.yOverlaps||[]).join(', ')||'няма'}\n\nВНИМАНИЕ: Изчислителен прототип. Потвърди с OACS.`;
   updateSelected();
   saveLocal();
  }catch(err){
@@ -1392,6 +1492,7 @@ function updateSelected(){
   if(el){if(key==='x'){$('editXLabel').textContent='X начало (mm)';el.readOnly=false;el.classList.remove('locked-input');}
    if(document.activeElement!==el)el.value=String(e[key]);}
  }
+ updateOverlapEditor();
  document.querySelectorAll('.elementShape').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.element)===selectedIndex));
  document.querySelectorAll('#elementRows tr').forEach(tr=>tr.classList.toggle('row-selected',Number(tr.dataset.i)===selectedIndex));
 }
@@ -1499,12 +1600,15 @@ $('elementRows').addEventListener('click',e=>{
  const target=e.target.closest('button[data-del]');if(!target)return;
  if(state.elements.length===1)return alert('Трябва да има поне един елемент.');
  const removed=Number(target.dataset.del);state.elements.splice(removed,1);
+ state.yOverlaps=(state.yOverlaps||[]).flatMap(key=>{const [a,b]=key.split(':').map(Number);return a===removed||b===removed?[]:[relationKey(a>removed?a-1:a,b>removed?b-1:b)];});
  selectedIndex=Math.min(selectedIndex,state.elements.length-1);renderRows();compute();
 });
 $('addElement').addEventListener('click',()=>{
  if(state.elements.length>=80)return alert('Максимум 80 елемента.');
  const x=state.elements.length?Math.min(state.cutLength-10,Math.max(0,Math.max(...state.elements.map(e=>e.x+e.w))+state.gapX)):0;
- state.elements.push({x:Math.max(0,x),w:Math.min(10,Math.max(1,state.cutLength-x)),y:10,h:10});
+ const ix=state.elements.length;
+ state.elements.push({x:Math.max(0,x),w:Math.min(10,Math.max(1,state.cutLength-x)),y:10+ix*15,h:10});
+ if(relationalMode()){state.yOverlaps=state.yOverlaps||[];for(let i=0;i<ix;i++)state.yOverlaps.push(relationKey(i,ix));}
  selectedIndex=state.elements.length-1;renderRows();compute();
 });
 $('fitPreview').addEventListener('click',()=>{previewCutMode='first';redrawPreview();$('fitPreview').classList.add('selected');$('readablePreview').classList.remove('selected');});
@@ -1522,9 +1626,9 @@ $('load4').addEventListener('click',()=>load(sample4));
 $('load6').addEventListener('click',()=>{load(sample6);$('oacsCompare').value='56.333';renderOacsComparison();});
 $('simulationCount').addEventListener('change',compute);
 $('copySequence').addEventListener('click',()=>{if(currentSequence)copyPlain(currentSequence.moves.map((v,i)=>`${i+1}. ${nfmt(v,3)} mm`).join('\n'),'manualCopied');});
-$('newProject').addEventListener('click',()=>load({...structuredClone(sample2),id:0,elements:[{x:0,w:20,y:10,h:10}]}));
+$('newProject').addEventListener('click',()=>load({...structuredClone(sample2),id:0,elements:[{x:0,w:20,y:10,h:10}],yMode:'relations',yOverlaps:[]}));
 $('exportProject').addEventListener('click',()=>{
- readState();const content=JSON.stringify({format:'foilstep-lab/v1.6',cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}},null,2);
+ readState();const content=JSON.stringify({format:'foilstep-lab/v1.6',cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}},null,2);
  const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
  a.href=url;a.download='FoilStep_Proekt.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
 });
@@ -1536,13 +1640,13 @@ $('filePicker').addEventListener('change',async e=>{
   const data=JSON.parse(await f.text());
   const p={...structuredClone(sample2),...data};
   if(!Array.isArray(p.elements))throw Error('Липсват елементи.');
-  const result=solve(p);if(!result)throw Error('Неуспешна проверка.');
+  const result=solve(normalizeRelations(p));if(!result)throw Error('Неуспешна проверка.');
   load(p);
  }catch(err){alert('Не може да се зареди проектът: '+err.message);}
  e.target.value='';
 });
-try{const saved=localStorage.getItem('foilstep-lab-v16') || localStorage.getItem('foilstep-lab-v15') || localStorage.getItem('foilstep-lab-v14') || localStorage.getItem('foilstep-lab-v12') || localStorage.getItem('foilstep-lab-v09') || localStorage.getItem('foilstep-lab-v08') || localStorage.getItem('foilstep-lab-v07') || localStorage.getItem('foilstep-lab-v06') || localStorage.getItem('foilstep-lab-v05') || localStorage.getItem('foilstep-lab-v04') || localStorage.getItem('foilstep-lab-v03') || localStorage.getItem('foilstep-lab-v01');if(saved){const p=JSON.parse(saved);solve(p);state={id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements)};if(p.manual){if(Number.isFinite(Number(p.manual.safety)))$('manualSafety').value=String(p.manual.safety);if(Number.isFinite(Number(p.manual.clearExtra)))$('manualClearExtra').value=String(Math.max(MIN_CLEAR_EXTRA,Number(p.manual.clearExtra)));if(p.manual.error!==undefined&&Number.isFinite(Number(p.manual.error)))$('manualError').value=String(Math.max(0,Number(p.manual.error)));if([0.1,0.5,1,1.5,2].includes(Number(p.manual.grid)))$('manualGrid').value=String(p.manual.grid);if([10,18,25].includes(Number(p.manual.maxRep)))$('manualRepeats').value=String(p.manual.maxRep);if(Array.isArray(p.manual.blocks)&&p.manual.blocks.length)smartSetBlocks(p.manual.blocks.slice(0,3));}}}catch(err){/* ignore invalid cache */}
-setFields();renderRows();selfTest();compute();
+try{const saved=localStorage.getItem('foilstep-lab-v16') || localStorage.getItem('foilstep-lab-v15') || localStorage.getItem('foilstep-lab-v14') || localStorage.getItem('foilstep-lab-v12') || localStorage.getItem('foilstep-lab-v09') || localStorage.getItem('foilstep-lab-v08') || localStorage.getItem('foilstep-lab-v07') || localStorage.getItem('foilstep-lab-v06') || localStorage.getItem('foilstep-lab-v05') || localStorage.getItem('foilstep-lab-v04') || localStorage.getItem('foilstep-lab-v03') || localStorage.getItem('foilstep-lab-v01');if(saved){const p=JSON.parse(saved);solve(normalizeRelations(p));state=normalizeRelations({id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements),yMode:p.yMode||'coords',yOverlaps:p.yOverlaps,relationsEdited:p.relationsEdited});if(p.manual){if(Number.isFinite(Number(p.manual.safety)))$('manualSafety').value=String(p.manual.safety);if(Number.isFinite(Number(p.manual.clearExtra)))$('manualClearExtra').value=String(Math.max(MIN_CLEAR_EXTRA,Number(p.manual.clearExtra)));if(p.manual.error!==undefined&&Number.isFinite(Number(p.manual.error)))$('manualError').value=String(Math.max(0,Number(p.manual.error)));if([0.1,0.5,1,1.5,2].includes(Number(p.manual.grid)))$('manualGrid').value=String(p.manual.grid);if([10,18,25].includes(Number(p.manual.maxRep)))$('manualRepeats').value=String(p.manual.maxRep);if(Array.isArray(p.manual.blocks)&&p.manual.blocks.length)smartSetBlocks(p.manual.blocks.slice(0,3));}}}catch(err){/* ignore invalid cache */}
+setFields();renderRows();selfTest();compute();$('runtimeWarning').hidden=true;
 // V1.2 checks manual program repetition and both safety settings.
 (function smartSelfTest(){
  try{
@@ -1604,7 +1708,7 @@ function focusCycleClearance(shapes,steps,idx){
   const d=cur-starts[k];
   for(const a of shapes)for(const b of shapes){
    const xSigned=axisGap(a.x,a.w,b.x+d,b.w);
-   const ySigned=axisGap(a.y,a.h,b.y,b.h);
+   const ySigned=axisGapY(a,b);
    const distance=Math.hypot(Math.max(0,xSigned),Math.max(0,ySigned));
    if(distance<best2-EPS){best2=distance;bestPrevious=k;}
    if(ySigned<-EPS&&xSigned<bestX-EPS)bestX=xSigned;
@@ -1768,6 +1872,11 @@ function validRecipe(recipe){
  if(!recipe||recipe.format!==RECIPE_FORMAT||!recipe.project||!recipe.manual)throw Error('Непознат формат на настройката.');
  const p=recipe.project,m=recipe.manual;
  if(!Array.isArray(p.elements)||p.elements.length<1||p.elements.length>80)throw Error('Невалиден брой елементи.');
+ if(p.yMode==='relations'){
+  if(!Array.isArray(p.yOverlaps))throw Error('Липсват Y-застъпванията на елементите.');
+  const allowed=new Set(defaultOverlaps(p.elements));
+  if(p.yOverlaps.some(x=>!allowed.has(x)))throw Error('Невалидна двойка при Y-застъпванията.');
+ }
  if(!Number.isInteger(p.copies)||p.copies<1||p.copies>50)throw Error('Невалиден брой изрезки.');
  if(!numberIs(p.cutLength)||p.cutLength<=0||p.cutLength>10000)throw Error('Невалидна дължина на изрезката.');
  if(!numberIs(p.gapX)||!numberIs(p.gapY)||!numberIs(p.sheets))throw Error('Невалидни параметри на изрезката.');
@@ -1787,7 +1896,7 @@ function currentRecipe(){
  // the user's independent custom inputs. Otherwise loading could silently check
  // an automatic proposal against weaker custom settings.
  const effective=variant?{...customSettings,gap:variant.gap,extra:variant.extra,error:variant.error}:customSettings;
- const recipe={format:RECIPE_FORMAT,project:{id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements.map(({x,y,w,h})=>({x,y,w,h}))},manual:{blocks:blocks.map(({advance,count})=>({advance,count})),settings:effective,customSettings,checkedMinimum:effective.gap,selectedVariant:variant?.id??null},savedAt:new Date().toISOString()};
+ const recipe={format:RECIPE_FORMAT,project:{id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements.map(({x,y,w,h})=>({x,y,w,h})),yMode:state.yMode,yOverlaps:[...(state.yOverlaps||[])],relationsEdited:state.relationsEdited},manual:{blocks:blocks.map(({advance,count})=>({advance,count})),settings:effective,customSettings,checkedMinimum:effective.gap,selectedVariant:variant?.id??null},savedAt:new Date().toISOString()};
  validRecipe(recipe);return recipe;
 }
 function newJobId(){return (typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID():`job-${Date.now()}-${Math.floor(Math.random()*1e8)}`;}
