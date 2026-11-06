@@ -1169,7 +1169,8 @@ function smartResult(blocks,source='Проверка на ръчно въвед�
  const forb=forbiddenOffsetsDistance(result.shapes,effectiveGap);
  const avg=seq.reduce((s,x)=>s+x,0)/seq.length;
  const sum=seq.reduce((s,x)=>s+x,0);
- const valid=verifyPeriodic(seq,forb);
+ const clearingOK=!stepsOverride||nestedChosenMinC<=EPS||readNestedValues().c+EPS>=nestedChosenMinC;
+ const valid=verifyPeriodic(seq,forb)&&clearingOK;
  const clearance=minimumImprintGap(result.shapes,seq);
  const previous=smartLast?.clearance||null;
  renderMinimumGap(clearance,previous);
@@ -1177,7 +1178,7 @@ function smartResult(blocks,source='Проверка на ръчно въвед�
  $('smartPeriod').textContent=nfmt(sum,2)+' mm / '+seq.length+' хода';
  $('smartStatus').className='status '+(valid?(relationalMode()?'warn':''):'error');
  $('smartStatus').textContent=valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap?(relationalMode()?`⚠ Условно допустима схема по X и отметките за Y. За разделените двойки е необходим реален Y резерв поне ${nfmt(effectiveGap,2)} mm. Проверѝ физическото разположение. Изчислена междина за застъпващите се двойки: ${nfmt(clearance.near2.distance,3)} mm.`:`✓ Измерена 2D междина ${nfmt(clearance.near2.distance,3)} mm · цел ${nfmt(settings.gap,2)} + грешка ${nfmt(settings.error||0,2)} = изисквани ${nfmt(effectiveGap,2)} mm. Проверени са повторенията.`):'✕ Геометричната междина е под минимума, схемата се пресича или проверката не е завършила. Не използвай като потвърдена настройка.';
- if(stepsOverride)$('smartStatus').textContent+=' '+(nestedManualSafety==='diagnostic'?'⚠ Диагностичен N с 0 mm междина, не е производствена настройка.':'Редът на ходовете е истинският вложен цикъл.');
+ if(stepsOverride)$('smartStatus').textContent+=' '+(clearingOK?'':`Изчистващият ход C трябва да е поне ${nfmt(nestedChosenMinC,1)} mm за този профил. `)+(nestedManualSafety==='diagnostic'?'⚠ Диагностичен N с 0 mm междина, не е производствена настройка.':'Редът на ходовете е истинският вложен цикъл.');
  const automAvg=currentSequence?(currentSequence.period?currentSequence.period.reduce((a,b)=>a+b,0)/currentSequence.period.length:currentSequence.avg):NaN;
  const compare=Number.isFinite(automAvg)?` Автоматичен геометричен модел: ${nfmt(automAvg,3)} mm; ръчен кандидат: ${nfmt(avg,3)} mm; разлика: ${nfmt(automAvg-avg,3)} mm. Двата режима използват различни резерви.`:'';
  $('smartMeta').textContent=`${source}. ${blocks.length} активни реда · ${seq.length} подавания/период · средно ${nfmt(avg,3)} mm · ${nfmt(avg,3)} m за 1000 цикъла.${compare} Допълнителният изчистващ резерв се прилага при автоматичното търсене; ръчно написаните ходове се проверяват геометрично без автоматично удължаване.`;
@@ -2121,7 +2122,7 @@ function renderNestedProfiles(message=''){
   const steps='<div class="profile-steps">'+[['1 · A',b.a],['2 · B',b.b],['3 · C',b.c]].map(x=>'<div><small>Ред '+x[0]+'</small><b>'+nfmt(x[1],2)+'</b><small>mm</small></div>').join('')+'</div>';
   const warning=v.gap<=EPS?'⚠ Диагностика 0 mm: допуска допиране. Не е производствена настройка.':'⚠ Само геометричен луфт, без резерв за грешка на машината.';
   return '<article class="nested-profile'+(chosen?' is-chosen':'')+'">'+title+
-    '<small class="profile-meta">N = <b>'+b.n+'</b> · ред 1: '+(b.n+1)+' пъти · ред 2: '+b.n+' пъти · ред 3: 1 път · '+b.steps.length+' хода</small>'+
+    '<small class="profile-meta">N = <b>'+b.n+'</b> · ред 1: '+(b.n+1)+' пъти · ред 2: '+b.n+' път'+(b.n===1?'':'и')+' · ред 3: 1 път · '+b.steps.length+' хода</small>'+
     steps+'<strong class="profile-avg">'+nfmt(b.avg,3)+' mm/ход</strong>'+
     '<div class="profile-detail">Общо '+nfmt(b.sum,2)+' mm · измерена междина по модела '+nfmt(b.clearance.near2.distance,3)+' mm'+(Math.abs(b.avg-minimum)<=EPS?' · най-ниско намерено средно':'')+'</div>'+
     '<small class="profile-warning">'+warning+(relationalMode()?' Y-разделянето е условно по отметките.':'')+'</small>'+
