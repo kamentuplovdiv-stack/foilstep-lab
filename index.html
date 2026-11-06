@@ -705,7 +705,7 @@ let smartCalculationSerial=0;
 const MANUAL_Y_EXTRA_GAP=0;
 const MIN_CLEAR_EXTRA=0;
 let smartVariants=[],smartSelectedId=null;
-let nestedManualActive=false,nestedManualSafety='safe';
+let nestedManualActive=false,nestedManualSafety='safe',nestedChosenGap=0,nestedChosenMinC=0;
 
 /* V1.9.3: the smallest actual separation is measured between DIFFERENT impressions
    We inspect every phase of the repeated feed program and all later impressions
@@ -872,7 +872,7 @@ $('smartNestedResult').addEventListener('click',ev=>{const b=ev.target.closest('
 
 function nestedSaveInfo(){
  if(!nestedManualActive)return null;
- try{return {n:readNestedValues().n,safety:nestedManualSafety,sequence:'(1,2)^N,1,3'};}
+ try{return {n:readNestedValues().n,safety:nestedManualSafety,gap:nestedChosenGap,minC:nestedChosenMinC,sequence:'(1,2)^N,1,3'};}
  catch(err){return null;}
 }
 function restoreNestedManual(manual){
@@ -880,6 +880,8 @@ function restoreNestedManual(manual){
  if(!item||!Number.isInteger(Number(item.n))||Number(item.n)<1||Number(item.n)>25||
   !Array.isArray(manual.blocks)||manual.blocks.length!==3||!['safe','diagnostic'].includes(item.safety))return;
  $('smartNestedN').value=String(item.n);
+ nestedChosenGap=Number.isFinite(Number(item.gap))&&Number(item.gap)>=0?Number(item.gap):item.safety==='diagnostic'?0:(Number(manual.safety)||0)+(Number(manual.error)||0);
+ nestedChosenMinC=Number(item.minC)||0;
  setNestedManualMode(true,item.safety);
  smartRunCheck();
 }
@@ -912,36 +914,35 @@ function renderNestedEntry(){
    '<div><span>Брояч</span><strong>N = '+n+'</strong><span>(1 → 2) × '+n+' → 1 → 3</span></div>';
  $('nestedSafetyWarning').className='note '+(nestedManualSafety==='diagnostic'?'warntext':'');
  $('nestedSafetyWarning').textContent=nestedManualSafety==='diagnostic'
-  ?'⚠ Диагностика с 0 mm междина: не е потвърдена настройка за производство.'
-  :'⚠ Провери технологичните резерви и реалното Y разделяне преди използване на машина.';
+  ?'⚠ Диагностика 0 mm: допуска допиране, не е потвърдена настройка за производство.'
+  :'⚠ Геометричен луфт '+nfmt(nestedChosenGap,1)+' mm без резерв за грешка на машина. Провери технологичните условия.';
 }
 function nestedManualSettings(){
  const s=smartSettings();
- return nestedManualSafety==='diagnostic'?{...s,gap:0,error:0,extra:0}:s;
+ return {...s,gap:nestedChosenGap,error:0,extra:0};
 }
-function chooseNested12(){
- const v=smartNestedLast;
- if(!v){$('smartVariantStatus').textContent='Първо изчисли №12.';return;}
- smartSetBlocks([{advance:v.a,count:v.n+1},{advance:v.b,count:v.n},{advance:v.c,count:1}]);
- $('smartNestedN').value=String(v.n);
- setNestedManualMode(true,v.mode||$('nestedGapMode').value);
+function chooseNested12(index){
+ const v=smartNestedOptions[index];
+ if(!v?.best){$('smartVariantStatus').textContent='Няма изчислен кандидат за този профил.';return;}
+ smartNestedLast=v;nestedChosenGap=v.gap;nestedChosenMinC=v.minC;
+ const b=v.best;
+ smartSetBlocks([{advance:b.a,count:b.n+1},{advance:b.b,count:b.n},{advance:b.c,count:1}]);
+ $('smartNestedN').value=String(b.n);
+ setNestedManualMode(true,v.gap<=EPS?'diagnostic':'safe');
  smartSelectedId=12;smartAutomatic=true;
  smartRenderVariants();
  const blocks=smartReadBlocks();
- smartResult(blocks,'Избран №12 · вложен N='+v.n,nestedManualSettings(),nestedManualSteps());
- $('smartChosenGap').textContent='№12 · N='+v.n+(nestedManualSafety==='diagnostic'?' · диагностика 0 mm':' · зададени резерви');
- $('smartNestedResult').classList.add('is-chosen');
- $('smartNestedSelect').textContent='✓ Избран №12';
- $('smartNestedSelect').classList.add('selected');
+ smartResult(blocks,'Избран №12 · вложен N='+b.n,nestedManualSettings(),nestedManualSteps());
+ $('smartChosenGap').textContent='№12 · N='+b.n+' · луфт '+nfmt(v.gap,1)+' mm'+(v.minC>0?' · C ≥ '+nfmt(v.minC,1)+' mm':'');
+ renderNestedProfiles();
  $('selectedNestedPanel').scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 function smartSelectVariant(id){
  const variant=smartVariants.find(v=>v.id===Number(id)&&v.valid);
  if(!variant)return;
  // Standard selections reset the alternating nested mode.
  setNestedManualMode(false);
- if($('smartNestedSelect')){$('smartNestedSelect').textContent='Избери вариант №12';$('smartNestedSelect').classList.remove('selected');$('smartNestedResult').classList.remove('is-chosen');}
+ if(smartNestedOptions.length)renderNestedProfiles();
  smartSetBlocks(variant.blocks);
  smartSelectedId=variant.id;
  const current=smartSettings();
@@ -1189,7 +1190,7 @@ function smartRefreshLabel(){
  if(smartSelectedId!==null){smartSelectedId=null;smartRenderVariants();}
  $('smartStatus').className='status warn';
  $('smartStatus').textContent='Стойностите са променени. Натисни „Провери въведените“ или „Изчисли моя вариант“.';
- if(nestedManualActive){$('smartChosenGap').textContent='№12 · редактиран вложен цикъл';$('smartNestedResult').classList.remove('is-chosen');if($('smartNestedSelect')){$('smartNestedSelect').textContent='Избери вариант №12';$('smartNestedSelect').classList.remove('selected');}}
+ if(nestedManualActive){$('smartChosenGap').textContent='№12 · редактиран вложен цикъл';}
 }
 function smartRunOptimized(){
  setNestedManualMode(false);
@@ -1990,7 +1991,7 @@ function validRecipe(recipe){
  if(!Array.isArray(m.blocks)||m.blocks.length<1||m.blocks.length>3)throw Error('Необходимо е от 1 до 3 ръчни реда.');
  if(m.blocks.some(x=>!numberIs(x.advance)||x.advance<=0||!Number.isInteger(x.count)||x.count<1||x.count>200)||m.blocks.reduce((s,x)=>s+x.count,0)>250)throw Error('Невалидни ръчни стъпки/повторения.');
  if(!m.settings||(m.settings.error!==undefined&&(!numberIs(m.settings.error)||m.settings.error<0||m.settings.error>30))||!numberIs(m.settings.gap)||m.settings.gap<0||m.settings.gap>30||!numberIs(m.settings.extra)||m.settings.extra<0||m.settings.extra>50||![.1,.5,1,1.5,2].includes(m.settings.grid)||![10,18,25].includes(m.settings.maxRep))throw Error('Невалидни ръчни резерви или точност.');
- if(m.nested){const n=m.nested;if(!Number.isInteger(n.n)||n.n<1||n.n>25||!['safe','diagnostic'].includes(n.safety)||m.blocks.length!==3||m.blocks[0].count!==n.n+1||m.blocks[1].count!==n.n||m.blocks[2].count!==1)throw Error('Невалидна вложена N програма.');}
+ if(m.nested){const n=m.nested;if(!Number.isInteger(n.n)||n.n<1||n.n>25||!['safe','diagnostic'].includes(n.safety)||(n.gap!==undefined&&(!Number.isFinite(n.gap)||n.gap<0||n.gap>30))||m.blocks.length!==3||m.blocks[0].count!==n.n+1||m.blocks[1].count!==n.n||m.blocks[2].count!==1)throw Error('Невалидна вложена N програма.');}
  if(m.customSettings){const c=m.customSettings;if(!numberIs(c.gap)||c.gap<0||c.gap>30||!numberIs(c.extra)||c.extra<0||c.extra>50||!numberIs(c.error)||c.error<0||c.error>30||![.1,.5,1,1.5,2].includes(c.grid)||![10,18,25].includes(c.maxRep))throw Error('Невалидни лични резерви.');}
  if(!numberIs(m.checkedMinimum)||m.checkedMinimum<0||m.checkedMinimum>30)throw Error('Невалиден проверяван минимум.');
  solve(p);return true;
