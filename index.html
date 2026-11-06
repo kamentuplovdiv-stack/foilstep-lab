@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101a31"/>
-<title>FoilStep Lab V1.9.18 · много N схеми с луфт и без луфт</title>
+<title>FoilStep Lab V1.9.19 · цяла лента и по-компактен изглед</title>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -251,12 +251,16 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 .nested-profile .profile-steps small{font-size:10px;color:#69788d}.nested-profile button{margin-top:auto;width:100%;min-height:44px}
 .nested-profile .profile-warning{font-size:11px;color:#8e5a16;line-height:1.5}
 @media(max-width:640px){.nested-suite{grid-template-columns:1fr}}
+
+/* V1.9.19 compact full-strip-only visualization */
+.manual-simbox{padding:12px!important;margin-top:13px!important;background:#fbfdff}
+.strip-heading{gap:8px;margin-bottom:8px}.strip-heading h3{margin:0;font-size:16px}.strip-heading .sub{margin:2px 0 0;font-size:12px}.strip-zoom{gap:5px}.strip-zoom .mini{min-width:36px;min-height:36px;padding:3px 8px}.strip-status{font-size:12px;color:#42608b;margin:6px 0 8px;line-height:1.4}#smartFoilPreview{min-height:90px}.sim-legend{margin-top:7px}@media(max-width:540px){.manual-simbox{padding:9px!important}.strip-heading h3{font-size:15px}.strip-zoom .tag{font-size:11px}}
 </style>
 </head>
 <body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.18 TEST</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.19 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
 <div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Вграденият преглед на файла не изпълнява JavaScript. <a href="https://kamentuplovdiv-stack.github.io/foilstep-lab/?v=1.9.12" target="_blank" rel="noopener noreferrer" style="font-weight:800;color:#124aac;text-decoration:underline">Отвори работещата уеб версия в Chrome</a>. Тук добавянето и Y отметките са недостъпни.</div>
@@ -415,21 +419,13 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
     <div class="status warn" id="smartStatus">Натисни „Изчисли 12 варианта“.</div>
     <p class="note" id="smartMeta"></p>
     <div class="manual-actions"><button id="smartCopy" type="button">Копирай редовете</button><span id="smartCopyStatus" class="note"></span></div>
-    <div class="manual-simbox" id="manualSimulator">
-      <div class="flex between"><h3>Симулация на ръчното подаване</h3><span class="tag">X/Y · реална геометрия</span></div>
-      <p class="sub">Всеки ход премества цялата лента. Синьото е новият отпечатък, сивото — предишният. Червеното показва недопустимо сближаване според ръчния резерв X.</p>
-      <div class="sim-toolbar">
-        <button type="button" id="simPrev" aria-label="Предишен ход">‹ Предишен</button>
-        <span id="simCurrent" class="tag" aria-live="polite">Ход —</span>
-        <button type="button" id="simNext" aria-label="Следващ ход">Следващ ›</button>
-      </div>
-      <div id="simDetail" class="sim-detail" aria-live="polite">Въведи стъпките, за да видиш движението.</div>
-      <div class="svgbox sim-figure" id="simFocusPreview"></div>
-      <div class="flex between" style="margin-top:15px"><strong>Цялата лента · период + повторение</strong><div class="flex"><button id="simZoomOut" class="mini" type="button">−</button><span class="tag" id="simZoomValue">100%</span><button id="simZoomIn" class="mini" type="button">+</button></div></div>
-      <p class="note" style="margin:4px 0 7px">Плъзни хоризонтално. Докосни номера на ход, за да го избереш.</p>
+    <section class="manual-simbox" id="manualSimulator" aria-label="Цялата лента">
+      <div class="flex between strip-heading"><div><h3>Цялата лента</h3><span class="sub">Период и повторение на отпечатъците</span></div>
+        <div class="flex strip-zoom"><button id="simZoomOut" class="mini" type="button" aria-label="Намали мащаба">−</button><span class="tag" id="simZoomValue">100%</span><button id="simZoomIn" class="mini" type="button" aria-label="Увеличи мащаба">+</button></div></div>
+      <div id="foilStripStatus" class="strip-status" role="status">Избери вариант или въведи подавания за визуализация.</div>
       <div class="svgbox sim-figure" id="smartFoilPreview"></div>
-      <div class="sim-legend"><span><i class="sim-dot dark"></i> Отпечатък</span><span><i class="sim-dot blue"></i> Избран ход</span><span><i class="sim-dot red"></i> Недопустимо сближаване</span></div>
-    </div>
+      <div class="sim-legend"><span><i class="sim-dot dark"></i> Отпечатък</span><span><i class="sim-dot blue"></i> Избран ход</span><span><i class="sim-dot red"></i> Конфликт</span></div>
+    </section>
     <p class="note">Проверяват се отпечатъците между различните цикли, включително при прехода от последния към първия ред. По Y няма изкуствен резерв: само истинско припокриване блокира X. Допълнителният резерв за изчистващия ход е различен за всеки вариант. Тези стойности не заместват проверка на отклоненията при изтегляне. Изчислените ходове са геометрични предложения, не потвърдени машинни настройки.</p>
    </section>
    <section class="panel" id="manualPanel" aria-live="polite" hidden style="display:none">
@@ -452,18 +448,11 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
     <div class="manual-info"><strong>Внимание за реалната машина:</strong> схемите показват геометрично изчислени ходове. От снимките с празни полета не можем да установим кои точно колони на BOBST са дължина, брой повторения или изчистващо подаване. Изчислените ходове НЕ са директно съответствие на трите реда в BOBST; липсва потвърдено значение на полетата. Свери ръчните настройки с OACS и ръководството.</div>
     <details class="more" style="margin-top:11px"><summary>Пълен отчет с всички координати</summary><textarea id="machineReport" class="reportText" readonly aria-label="Резултат и координати за сверяване"></textarea><div class="manual-actions"><button id="copyReport" type="button">Копирай отчета</button><span class="note" id="copyStatus"></span></div></details>
    </section>
-   <section class="panel">
-    <h2>6. Два последователни цикъла · постоянна стъпка</h2>
-    <p class="sub">Тъмно = първи цикъл · Синьо = следващ цикъл.</p>
-    <div class="svgbox" id="cyclePreview"><svg viewBox="0 0 900 145"></svg></div>
-    <div class="legend"><span><span class="dot"></span>Предишен отпечатък</span><span><span class="dot blue"></span>Следващ отпечатък</span></div>
-
-   </section>
    <details class="panel more"><summary><strong>Разминаване по Y</strong> · проверка</summary><div class="stateline" id="xyNotes" style="margin-top:10px">—</div></details>
   </div>
  </div>
  <details class="panel more"><summary><strong>Кратко обяснение и ограничения</strong></summary><div class="small" style="padding-top:12px;color:#55677d">Елементите се копират през дължината на изрезката. Програмата сравнява постоянна стъпка и евристично подреждане на последователни подавания: по X се спазва луфтът, освен когато елементите са достатъчно разделени по Y. Това е независим тестов модел, а не софтуерът на BOBST. Няма връзка с машината и не отчита всички нейни ограничения; сверявай реалните настройки с OACS.</div></details>
- <p class="footer">FoilStep Lab V1.9.11 · 10 автоматични + 1 собствен вариант · Първа изрезка в подредбата · Начален X = 0 по подразбиране, но е редактируем · Офлайн · Проектите могат да се експортират като JSON · Не управлява машината.</p>
+ <p class="footer">FoilStep Lab V1.9.19 · 11 основни и 12 N профила · Цяла лента · Проекти JSON · Офлайн · Не управлява машината.</p>
 </main>
 <script>
 'use strict';
@@ -1429,11 +1418,11 @@ function load(p){
   if(Array.isArray(p.manual.blocks))smartSetBlocks(p.manual.blocks.slice(0,3));
  }
  smartLast=null;smartDirty=true;
- $('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('smartMinX').textContent='—';$('smartMin2D').textContent='—';$('smartMinPair').textContent='Изчислява се след проверка на ръчната схема.';$('smartMinXDelta').textContent='';$('smartMin2DDelta').textContent='';$('smartFoilPreview').innerHTML='';if($('simFocusPreview'))$('simFocusPreview').innerHTML='';if($('simDetail'))$('simDetail').textContent='Въведи стъпките за визуализация.';
+ $('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('smartMinX').textContent='—';$('smartMin2D').textContent='—';$('smartMinPair').textContent='Изчислява се след проверка на ръчната схема.';$('smartMinXDelta').textContent='';$('smartMin2DDelta').textContent='';$('smartFoilPreview').innerHTML='';$('foilStripStatus').textContent='Избери вариант или въведи подавания.';
  $('smartStatus').className='status warn';$('smartStatus').textContent='Избери „Изчисли 4 варианта“ или „Провери въведените“.';
  selectedIndex=0;if($('oacsCompare'))$('oacsCompare').value=p.id===6?'56.333':'';state=normalizeRelations({id:p.id||0,cutLength:p.cutLength,copies:p.copies,gapX:p.gapX,gapY:p.gapY,sheets:p.sheets,elements:structuredClone(p.elements),yMode:p.yMode||'coords',yOverlaps:p.yOverlaps,relationsEdited:p.relationsEdited});setFields();renderRows();compute();restoreNestedManual(p.manual);if(p.manual?.nested)saveLocal();}
 function saveLocal(){try{localStorage.setItem('foilstep-lab-v16',JSON.stringify({id:state.id,cutLength:state.cutLength,copies:state.copies,gapX:state.gapX,gapY:state.gapY,sheets:state.sheets,elements:state.elements,yMode:state.yMode,yOverlaps:state.yOverlaps,relationsEdited:state.relationsEdited,manual:{safety:toNum($('manualSafety').value),clearExtra:toNum($('manualClearExtra').value),error:toNum($('manualError').value),grid:toNum($('manualGrid').value),maxRep:toNum($('manualRepeats').value),nested:nestedSaveInfo(),blocks:(()=>{try{return smartReadBlocks()}catch(e){return []}})()}}));}catch(e){/* file-browser privacy mode */}}
-function clearResults(){for(const id of ['resultAdvance','per1000','totalUsage','totalElements','totalWidth'])$(id).textContent='—';$('tightContact').textContent='Въведи валидни размери.';$('cutPreview').innerHTML='';$('cyclePreview').innerHTML='';$('allPositions').innerHTML='';$('previewQuickLegend').innerHTML='';$('machineReport').value='';$('heroAdvance').textContent='—';$('heroPer1000').textContent='—';$('heroStatus').textContent='Провери въведените данни';$('xyNotes').textContent='Въведи валидни размери.';manualRecord=null;for(const id of ['manualValue','manualExact','sequenceAverage','sequenceSaving'])$(id).textContent='—';$('manualNote').textContent='Няма валиден резултат за ръчно сверяване.';$('copyManual').disabled=true;$('copyManualSummary').disabled=true;$('manualCopied').textContent='';$('manualStepList').innerHTML='';$('manualDiagram').innerHTML='';$('manualModeState').textContent='Няма резултат';$('oacsCompareResult').textContent='Няма въведена стойност за сравнение.';$('sequenceChips').innerHTML='';$('sequenceRows').innerHTML='';$('sequencePreview').innerHTML='';currentSequence=null;}
+function clearResults(){for(const id of ['resultAdvance','per1000','totalUsage','totalElements','totalWidth'])$(id).textContent='—';$('tightContact').textContent='Въведи валидни размери.';$('cutPreview').innerHTML='';$('allPositions').innerHTML='';$('previewQuickLegend').innerHTML='';$('machineReport').value='';$('heroAdvance').textContent='—';$('heroPer1000').textContent='—';$('heroStatus').textContent='Провери въведените данни';$('xyNotes').textContent='Въведи валидни размери.';manualRecord=null;for(const id of ['manualValue','manualExact','sequenceAverage','sequenceSaving'])$(id).textContent='—';$('manualNote').textContent='Няма валиден резултат за ръчно сверяване.';$('copyManual').disabled=true;$('copyManualSummary').disabled=true;$('manualCopied').textContent='';$('manualStepList').innerHTML='';$('manualDiagram').innerHTML='';$('manualModeState').textContent='Няма резултат';$('oacsCompareResult').textContent='Няма въведена стойност за сравнение.';$('sequenceChips').innerHTML='';$('sequenceRows').innerHTML='';$('sequencePreview').innerHTML='';currentSequence=null;}
 function drawRect(e,x,y,w,h,color,opacity=1,stroke='#fff',interactive=false){
  const label=`${esc(e.label)}: X=${nfmt(e.x,2)}; Y=${nfmt(e.y,2)}; дължина=${nfmt(e.w,2)}; височина=${nfmt(e.h,2)}`;
  // The filled rect retains exact proportional dimensions. Touch targets are larger,
@@ -1534,7 +1523,7 @@ function checkYRelations(p,shapes,A){
 }
 function compute(){
  readState();
- if(smartLast){smartLast=null;smartRefreshLabel();manualSim=null;$('smartFoilPreview').innerHTML='';if($('simFocusPreview'))$('simFocusPreview').innerHTML='';if($('simDetail'))$('simDetail').textContent='Въведи стъпките за визуализация.';$('simFocusPreview').innerHTML='';$('simDetail').textContent='Елементите са променени. Провери ръчните ходове отново.';}
+ if(smartLast){smartLast=null;smartRefreshLabel();manualSim=null;$('smartFoilPreview').innerHTML='';$('foilStripStatus').textContent='Избери вариант или въведи подавания.';$('foilStripStatus').textContent='Елементите са променени. Провери подаванията отново.';}
  if(smartVariants.length)smartClearVariants();
  try{
   const result=solve(state),A=result.A;
@@ -1560,7 +1549,6 @@ function compute(){
   const previousScroll=$('cutPreview').scrollLeft;
   $('cutPreview').innerHTML=buildPreview(result.shapes,state);
   $('cutPreview').scrollLeft=previousScroll;
-  $('cyclePreview').innerHTML=buildCycles(result.shapes,A,state);
   $('xyNotes').innerHTML=checkYRelations(state,result.shapes,A);
   $('positionsCount').textContent=`(${result.shapes.length})`;
   $('previewQuickLegend').innerHTML=state.elements.map((e,i)=>`<button type="button" class="tinyElement" data-select="${i}" title="Избери елемент ${i+1}"><b>${i+1}</b><span>X ${nfmt(e.x,1)}${relationalMode()?' · Y по отметки':' · Y '+nfmt(e.y,1)}<br>${nfmt(e.w,1)} mm${relationalMode()?'':' × '+nfmt(e.h,1)+' mm'}</span></button>`).join('');
@@ -1592,7 +1580,7 @@ function selectElement(i,scroll=false){
  selectedIndex=i;updateSelected();
  if(scroll)$('selectedEditor').scrollIntoView({behavior:'smooth',block:'center'});
 }
-for(const id of ['cutPreview','cyclePreview']){
+for(const id of ['cutPreview']){
  $(id).addEventListener('click',event=>{
   const target=event.target.closest('[data-element]');if(!target)return;
   selectElement(Number(target.dataset.element),true);
@@ -1854,52 +1842,13 @@ function buildManualOverview(sim){
  html+=`<text x="${left}" y="242" font-size="12" fill="#5b6d87">X: ${nfmt(minX,1)} mm</text><text x="${left+length*scale}" y="242" font-size="12" text-anchor="end" fill="#5b6d87">${nfmt(starts.at(-1)+maxRight,1)} mm</text><text x="${left}" y="260" font-size="11" fill="#5b6d87">Показани ${n+1} отпечатвания; червено = недостатъчен ръчен резерв</text></svg>`;
  return html;
 }
-function buildManualFocus(sim,idx){
- const {shapes,steps,reserve}=sim;
- const before=Math.max(0,idx-1),after=idx+1;
- const starts=manualStarts(steps,after);
- const minx=Math.min(...shapes.map(e=>e.x))+starts[before]-8;
- const maxx=Math.max(...shapes.map(e=>e.x+e.w))+starts[after]+8;
- const rawLength=maxx-minx;
- const scale=2.4;
- const width=Math.max(680,rawLength*scale+96);
- const left=42,yl=manualYView(shapes,58,155),height=268;
- const {red}=manualCycleCollisions(shapes,starts,reserve);
- let html=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Приближен изглед на избраното ръчно подаване"><rect x="${left}" y="58" width="${rawLength*scale}" height="155" rx="5" fill="#fff3c8" stroke="#dabb69"/>`;
- for(let k=before;k<=after;k++){
-  const x=left+(starts[k]-minx)*scale;
-  const chosen=k===idx;
-  html+=`<line x1="${x}" y1="43" x2="${x}" y2="214" stroke="${chosen?'#2563eb':'#adbcd5'}" stroke-width="${chosen?2:1}" stroke-dasharray="4 4"/><text x="${x}" y="33" fill="${chosen?'#154dc1':'#526783'}" text-anchor="middle" font-size="13" font-weight="700">${k===0?'Старт':`Ход ${k}`}</text>`;
-  for(const e of shapes){
-    const x0=left+(starts[k]+e.x-minx)*scale,y0=yl.toY(e.y,e.h);
-    const w=Math.max(.5,e.w*scale),h=Math.max(.5,e.h*yl.scale);
-    const col=red.has(k)?'#c73543':chosen?'#2563eb':'#495a72';
-    html+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="1" fill="${col}" opacity="${chosen?1:.72}"><title>Отпечатване ${k+1}; ${esc(e.label)}; X ${nfmt(starts[k]+e.x,1)} / Y ${nfmt(e.y,1)}</title></rect>`;
-  }
- }
- html+=`<text x="${left}" y="241" fill="#53657e" font-size="11">X ${nfmt(minx,1)} mm</text><text x="${left+rawLength*scale}" y="241" fill="#53657e" text-anchor="end" font-size="11">X ${nfmt(maxx,1)} mm</text><text x="${left}" y="259" fill="#53657e" font-size="11">Реален геометричен размер · червеното означава конфликт по X/Y</text></svg>`;
- return html;
-}
 function updateManualSim(resetScroll=false){
  if(!manualSim)return;
- const sim=manualSim,n=sim.steps.length;
- manualFocusIndex=Math.max(0,Math.min(manualFocusIndex,Math.min(65,2*n)));
- $('simCurrent').textContent=`Отпечатване ${manualFocusIndex+1} · период ${Math.floor(manualFocusIndex/n)+1}`;
- const feed=manualFocusIndex===0?null:sim.steps[(manualFocusIndex-1)%n];
- const previous=manualFocusIndex?manualStarts(sim.steps,manualFocusIndex)[manualFocusIndex]:0;
- const valid=verifyPeriodic(sim.steps,forbiddenOffsetsDistance(sim.shapes,sim.reserve));
- const clearance=smartLast?.clearance||minimumImprintGap(sim.shapes,sim.steps);
- const cycleGap=focusCycleClearance(sim.shapes,sim.steps,manualFocusIndex);
- const hopText=cycleGap?` <strong>За избрания ход:</strong> най-малко по X ${formatGap(cycleGap.x)}; 2D ${formatGap(cycleGap.twoD)}.`:'';
- const ctext=clearance?.complete?` <strong>За целия период:</strong> най-малко по X ${formatGap(clearance.nearX.distance)}; реална 2D ${formatGap(clearance.near2.distance)}.`:'';
- $('simDetail').innerHTML=`<strong>${manualFocusIndex===0?'Начално отпечатване':`Подаване преди него: ${nfmt(feed,3)} mm`}</strong> · X отместване ${nfmt(previous,3)} mm · ${n} хода/период. <span class="${valid?'ok-text':'bad-text'}">${valid?'Няма геометрично застъпване според резерва.':'Проверка: има геометричен конфликт.'}</span> <span>${hopText}${ctext}</span>`;
- $('simFocusPreview').innerHTML=buildManualFocus(sim,manualFocusIndex);
- const overview=$('smartFoilPreview'),scroll=overview.scrollLeft;
+ const sim=manualSim,overview=$('smartFoilPreview'),oldScroll=overview.scrollLeft;
  overview.innerHTML=buildManualOverview(sim);
- overview.scrollLeft=resetScroll?0:scroll;
+ overview.scrollLeft=resetScroll?0:oldScroll;
  $('simZoomValue').textContent=Math.round(manualDrawScale/2.8*100)+'%';
- $('simPrev').disabled=manualFocusIndex===0;
- $('simNext').disabled=manualFocusIndex>=Math.min(65,2*n);
+ $('foilStripStatus').textContent='Период '+sim.steps.length+' хода · плъзни хоризонтално за цялата лента.';
 }
 function redrawPreview(){
  const p=state;
@@ -1913,15 +1862,8 @@ function previewReadable(){
  redrawPreview();
 }
 $('readablePreview').addEventListener('click',previewReadable);
-$('simPrev').addEventListener('click',()=>{manualFocusIndex--;updateManualSim();});
-$('simNext').addEventListener('click',()=>{manualFocusIndex++;updateManualSim();});
 $('simZoomOut').addEventListener('click',()=>{manualDrawScale=Math.max(1,manualDrawScale/1.4);updateManualSim();});
 $('simZoomIn').addEventListener('click',()=>{manualDrawScale=Math.min(10,manualDrawScale*1.4);updateManualSim();});
-$('smartFoilPreview').addEventListener('click',e=>{
- const target=e.target.closest('[data-sim-index]');
- if(!target)return;
- manualFocusIndex=Number(target.dataset.simIndex);updateManualSim();
-});
 let manualPreviewTimer=null;
 for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3','smartNestedN']){
  $(id).addEventListener('input',()=>{
@@ -1931,7 +1873,7 @@ for(const id of ['smartA1','smartN1','smartA2','smartN2','smartA3','smartN3','sm
     const selected=smartVariants.find(v=>v.id===smartSelectedId&&v.valid);
     if(nestedManualActive)smartResult(blocks,'Редактиран вложен №12 · симулация на живо',nestedManualSettings(),nestedManualSteps());
     else smartResult(blocks,'Редактирана ръчна схема · симулация на живо',selected?{...active,gap:selected.gap,extra:selected.extra,error:selected.error}:active);}
-   catch(err){manualSim=null;$('simFocusPreview').innerHTML='';$('smartFoilPreview').innerHTML='';$('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('simDetail').textContent='Проверка: '+err.message;$('smartStatus').textContent='Проверка: '+err.message;$('smartStatus').className='status error';}
+   catch(err){manualSim=null;$('smartFoilPreview').innerHTML='';$('smartAverage').textContent='—';$('smartPeriod').textContent='—';$('foilStripStatus').textContent='Проверка: '+err.message;$('smartStatus').textContent='Проверка: '+err.message;$('smartStatus').className='status error';}
   },160);
  });
 }
