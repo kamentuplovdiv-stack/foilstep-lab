@@ -2097,107 +2097,121 @@ function nestedCountsHtml(n,a,b,c){
   '</div></details></div>';
 }
 
-/* V1.9.15: geometry-led bounded search over N=1..25.
-   First search all grid A/B in an adaptive near-field domain, then check
-   the entire prefix and solve the clearing C by forbidden intervals.
-   For finest grids we sample A/B and disclose that limitation. No claim
-   of a global optimum; zero gap is diagnostic only, not production-safe. */
+
+/* V1.9.18: comparative search. Every N is visited, but only a bounded
+   set of A/B candidates is evaluated analytically per N. Never claim global optimality. */
 let nestedTicket=0;
+function nestedProfiles(){
+ const gaps=[0,.5,1,1.5,2,2.5,3,3.5];
+ const set=gaps.map(gap=>({gap,minC:0,label:'Геометричен луфт '+nfmt(gap,1)+' mm'}));
+ for(const gap of [0,1,2,3.5])set.push({gap,minC:state.cutLength,label:'Луфт '+nfmt(gap,1)+' mm · C ≥ изрезка'});
+ return set;
+}
+function renderNestedProfiles(message=''){
+ const parent=$('smartNestedResult');
+ parent.className='nested-suite';
+ const entries=smartNestedOptions;
+ const finite=entries.filter(v=>v.best).map(v=>v.best.avg),minimum=finite.length?Math.min(...finite):Infinity;
+ parent.innerHTML='<div class="nested-suite-head">№12 · Вложени N схеми при различен луфт<small>Изчислените геометрични варианти не са автоматично потвърдени машинни настройки. '+esc(message)+'</small></div>'+
+ entries.map((v,i)=>{
+  const title='<h3>'+esc(v.label)+'</h3>';
+  if(!v.best)return '<article class="nested-profile">'+title+'<small class="profile-warning">Няма намерен допустим кандидат в ограничения диапазон.</small><small class="profile-meta">N=1…'+v.maxN+' · '+v.checked+' проверки.</small></article>';
+  const b=v.best,chosen=smartSelectedId===12&&smartNestedLast===v;
+  const steps='<div class="profile-steps">'+[['1 · A',b.a],['2 · B',b.b],['3 · C',b.c]].map(x=>'<div><small>Ред '+x[0]+'</small><b>'+nfmt(x[1],2)+'</b><small>mm</small></div>').join('')+'</div>';
+  const warning=v.gap<=EPS?'⚠ Диагностика 0 mm: допуска допиране. Не е производствена настройка.':'⚠ Само геометричен луфт, без резерв за грешка на машината.';
+  return '<article class="nested-profile'+(chosen?' is-chosen':'')+'">'+title+
+    '<small class="profile-meta">N = <b>'+b.n+'</b> · ред 1: '+(b.n+1)+' пъти · ред 2: '+b.n+' пъти · ред 3: 1 път · '+b.steps.length+' хода</small>'+
+    steps+'<strong class="profile-avg">'+nfmt(b.avg,3)+' mm/ход</strong>'+
+    '<div class="profile-detail">Общо '+nfmt(b.sum,2)+' mm · измерена междина по модела '+nfmt(b.clearance.near2.distance,3)+' mm'+(Math.abs(b.avg-minimum)<=EPS?' · най-ниско намерено средно':'')+'</div>'+
+    '<small class="profile-warning">'+warning+(relationalMode()?' Y-разделянето е условно по отметките.':'')+'</small>'+
+    '<small class="profile-meta">'+(v.limited?'Изследвана ограничена извадка. ':'')+'N=1…'+v.maxN+' · '+v.checked+' аналитични проверки. Не е доказан глобален минимум.</small>'+
+    '<button type="button" data-nested-index="'+i+'">'+(chosen?'✓ Избран':'Избери тази N схема')+'</button></article>';
+ }).join('');
+}
+async function nestedSearchOne(shapes,profile,grid,maxN,aborted){
+ const forbidden=forbiddenOffsetsDistance(shapes,profile.gap);
+ const step=Math.max(.5,grid),first=forbidden[0][1],last=forbidden.at(-1)[1];
+ const ceiling=Math.min(last+step,Math.max(first+180,first*5));
+ const options=[];
+ for(let k=Math.ceil((first-EPS)/step);k*step<=ceiling+EPS&&options.length<2200;k++){
+  const x=Math.round(k*step*1e6)/1e6;
+  if(!offsetClash(x,forbidden))options.push(x);
+ }
+ for(const [lo,hi] of forbidden)for(const value of [lo-step,hi,hi+step]){
+  const x=Math.round(Math.ceil((value-EPS)/step)*step*1e6)/1e6;
+  if(x>=first-EPS&&x<=last+step+EPS&&!offsetClash(x,forbidden))options.push(x);
+ }
+ const uniq=[...new Set(options)].sort((a,b)=>a-b),indices=new Set();
+ if(uniq.length<=62)for(let i=0;i<uniq.length;i++)indices.add(i);
+ else {
+  for(let i=0;i<26;i++)indices.add(i);
+  for(let k=0;k<36;k++)indices.add(Math.round(k*(uniq.length-1)/35));
+ }
+ const sampled=[...indices].sort((a,b)=>a-b).map(i=>uniq[i]).filter(x=>x!==undefined);
+ const pairs=[];
+ for(const a of sampled)for(const b of sampled){
+  const starts=[0,a,a+b,2*a+b];
+  if(verifySteps(starts,forbidden))pairs.push({a,b,starts,prefix:[a,b,a]});
+ }
+ pairs.sort((p,q)=>p.a+p.b-q.a-q.b||p.a-q.a||p.b-q.b);
+ let best=null,checked=0,limited=uniq.length>sampled.length,active=pairs;
+ for(let n=1;n<=maxN;n++){
+  if(aborted())return {cancelled:true};
+  const next=[];let evaluated=0;
+  const budget=n===1?75:n===2?45:n<=5?24:n<=10?12:6;
+  for(const pair of active){
+   if(n>1){
+    pair.prefix.push(pair.b,pair.a);
+    const x=pair.starts.at(-1);
+    pair.starts.push(x+pair.b,x+pair.b+pair.a);
+    if(!verifySteps(pair.starts,forbidden))continue;
+   }
+   next.push(pair);
+   const {a,b,prefix}=pair;
+   const lowC=Math.max(forbidden[0][1],a,b,profile.minC);
+   const low=((n+1)*a+n*b+lowC)/(2*n+2);
+   if(best&&low>=best.avg-EPS)continue;
+   if(evaluated>=budget){limited=true;continue;}
+   evaluated++;checked++;
+   const c=smartLastAdvance(prefix,forbidden,step,0,profile.minC);
+   if(c===null)continue;
+   const steps=prefix.concat(c);
+   if(!verifyPeriodic(steps,forbidden))continue;
+   const sum=(n+1)*a+n*b+c,avg=sum/(2*n+2);
+   if(!best||avg<best.avg-EPS||(Math.abs(avg-best.avg)<EPS&&(n<best.n||n===best.n&&c<best.c)))
+    best={a,b,c,n,sum,avg,steps:steps.slice()};
+  }
+  active=next;
+  if(n%3===0||n===maxN)await new Promise(resolve=>setTimeout(resolve,0));
+ }
+ if(best){
+  const clearance=minimumImprintGap(shapes,best.steps);
+  if(!clearance?.complete||clearance.near2.distance+1e-6<profile.gap)best=null;
+  else best.clearance=clearance;
+ }
+ return {best,checked,limited};
+}
 async function machineNOptimize(compareToken){
  const run=++nestedTicket;
- const output=$('smartNestedResult');
- const mode=$('nestedGapMode').value;
- resetNestedCard('Търсене на вложен N цикъл…');
+ resetNestedCard('Изчислява 12 профила с различен луфт и изчистващ ход…');
  try{
-  readState();const shapes=solve(state).shapes,opts=smartSettings();
-  const req=mode==='diagnostic'?0:opts.gap+opts.error,forb=forbiddenOffsetsDistance(shapes,req);
-  const maxN=Number($('machineNMax').value),g=opts.grid;
-  if(!Number.isInteger(maxN)||maxN<1||maxN>25)throw Error('N трябва да е между 1 и 25.');
-  const first=forb[0][1],last=forb.at(-1)[1];
-  // Near-field region covers short moves A/B near source geometry,
-  // including the candidate regions around X=35 and X=95 for small motifs.
-  const ceiling=Math.min(last+g,Math.max(first+180,first*5));
-  const allowed=[];
-  for(let k=Math.ceil((first-EPS)/g);k*g<=ceiling+EPS&&allowed.length<2000;k++){
-   const x=Math.round(k*g*1e6)/1e6;
-   if(!offsetClash(x,forb))allowed.push(x);
-  }
-  // Always include exact forbidden-interval endpoints on the grid.
-  for(const [lo,hi] of forb){
-   for(const p of [lo-g,hi,hi+g]){
-    const x=Math.round(Math.ceil((p-EPS)/g)*g*1e6)/1e6;
-    if(x>=first-EPS&&x<=last+g+EPS&&!offsetClash(x,forb))allowed.push(x);
-   }
-  }
-  const uniq=[...new Set(allowed)].sort((a,b)=>a-b);
-  const limit=90;
-  let samples=uniq;
-  if(uniq.length>limit){
-   const indices=new Set();
-   for(let i=0;i<30;i++)indices.add(i);
-   for(let j=0;j<limit-30;j++)indices.add(Math.round(j*(uniq.length-1)/(limit-31)));
-   samples=[...indices].filter(i=>i<uniq.length).map(i=>uniq[i]).sort((a,b)=>a-b);
-  }
-  // Remove A/B combinations whose first A,B,A prefix is already unsafe.
-  const pairs=[];
-  for(const a of samples)for(const b of samples){
-   const prefix=[a,b,a],starts=[0,a,a+b,2*a+b];
-   if(verifySteps(starts,forb))pairs.push({a,b,prefix,starts});
-  }
-  pairs.sort((p,q)=>(p.a+p.b)-(q.a+q.b)||p.a-q.a||p.b-q.b);
-  const maxAnalyticPerN=600;
-  let best=null,checks=0,limitReached=false,active=pairs;
-  for(let n=1;n<=maxN;n++){
-   const next=[];let nChecks=0;
-   for(const pair of active){
-    if(n>1){
-     pair.prefix.push(pair.b,pair.a);
-     const pos=pair.starts.at(-1);
-     pair.starts.push(pos+pair.b,pos+pair.b+pair.a);
-     if(!verifySteps(pair.starts,forb))continue;
-    }
-    next.push(pair);
-    const {a,b,prefix}=pair;
-    // Conservative lower bound: the last clearing step cannot be shorter
-    // than the biggest short movement in smartLastAdvance.
-    const lower=((n+1)*a+n*b+Math.max(a,b))/(2*n+2);
-    if(best&&lower>=best.avg-EPS)continue;
-    if(nChecks>=maxAnalyticPerN){limitReached=true;continue;}
-    nChecks++;checks++;
-    const c=smartLastAdvance(prefix,forb,g,opts.extra);
-    if(c===null)continue;
-    const seq=prefix.concat(c);
-    if(!verifyPeriodic(seq,forb))continue;
-    const sum=seq.reduce((x,y)=>x+y,0),avg=sum/seq.length;
-    if(!best||avg<best.avg-EPS||(Math.abs(avg-best.avg)<EPS&&n<best.n))
-     best={a,b,c,n,steps:seq,sum,avg};
-   }
-   active=next;
+  readState();
+  const shapes=solve(state).shapes,opts=smartSettings(),maxN=Number($('machineNMax').value);
+  if(!Number.isInteger(maxN)||maxN<1||maxN>25)throw Error('N трябва да е от 1 до 25.');
+  smartNestedOptions=[];
+  const profiles=nestedProfiles();
+  for(let i=0;i<profiles.length;i++){
    if(run!==nestedTicket||compareToken!==smartCalculationSerial)return;
-   const msg='Проверка на вложен N '+n+'/'+maxN+' · '+checks+' комбинации';
-   resetNestedCard(msg);
+   const p=profiles[i];
+   const result=await nestedSearchOne(shapes,p,opts.grid,maxN,()=>run!==nestedTicket||compareToken!==smartCalculationSerial);
+   if(result.cancelled)return;
+   smartNestedOptions.push({...p,required:p.gap,maxN,checked:result.checked,limited:result.limited,best:result.best});
+   renderNestedProfiles('Изчислени '+(i+1)+' / '+profiles.length+' профила…');
    await new Promise(resolve=>setTimeout(resolve,0));
   }
-  if(run!==nestedTicket||compareToken!==smartCalculationSerial)return;
-  if(best){
-   const clearance=minimumImprintGap(shapes,best.steps);
-   if(!clearance?.complete||clearance.near2.distance+1e-6<req)best=null;
-   else best.clearance=clearance;
-  }
-  const limitMsg=(samples.length<uniq.length||limitReached)?'Ограничена извадка от комбинациите,':'Проверени всички A/B по решетката в разгледания диапазон,';
-  const caution=mode==='diagnostic'?'⚠ ДИАГНОСТИКА: 0 mm резерв. Възможно е допиране на отпечатъци; това НЕ е валидирана настройка за производство.':(relationalMode()?'⚠ Проверка само по зададените Y застъпвания.':'Геометрична проверка със зададените резерви.');
-  {
-   smartNestedLast=best?{...best,mode}:null;
-   if(!best){resetNestedCard('Не е намерен допустим вложен цикъл при N=1…'+maxN+' ('+checks+' комбинации). '+limitMsg+' '+caution);return;}
-   const own=smartVariants.find(v=>v.id===11&&v.valid),normal=own?.avg??Infinity;
-   const delta=normal-best.avg;
-   const compare=mode==='diagnostic'?'Сравнение с №11 не е равностойно: използвани са по-малки резерви.':Number.isFinite(normal)?delta>EPS?'По-икономичен с '+nfmt(delta,3)+' mm/ход спрямо №11':delta<-EPS?'По-голям разход с '+nfmt(-delta,3)+' mm/ход спрямо №11':'Равен разход с №11':'Няма валиден №11 за сравнение';
-   output.className='variant-card'+(delta>EPS&&mode!=='diagnostic'?' best-geom':'');
-   output.innerHTML='<strong class="variant-title">№12 · Вложен N='+best.n+(mode==='diagnostic'?' · диагностичен':'')+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p>'+nestedCountsHtml(best.n,best.a,best.b,best.c)+'<strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · най-малка междина '+nfmt(best.clearance.near2.distance,3)+' mm</p><p><b>'+compare+'</b></p><p class="variant-notice">'+caution+' '+limitMsg+' N=1…'+maxN+', '+checks+' комбинации. Няма доказан абсолютен минимум.</p><button type="button" id="smartNestedSelect" class="primary">Избери вариант №12</button>';
-  }
- }catch(err){resetNestedCard('Грешка при търсене: '+err.message);}
+  renderNestedProfiles('Готово: всеки предложен период е геометрично проверен.');
+ }catch(err){renderNestedProfiles('Грешка: '+err.message);}
 }
-
 
 (function testNestedCounts(){
  for(const n of [1,2,3,25]){
