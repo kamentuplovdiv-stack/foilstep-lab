@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101a31"/>
-<title>FoilStep Lab V1.9.16 · N във вариант 12</title>
+<title>FoilStep Lab V1.9.17 · избор на №12</title>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -226,12 +226,23 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 .nested-moves-list{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
 .n-seq-chip{background:#dceaff;border:1px solid #bad1f4;border-radius:6px;color:#19447a;font-size:11px;font-weight:750;padding:5px}
 @media(max-width:380px){.nested-counts{padding:8px}.nested-count-grid{gap:4px}.nested-count-grid>div{padding:6px}.nested-count-grid strong{font-size:16px}}
+
+.nested-selected-panel{margin:12px 0;border:2px solid #b6d2f7;border-radius:12px;background:#f0f7ff;padding:14px}
+.nested-selected-panel[hidden]{display:none!important}
+.nested-selected-panel h3{margin:0 0 7px;color:#164885;font-size:17px}
+.nested-n-edit{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:12px 0}
+.nested-n-edit>div{max-width:175px;flex:1}.nested-n-edit>strong{font-size:15px;color:#1d4f9d;padding-bottom:10px}
+.nested-entry-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.nested-entry-rows>div{border:1px solid #cbdcf4;background:white;border-radius:9px;padding:10px}
+.nested-entry-rows span{display:block;font-size:12px;color:#607089}
+.nested-entry-rows strong{display:block;font-size:19px;color:#163d7b;font-variant-numeric:tabular-nums}
+.nested-selected-panel .warntext{color:#7a4f10;font-weight:650}
 </style>
 </head>
 <body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.16 TEST</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.17 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
 <div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Вграденият преглед на файла не изпълнява JavaScript. <a href="https://kamentuplovdiv-stack.github.io/foilstep-lab/?v=1.9.12" target="_blank" rel="noopener noreferrer" style="font-weight:800;color:#124aac;text-decoration:underline">Отвори работещата уеб версия в Chrome</a>. Тук добавянето и Y отметките са недостъпни.</div>
@@ -369,6 +380,13 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
       <div class="manualSmartRow"><b>2</b><input id="smartA2" class="input" inputmode="decimal" value="205" aria-label="Стъпка ред 2"/><input id="smartN2" class="input" inputmode="numeric" value="1" aria-label="Повторения ред 2"/></div>
       <div class="manualSmartRow"><b>3</b><input id="smartA3" class="input" inputmode="decimal" placeholder="—" aria-label="Стъпка ред 3"/><input id="smartN3" class="input" inputmode="numeric" placeholder="—" aria-label="Повторения ред 3"/></div>
     </div>
+    <section id="selectedNestedPanel" class="nested-selected-panel" hidden aria-live="polite">
+      <h3>№12 · Данни за въвеждане</h3>
+      <p class="note">Ред 1, 2 и 3 се попълват автоматично горе. N е отделен брояч, който повтаря двойката 1 → 2.</p>
+      <div class="nested-n-edit"><div><label for="smartNestedN">N · повторения на ред 1 → 2</label><input id="smartNestedN" class="input" type="number" inputmode="numeric" min="1" max="25" step="1" value="1"/></div><strong id="nestedTotalStrokes">Общо 4 хода</strong></div>
+      <div id="nestedEntryInstructions" class="nested-entry-rows"></div>
+      <p class="note" id="nestedSafetyWarning"></p>
+    </section>
 
     <div class="manual-compare"><div><span class="m-label">СРЕДНО РЪЧНО ПОДАВАНЕ</span><strong id="smartAverage">—</strong></div><div><span class="m-label">ПОДАВАНЕ ЗА ПЕРИОДА</span><strong id="smartPeriod">—</strong></div></div>
     <div class="clearance-block" aria-live="polite">
@@ -673,6 +691,7 @@ let smartCalculationSerial=0;
 const MANUAL_Y_EXTRA_GAP=0;
 const MIN_CLEAR_EXTRA=0;
 let smartVariants=[],smartSelectedId=null;
+let nestedManualActive=false,nestedManualSafety='safe';
 
 /* V1.9.3: the smallest actual separation is measured between DIFFERENT impressions
    We inspect every phase of the repeated feed program and all later impressions
@@ -833,6 +852,59 @@ async function smartRunCompare(){
 let smartNestedLast=null;
 $('machineNMax').addEventListener('change',smartClearVariants);
 $('nestedGapMode').addEventListener('change',smartClearVariants);
+
+function setNestedManualMode(enabled,safety='safe'){
+ nestedManualActive=enabled;if(enabled)nestedManualSafety=safety;
+ $('selectedNestedPanel').hidden=!enabled;
+ for(let i=1;i<=3;i++)$('smartN'+i).readOnly=enabled;
+ if(enabled)renderNestedEntry();
+}
+function readNestedValues(){
+ const n=toNum($('smartNestedN').value),[a,b,c]=[1,2,3].map(i=>toNum($('smartA'+i).value));
+ if(!Number.isInteger(n)||n<1||n>25)throw Error('N трябва да е цяло число от 1 до 25.');
+ if([a,b,c].some(x=>!Number.isFinite(x)||x<=0))throw Error('Въведи положителни подавания на ред 1, 2 и 3.');
+ return {n,a,b,c};
+}
+function nestedManualSteps(){
+ const {n,a,b,c}=readNestedValues(),steps=[];
+ for(let i=0;i<n;i++)steps.push(a,b);
+ steps.push(a,c);
+ return steps;
+}
+function renderNestedEntry(){
+ if(!nestedManualActive)return;
+ const n=toNum($('smartNestedN').value),valid=Number.isInteger(n)&&n>=1&&n<=25;
+ for(let i=1;i<=3;i++)$('smartN'+i).value=valid?String(i===1?n+1:i===2?n:1):'';
+ $('nestedTotalStrokes').textContent=valid?'Общо '+(2*n+2)+' хода':'Въведи N от 1 до 25';
+ if(!valid){$('nestedEntryInstructions').textContent='N трябва да бъде цяло число от 1 до 25.';return;}
+ const rows=[1,2,3].map(i=>({i,a:toNum($('smartA'+i).value),k:i===1?n+1:i===2?n:1}));
+ $('nestedEntryInstructions').innerHTML=rows.map(v=>'<div><span>Ред '+v.i+' · подаване</span><strong>'+nfmt(v.a,2)+' mm</strong><span>Изпълнява се '+v.k+' път'+(v.k===1?'':'и')+'</span></div>').join('')+
+   '<div><span>Брояч</span><strong>N = '+n+'</strong><span>(1 → 2) × '+n+' → 1 → 3</span></div>';
+ $('nestedSafetyWarning').className='note '+(nestedManualSafety==='diagnostic'?'warntext':'');
+ $('nestedSafetyWarning').textContent=nestedManualSafety==='diagnostic'
+  ?'⚠ Диагностика с 0 mm междина: не е потвърдена настройка за производство.'
+  :'⚠ Провери технологичните резерви и реалното Y разделяне преди използване на машина.';
+}
+function nestedManualSettings(){
+ const s=smartSettings();
+ return nestedManualSafety==='diagnostic'?{...s,gap:0,error:0,extra:0}:s;
+}
+function chooseNested12(){
+ const v=smartNestedLast;
+ if(!v){$('smartVariantStatus').textContent='Първо изчисли №12.';return;}
+ smartSetBlocks([{advance:v.a,count:v.n+1},{advance:v.b,count:v.n},{advance:v.c,count:1}]);
+ $('smartNestedN').value=String(v.n);
+ setNestedManualMode(true,v.mode||$('nestedGapMode').value);
+ smartSelectedId=12;smartAutomatic=true;
+ const blocks=smartReadBlocks();
+ smartResult(blocks,'Избран №12 · вложен N='+v.n,nestedManualSettings(),nestedManualSteps());
+ $('smartChosenGap').textContent='№12 · N='+v.n+(nestedManualSafety==='diagnostic'?' · диагностика 0 mm':' · зададени резерви');
+ $('smartNestedResult').classList.add('is-chosen');
+ $('smartNestedSelect').textContent='✓ Избран №12';
+ $('smartNestedSelect').classList.add('selected');
+ $('selectedNestedPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function smartSelectVariant(id){
  const variant=smartVariants.find(v=>v.id===Number(id)&&v.valid);
  if(!variant)return;
