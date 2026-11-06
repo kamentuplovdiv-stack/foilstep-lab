@@ -852,6 +852,7 @@ async function smartRunCompare(){
 let smartNestedLast=null;
 $('machineNMax').addEventListener('change',smartClearVariants);
 $('nestedGapMode').addEventListener('change',smartClearVariants);
+$('smartNestedResult').addEventListener('click',ev=>{if(ev.target.closest('#smartNestedSelect'))chooseNested12();});
 
 function setNestedManualMode(enabled,safety='safe'){
  nestedManualActive=enabled;if(enabled)nestedManualSafety=safety;
@@ -908,7 +909,9 @@ function chooseNested12(){
 function smartSelectVariant(id){
  const variant=smartVariants.find(v=>v.id===Number(id)&&v.valid);
  if(!variant)return;
- // Choosing any automatic proposal never overwrites the custom inputs.
+ // Standard selections reset the alternating nested mode.
+ setNestedManualMode(false);
+ if($('smartNestedSelect')){$('smartNestedSelect').textContent='Избери вариант №12';$('smartNestedSelect').classList.remove('selected');$('smartNestedResult').classList.remove('is-chosen');}
  smartSetBlocks(variant.blocks);
  smartSelectedId=variant.id;
  const current=smartSettings();
@@ -1129,8 +1132,8 @@ function smartVisualize(shapes,pattern){
  svg+=`<text x="34" y="${h-9}" fill="#4d6178" font-size="11">${draws+1} отпечатвания · редуване на цветове по цикъл · X/Y в мащаб</text></svg>`;
  return svg;
 }
-function smartResult(blocks,source='Проверка на ръчно въведена схема',settingsOverride=null){
- let settings=settingsOverride||smartSettings();let result=solve(state);let seq=smartExpand(blocks);
+function smartResult(blocks,source='Проверка на ръчно въведена схема',settingsOverride=null,stepsOverride=null){
+ let settings=settingsOverride||smartSettings();let result=solve(state);let seq=stepsOverride||smartExpand(blocks);
  const effectiveGap=settings.gap+(settings.error||0);
  const forb=forbiddenOffsetsDistance(result.shapes,effectiveGap);
  const avg=seq.reduce((s,x)=>s+x,0)/seq.length;
@@ -1143,10 +1146,11 @@ function smartResult(blocks,source='Проверка на ръчно въвед�
  $('smartPeriod').textContent=nfmt(sum,2)+' mm / '+seq.length+' хода';
  $('smartStatus').className='status '+(valid?(relationalMode()?'warn':''):'error');
  $('smartStatus').textContent=valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap?(relationalMode()?`⚠ Условно допустима схема по X и отметките за Y. За разделените двойки е необходим реален Y резерв поне ${nfmt(effectiveGap,2)} mm. Проверѝ физическото разположение. Изчислена междина за застъпващите се двойки: ${nfmt(clearance.near2.distance,3)} mm.`:`✓ Измерена 2D междина ${nfmt(clearance.near2.distance,3)} mm · цел ${nfmt(settings.gap,2)} + грешка ${nfmt(settings.error||0,2)} = изисквани ${nfmt(effectiveGap,2)} mm. Проверени са повторенията.`):'✕ Геометричната междина е под минимума, схемата се пресича или проверката не е завършила. Не използвай като потвърдена настройка.';
+ if(stepsOverride)$('smartStatus').textContent+=' '+(nestedManualSafety==='diagnostic'?'⚠ Диагностичен N с 0 mm междина, не е производствена настройка.':'Редът на ходовете е истинският вложен цикъл.');
  const automAvg=currentSequence?(currentSequence.period?currentSequence.period.reduce((a,b)=>a+b,0)/currentSequence.period.length:currentSequence.avg):NaN;
  const compare=Number.isFinite(automAvg)?` Автоматичен геометричен модел: ${nfmt(automAvg,3)} mm; ръчен кандидат: ${nfmt(avg,3)} mm; разлика: ${nfmt(automAvg-avg,3)} mm. Двата режима използват различни резерви.`:'';
  $('smartMeta').textContent=`${source}. ${blocks.length} активни реда · ${seq.length} подавания/период · средно ${nfmt(avg,3)} mm · ${nfmt(avg,3)} m за 1000 цикъла.${compare} Допълнителният изчистващ резерв се прилага при автоматичното търсене; ръчно написаните ходове се проверяват геометрично без автоматично удължаване.`;
- smartLast={blocks:blocks.map(b=>({...b})),seq,average:avg,sum,valid:valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap&&!relationalMode(),conditional:relationalMode()&&valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap,settings,source,clearance};smartDirty=false;
+ smartLast={blocks:blocks.map(b=>({...b})),seq,average:avg,sum,nested:stepsOverride?{n:readNestedValues().n,safety:nestedManualSafety}:null,valid:valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap&&!relationalMode(),conditional:relationalMode()&&valid&&clearance?.complete&&clearance.near2.distance+1e-6>=effectiveGap,settings,source,clearance};smartDirty=false;
  manualSimSet(result.shapes, seq, effectiveGap);
  return smartLast.valid;
 }
@@ -1157,6 +1161,7 @@ function smartRefreshLabel(){
  $('smartStatus').textContent='Стойностите са променени. Натисни „Провери въведените“ или „Изчисли моя вариант“.';
 }
 function smartRunOptimized(){
+ setNestedManualMode(false);
  try{
   readState();const settings=smartSettings(),r=solve(state);
   const found=smartOptimize(r.shapes,{...settings,gap:settings.gap+(settings.error||0)});
@@ -1170,10 +1175,11 @@ function smartRunOptimized(){
  }catch(err){$('smartStatus').className='status error';$('smartStatus').textContent=err.message;}
 }
 function smartRunCheck(){
- try{readState();const blocks=smartReadBlocks();smartAutomatic=false;
+ try{readState();if(nestedManualActive)renderNestedEntry();const blocks=smartReadBlocks();smartAutomatic=false;
   const selected=smartVariants.find(v=>v.id===smartSelectedId&&v.valid);
   const active=smartSettings();
-  smartResult(blocks,'Проверка на ръчно въведена схема',selected?{...active,gap:selected.gap,extra:selected.extra,error:selected.error}:active);
+  if(nestedManualActive)smartResult(blocks,'Проверка на вложен №12 · N='+readNestedValues().n,nestedManualSettings(),nestedManualSteps());
+  else smartResult(blocks,'Проверка на ръчно въведена схема',selected?{...active,gap:selected.gap,extra:selected.extra,error:selected.error}:active);
  }
  catch(err){$('smartStatus').className='status error';$('smartStatus').textContent=err.message;}
 }
@@ -2144,13 +2150,13 @@ async function machineNOptimize(compareToken){
   const limitMsg=(samples.length<uniq.length||limitReached)?'Ограничена извадка от комбинациите,':'Проверени всички A/B по решетката в разгледания диапазон,';
   const caution=mode==='diagnostic'?'⚠ ДИАГНОСТИКА: 0 mm резерв. Възможно е допиране на отпечатъци; това НЕ е валидирана настройка за производство.':(relationalMode()?'⚠ Проверка само по зададените Y застъпвания.':'Геометрична проверка със зададените резерви.');
   {
-   smartNestedLast=best;
+   smartNestedLast=best?{...best,mode}:null;
    if(!best){resetNestedCard('Не е намерен допустим вложен цикъл при N=1…'+maxN+' ('+checks+' комбинации). '+limitMsg+' '+caution);return;}
    const own=smartVariants.find(v=>v.id===11&&v.valid),normal=own?.avg??Infinity;
    const delta=normal-best.avg;
    const compare=mode==='diagnostic'?'Сравнение с №11 не е равностойно: използвани са по-малки резерви.':Number.isFinite(normal)?delta>EPS?'По-икономичен с '+nfmt(delta,3)+' mm/ход спрямо №11':delta<-EPS?'По-голям разход с '+nfmt(-delta,3)+' mm/ход спрямо №11':'Равен разход с №11':'Няма валиден №11 за сравнение';
    output.className='variant-card'+(delta>EPS&&mode!=='diagnostic'?' best-geom':'');
-   output.innerHTML='<strong class="variant-title">№12 · Вложен N='+best.n+(mode==='diagnostic'?' · диагностичен':'')+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p>'+nestedCountsHtml(best.n,best.a,best.b,best.c)+'<strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · най-малка междина '+nfmt(best.clearance.near2.distance,3)+' mm</p><p><b>'+compare+'</b></p><p class="variant-notice">'+caution+' '+limitMsg+' N=1…'+maxN+', '+checks+' комбинации. Няма доказан абсолютен минимум.</p>';
+   output.innerHTML='<strong class="variant-title">№12 · Вложен N='+best.n+(mode==='diagnostic'?' · диагностичен':'')+'</strong><p class="variant-strokes">('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p>'+nestedCountsHtml(best.n,best.a,best.b,best.c)+'<strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · най-малка междина '+nfmt(best.clearance.near2.distance,3)+' mm</p><p><b>'+compare+'</b></p><p class="variant-notice">'+caution+' '+limitMsg+' N=1…'+maxN+', '+checks+' комбинации. Няма доказан абсолютен минимум.</p><button type="button" id="smartNestedSelect" class="primary">Избери вариант №12</button>';
   }
  }catch(err){resetNestedCard('Грешка при търсене: '+err.message);}
 }
