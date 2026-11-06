@@ -2125,7 +2125,7 @@ function renderNestedProfiles(message=''){
     steps+'<strong class="profile-avg">'+nfmt(b.avg,3)+' mm/ход</strong>'+
     '<div class="profile-detail">Общо '+nfmt(b.sum,2)+' mm · измерена междина по модела '+nfmt(b.clearance.near2.distance,3)+' mm'+(Math.abs(b.avg-minimum)<=EPS?' · най-ниско намерено средно':'')+'</div>'+
     '<small class="profile-warning">'+warning+(relationalMode()?' Y-разделянето е условно по отметките.':'')+'</small>'+
-    '<small class="profile-meta">'+(v.limited?'Изследвана ограничена извадка. ':'')+'N=1…'+v.maxN+' · '+v.checked+' аналитични проверки. Не е доказан глобален минимум.</small>'+
+    '<small class="profile-meta">'+(b.provenance?'Допустим кандидат, намерен първо при друг профил: '+esc(b.provenance)+'. ':'')+(v.limited?'Изследвана ограничена извадка. ':'')+'N=1…'+v.maxN+' · '+v.checked+' аналитични проверки. Не е доказан глобален минимум.</small>'+
     '<button type="button" data-nested-index="'+i+'">'+(chosen?'✓ Избран':'Избери тази N схема')+'</button></article>';
  }).join('');
 }
@@ -2192,6 +2192,28 @@ async function nestedSearchOne(shapes,profile,grid,maxN,aborted){
  }
  return {best,checked,limited};
 }
+
+/* A program valid at a larger required gap is valid at any smaller gap.
+   Reuse and independently re-validate such candidates so a sampled
+   smaller-gap search never reports a worse option just due to sampling. */
+function harmonizeNestedProfiles(shapes){
+ const entries=smartNestedOptions;
+ const intervals=new Map();
+ for(const p of entries)if(!intervals.has(p.gap))intervals.set(p.gap,forbiddenOffsetsDistance(shapes,p.gap));
+ for(let pass=0;pass<2;pass++){
+  for(let i=0;i<entries.length;i++)for(let j=0;j<entries.length;j++){
+   if(i===j)continue;
+   const dst=entries[i],src=entries[j];
+   if(!src.best||src.gap+EPS<dst.gap||src.minC+EPS<dst.minC)continue;
+   if(dst.best&&src.best.avg>=dst.best.avg-EPS)continue;
+   if(src.best.c+EPS<dst.minC||!src.best.clearance?.complete||src.best.clearance.near2.distance+1e-6<dst.gap)continue;
+   if(!verifyPeriodic(src.best.steps,intervals.get(dst.gap)))continue;
+   const origin=src.best.provenance||src.label;
+   dst.best={...src.best,provenance:origin};
+  }
+ }
+}
+
 async function machineNOptimize(compareToken){
  const run=++nestedTicket;
  resetNestedCard('Изчислява 12 профила с различен луфт и изчистващ ход…');
@@ -2207,6 +2229,7 @@ async function machineNOptimize(compareToken){
    const result=await nestedSearchOne(shapes,p,opts.grid,maxN,()=>run!==nestedTicket||compareToken!==smartCalculationSerial);
    if(result.cancelled)return;
    smartNestedOptions.push({...p,required:p.gap,maxN,checked:result.checked,limited:result.limited,best:result.best});
+   harmonizeNestedProfiles(shapes);
    renderNestedProfiles('Изчислени '+(i+1)+' / '+profiles.length+' профила…');
    await new Promise(resolve=>setTimeout(resolve,0));
   }
