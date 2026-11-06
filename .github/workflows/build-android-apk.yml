@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/build-android-apk.yml'
+      - 'index.html'
+      - 'sw.js'
 permissions:
   contents: write
 jobs:
@@ -51,7 +53,7 @@ jobs:
           android {
            namespace 'bg.foilstep.lab'
            compileSdk 35
-           defaultConfig { applicationId 'bg.foilstep.lab'; minSdk 26; targetSdk 34; versionCode 197; versionName '1.9.7' }
+           defaultConfig { applicationId 'bg.foilstep.lab'; minSdk 26; targetSdk 34; versionCode 1914; versionName '1.9.14' }
            buildTypes { release { minifyEnabled false } }
            compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
           }
@@ -183,16 +185,16 @@ jobs:
           unzip -l android/app/build/outputs/apk/debug/app-debug.apk | grep 'assets/icon-192.png'
           test $(stat -c%s android/app/build/outputs/apk/debug/app-debug.apk) -gt 45000
       - name: Name APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk FoilStep_Lab_V1.9.7.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk FoilStep_Lab_V1.9.14.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: FoilStep_Lab_V1.9.7_APK
-          path: FoilStep_Lab_V1.9.7.apk
+          name: FoilStep_Lab_V1.9.14_APK
+          path: FoilStep_Lab_V1.9.14.apk
       - name: Publish downloadable APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.9.7-android
-          name: FoilStep Lab Android V1.9.7
-          body: 'Offline Android APK (debug signed). For future updates the signing key must be preserved; before reinstalling, export saved jobs as JSON.'
-          files: FoilStep_Lab_V1.9.7.apk
+          tag_name: v1.9.14-android
+          name: FoilStep Lab Android V1.9.14
+          body: 'Offline Android APK (debug signed). This APK is debug-signed with a runner-generated key. If the signing key differs from an installed version, Android will refuse in-place updates. Export saved jobs as JSON before uninstalling the previous version.'
+          files: FoilStep_Lab_V1.9.14.apk
