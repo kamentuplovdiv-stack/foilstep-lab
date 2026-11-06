@@ -233,7 +233,7 @@ tbody td .input{width:100%;min-width:0;font-size:16px}
 <body class="is-relations">
 <header>
  <div class="eyebrow">ИНТЕРАКТИВЕН КАЛКУЛАТОР · ОФЛАЙН</div>
- <h1>FoilStep Lab <span class="version">V1.9.12 TEST</span></h1>
+ <h1>FoilStep Lab <span class="version">V1.9.13 TEST</span></h1>
  <p>X/Y отпечатъци · автоматичен и ръчен режим · последователност с повторения</p>
 </header>
 <div id="runtimeWarning" role="alert" style="max-width:1200px;margin:12px auto 0;padding:13px 16px;border:2px solid #e0ab37;border-radius:10px;background:#fff4cf;color:#654719;font-size:14px;line-height:1.5"><strong>⚠ Интерактивните функции не са активни.</strong> Този преглед на HTML не изпълнява JavaScript. Вграденият преглед на файла не изпълнява JavaScript. <a href="https://kamentuplovdiv-stack.github.io/foilstep-lab/?v=1.9.12" target="_blank" rel="noopener noreferrer" style="font-weight:800;color:#124aac;text-decoration:underline">Отвори работещата уеб версия в Chrome</a>. Тук добавянето и Y отметките са недостъпни.</div>
@@ -2162,7 +2162,7 @@ async function machineNOptimize(auto=false,compareToken=null){
     return;
    }
    smartNestedLast=best;
-   output.innerHTML='<article class="variant-card best-geom"><strong class="variant-title">№12 · Оптимизиран вложен N</strong><p>('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · междина '+nfmt(best.clearance.near2.distance,3)+' mm.</p><p>По-малко от №11: '+(Number.isFinite(normal)?nfmt(normal-best.avg,3)+' mm/ход':'няма сравним стандартен вариант')+'</p><p class="variant-notice">'+(relationalMode()?'⚠ Условен Y модел. ':'')+'Проверени N=1…'+maxN+', '+checked+' комбинации. Евристика, не доказан минимум.</p><button type="button" data-nested-use="1">Избери N варианта</button></article>';
+   output.innerHTML='<article class="variant-card best-geom"><strong class="variant-title">№12 · Най-добър намерен вложен N</strong><p>('+nfmt(best.a,2)+' → '+nfmt(best.b,2)+') × '+best.n+' → '+nfmt(best.a,2)+' → '+nfmt(best.c,2)+'</p><strong class="variant-avg">'+nfmt(best.avg,3)+' mm/ход</strong><p>Общо '+nfmt(best.sum,2)+' mm / '+best.steps.length+' хода · междина '+nfmt(best.clearance.near2.distance,3)+' mm.</p><p>По-малко от №11: '+(Number.isFinite(normal)?nfmt(normal-best.avg,3)+' mm/ход':'няма сравним стандартен вариант')+'</p><p class="variant-notice">'+(relationalMode()?'⚠ Условен Y модел. ':'')+'Проверени N=1…'+maxN+', '+checked+' комбинации. Евристика, не доказан минимум.</p><button type="button" data-nested-use="1">Избери N варианта</button></article>';
   }else{
    if(!best){output.textContent='Няма геометрично потвърден N цикъл (N=1…'+maxN+', '+checked+' проверки).';return;}
    $('machineN').value=String(best.n);
